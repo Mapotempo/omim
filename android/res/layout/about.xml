@@ -49,12 +49,16 @@
                 android:drawableStart="@drawable/ic_website"/>
 
       <TextView android:id="@+id/blog"
+                android:layout_height="0dp"
+                android:visibility="invisible"
                 style="@style/MwmWidget.TextView.Item"
                 android:text="@string/blog"
                 android:drawableLeft="@drawable/ic_blog"
                 android:drawableStart="@drawable/ic_blog"/>
 
       <TextView android:id="@+id/facebook"
+                android:layout_height="0dp"
+                android:visibility="invisible"
                 style="@style/MwmWidget.TextView.Item"
                 android:text="@string/facebook"
                 android:drawableLeft="@drawable/ic_facebook"

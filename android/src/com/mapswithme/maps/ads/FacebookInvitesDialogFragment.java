@@ -18,8 +18,8 @@ import com.mapswithme.util.statistics.Statistics;
 
 public class FacebookInvitesDialogFragment extends BaseMwmDialogFragment
 {
-  private static final String INVITE_APP_URL = "https://fb.me/958251974218933";
-  private static final String INVITE_IMAGE = "http://maps.me/images/fb_app_invite_banner.png";
+  private static final String INVITE_APP_URL = "https://www.facebook.com/pages/Mapotempo/971520209558254";
+  private static final String INVITE_IMAGE = "https://www.mapotempo.com/wp-content/uploads/2016/04/logiciel_de_planification_de_tourn%C3%A9es-1024x394.png";
 
   private boolean mHasInvited;
 
