@@ -75,7 +75,7 @@ public class ViralFragment extends BaseMwmDialogFragment
 
   private void share()
   {
-    SharingHelper.shareViralEditor(getActivity(), R.drawable.img_sharing_editor, R.string.editor_sharing_title, R.string.whatsnew_editor_message_1);
+//    SharingHelper.shareViralEditor(getActivity(), R.drawable.img_sharing_editor, R.string.editor_sharing_title, R.string.whatsnew_editor_message_1);
   }
 
   private void initViralText()

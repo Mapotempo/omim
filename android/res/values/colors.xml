@@ -40,8 +40,8 @@
   <!-- Backgrounds -->
   <color name="bg_window">#FFEEEEEE</color>
   <color name="bg_window_night">#FF32363A</color>
-  <color name="bg_primary">#1F9952</color>
-  <color name="bg_primary_night">#1E2226</color>
+  <color name="bg_primary">#FF89C53F</color>
+  <color name="bg_primary_night">#FF1E2226</color>
   <color name="bg_cards">@android:color/white</color>
   <color name="bg_cards_night">#FF3C4044</color>
   <color name="bg_panel">@color/bg_window</color>
@@ -57,8 +57,8 @@
   <color name="bg_menu_open">#FFFFFFFF</color>
   <color name="bg_menu_open_night">#FF2D3237</color>
 
-  <color name="bg_statusbar">#197841</color>
-  <color name="bg_statusbar_night">#14181C</color>
+  <color name="bg_statusbar">#FF618D2A</color>
+  <color name="bg_statusbar_night">#FF000000</color>
 
   <color name="bg_azimut_arrow">#1D414651</color>
   <color name="fg_azimut_arrow">#FFFFFFFF</color>

@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto"
-    android:sharedUserId="com.mapswithme"
+    android:sharedUserId="com.mapotempo"
     android:sharedUserLabel="@string/shared_user_label">
 
   <uses-feature
