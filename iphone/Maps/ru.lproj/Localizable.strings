@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Экономь на бронировании отеля";
 
 "whats_new_booking_improve_message" = "Результаты поиска отелей на карте показывают ценовую категорию.\nОтелей для бронирования стало на 110 000 больше.";
+
+"pref_url_server_title" = "Server URL";

@@ -1,5 +1,6 @@
 #include "platform/platform.hpp"
 #include "platform/local_country_file.hpp"
+#include "platform/settings.hpp"
 
 #include "coding/base64.hpp"
 #include "coding/file_name_utils.hpp"
@@ -135,8 +136,14 @@ string Platform::ResourcesMetaServerUrl() const
   return RESOURCES_METASERVER_URL;
 }
 
-string Platform::MetaServerUrl() const
+string Platform::MetaServerUrl(string settingName) const
 {
+  string res;
+  settings::Get(settingName, res);
+  if(!res.empty())
+  {
+    return res;
+  }
   return METASERVER_URL;
 }
 

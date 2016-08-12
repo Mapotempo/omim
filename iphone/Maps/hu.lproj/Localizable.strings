@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Takarékoskodjon szálláshely foglalásakor";
 
 "whats_new_booking_improve_message" = "A szálláshely keresési eredménye már tartalmazza az árkategóriát. \nEmellett kiegészítettük több mint 110.000 szálláshellyel.";
+
+"pref_url_server_title" = "Server URL";

@@ -36,7 +36,7 @@ void HttpMapFilesDownloader::GetServersList(int64_t const mapVersion, string con
 {
   ASSERT_THREAD_CHECKER(m_checker, ());
   m_request.reset(downloader::HttpRequest::PostJson(
-      GetPlatform().MetaServerUrl(), strings::to_string(mapVersion) + '/' + mapFileName,
+      GetPlatform().MetaServerUrl("URLServer"), strings::to_string(mapVersion) + '/' + mapFileName,
       bind(&HttpMapFilesDownloader::OnServersListDownloaded, this, callback, _1)));
 }
 

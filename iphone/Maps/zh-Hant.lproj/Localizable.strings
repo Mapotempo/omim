@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "優惠預訂飯店";
 
 "whats_new_booking_improve_message" = "飯店搜尋結果現在還包含價格類別。\n我們還加入了超過 110,000 間飯店。";
+
+"pref_url_server_title" = "Server URL";

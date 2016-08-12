@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Säästä hotellivarauksissa";
 
 "whats_new_booking_improve_message" = "Hotellien hakutuloksissa näkyy nyt hintakategoria.\nLisäsimme myös yli 110 000 hotellia.";
+
+"pref_url_server_title" = "Server URL";

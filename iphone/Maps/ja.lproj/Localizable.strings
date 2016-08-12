@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "ホテル予約時に節約しましょう";
 
 "whats_new_booking_improve_message" = "ホテルの検索結果に価格のカテゴリーが表示されるようになりました。\nさらに、 110,000 軒を超えるホテルを追加しました。";
+
+"pref_url_server_title" = "Server URL";

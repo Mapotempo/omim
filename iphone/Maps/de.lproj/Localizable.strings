@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Beim Buchen von Hotels sparen";
 
 "whats_new_booking_improve_message" = "Suchergebnisse für Hotels enthalten jetzt die Kategorie Preis.\nAußerdem haben wir über 110.000 Hotels hinzugefügt.";
+
+"pref_url_server_title" = "Server URL";

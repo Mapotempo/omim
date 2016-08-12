@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "توفير عند حجز الفنادق";
 
 "whats_new_booking_improve_message" = "تحتوي نتائج البحث عن الفنادق الآن على فئة السعر.\nوأضفنا أيضًا أكثر من 110000 فندق.";
+
+"pref_url_server_title" = "Server URL";

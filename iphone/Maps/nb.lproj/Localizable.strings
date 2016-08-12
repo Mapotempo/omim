@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Spar penger når du bestiller hotell";
 
 "whats_new_booking_improve_message" = "Søkeresultatene for hoteller inneholder nå priskategori.\nVi har også lagt til flere enn 110.000 hoteller.";
+
+"pref_url_server_title" = "Server URL";

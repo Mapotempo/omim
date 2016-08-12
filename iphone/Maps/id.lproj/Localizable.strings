@@ -1631,3 +1631,5 @@
 "whats_new_booking_improve_title" = "Berhemat saat memesan hotel";
 
 "whats_new_booking_improve_message" = "Hasil pencarian untuk hotel kini disertai kategori harga.\nKami juga menambahkan lebih dari 110.000 hotel.";
+
+"pref_url_server_title" = "Server URL";

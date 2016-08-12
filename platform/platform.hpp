@@ -214,7 +214,7 @@ public:
 
   /// @return url for clients to download maps
   //@{
-  string MetaServerUrl() const;
+  string MetaServerUrl(string settingName) const;
   string ResourcesMetaServerUrl() const;
   //@}
 
