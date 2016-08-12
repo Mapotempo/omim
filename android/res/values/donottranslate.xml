@@ -45,6 +45,7 @@
   <string name="pref_3d" translatable="false">3D</string>
   <string name="pref_3d_buildings" translatable="false">3DBuildings</string>
   <string name="pref_track_record" translatable="false">TrackRecord</string>
+  <string name="pref_url_server" translatable="false">URLServer</string>
   <string name="pref_showcase_switched_on" translatable="false">DisplayShowcase</string>
   <string name="pref_osm_profile" translatable="false">Osm profile</string>
   <string name="pref_auto_zoom" translatable="false">AutoZoom</string>

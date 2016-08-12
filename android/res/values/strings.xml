@@ -1065,4 +1065,5 @@
 	<string name="whatsnew_font_size_text">Labels on the map can be made bigger.</string>
 	<!-- "Translation is no needed, because it's a company name" -->
 	<string name="uber">Uber</string>
+	<string name="pref_url_server_title">Server URL</string>
 </resources>

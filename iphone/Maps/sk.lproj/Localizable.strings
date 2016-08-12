@@ -1794,3 +1794,5 @@
 
 /* "Translation is no needed, because it's a company name" */
 "uber" = "Uber";
+
+"pref_url_server_title" = "Server URL";

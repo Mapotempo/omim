@@ -33,6 +33,7 @@ public final class Config
   private static final String KEY_MISC_FIRST_START_DIALOG_SEEN = "FirstStartDialogSeen";
   private static final String KEY_MISC_UI_THEME = "UiTheme";
   private static final String KEY_MISC_UI_THEME_SETTINGS = "UiThemeSettings";
+  private static final String KEY_URL_SERVER = "URLServer";
 
   private Config() {}
 
@@ -342,6 +343,16 @@ public final class Config
 
     setString(KEY_MISC_UI_THEME_SETTINGS, theme);
     return true;
+  }
+
+  public static void  setURLServer(String urlServer)
+  {
+    setString(KEY_URL_SERVER, urlServer);
+  }
+
+  public static String  getURLServer()
+  {
+    return getString(KEY_URL_SERVER, "no server");
   }
 
   private static native boolean nativeGetBoolean(String name, boolean defaultValue);

@@ -2,6 +2,7 @@ package com.mapswithme.maps.settings;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.TwoStatePreference;
@@ -189,6 +190,29 @@ public class MapPrefsFragment extends BaseXmlSettingsFragment
           public void run()
           {
             trackPref.setSummary(trackPref.getEntry());
+          }
+        });
+        return true;
+      }
+    });
+
+    final EditTextPreference urlPref = (EditTextPreference)findPreference(getString(R.string.pref_url_server));
+    String url = Config.getURLServer();
+    urlPref.setText(url);
+    urlPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+    {
+      @Override
+      public boolean onPreferenceChange(final Preference preference, Object newValue)
+      {
+        Config.setURLServer((String) newValue);
+
+        UiThread.runLater(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            String url = Config.getURLServer();
+            urlPref.setText(url);
           }
         });
         return true;

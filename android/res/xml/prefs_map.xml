@@ -44,4 +44,10 @@
     android:entries="@array/track_length"
     android:entryValues="@array/track_length_values"
     android:order="7"/>
+
+  <EditTextPreference
+      android:key="@string/pref_url_server"
+      android:title="@string/pref_url_server_title"
+      android:maxLines="1"
+      android:order="8"/>
 </PreferenceScreen>

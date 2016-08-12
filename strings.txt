@@ -22071,3 +22071,7 @@
   [uber]
     comment = "Translation is no needed, because it's a company name"
     en = Uber
+
+  [pref_url_server_title]
+    en = Server URL
+    fr = URL serveur
