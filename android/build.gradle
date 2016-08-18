@@ -439,3 +439,75 @@ task patchNdkR10E(type: Exec, description: 'Patches NDK r10e for bug described h
   def cxxabiPath = "${android.getNdkDirectory().getAbsolutePath()}/sources/cxx-stl/gabi++/src/cxxabi.cc"
   commandLine 'bash', '-c', "patch -p1 ${cxxabiPath} < ../tools/android/cxxabi.cc_patch"
 }
+
+task mapotempoLocalize1(type: org.gradle.api.tasks.Copy) {
+  from 'res'
+  include '**/strings.xml'
+  filter {
+    line ->
+      line.contains('whatsnew_update_editor_message') ? line.replace('MAPS.ME', 'MAPS.ME &amp; Mapotempo-Route') :
+              line.contains('about_description') ? line.replace('Mail.Ru Group', 'Mail.Ru Group &amp; Mapotempo') :
+                      line
+                              .replaceAll('(?i)support@maps\\.me', 'mobile-route@mapotempo.com')
+                              .replaceAll('(?i)http://maps\\.me/get', 'http://mapotempo.com/mobile')
+                              .replaceAll('(?i)MAPS\\.ME', 'Mapotempo-Route')
+                              .replaceAll('bookmark sets', 'routes') // EN
+                              .replaceAll('bookmark set', 'route')
+                              .replaceAll('(?i)Bookmark Sets', 'Routes')
+                              .replaceAll('(?i)Bookmark Set', 'Route')
+                              .replaceAll('([^_"])bookmarks([^_"])', '$1points$2')
+                              .replaceAll('([^_"])bookmark([^_"])', '$1point$2')
+                              .replaceAll('(?i)([^_"])Bookmarks([^_"])', '$1Points$2')
+                              .replaceAll('(?i)([^_"])Bookmark([^_"])', '$1Point$2')
+                              .replaceAll('groupes de signets', 'tournées') // FR
+                              .replaceAll('groupe de signets', 'tournée')
+                              .replaceAll('(?i)Groupes de signets', 'Tournées')
+                              .replaceAll('(?i)Groupe de signets', 'Tournée')
+                              .replaceAll('groupes', 'tournées')
+                              .replaceAll('groupe', 'tournée')
+                              .replaceAll('(?i)Groupes', 'Tournées')
+                              .replaceAll('(?i)Groupe', 'Tournée')
+                              .replaceAll('(?i)du( Tournée)', 'de la$1')
+                              .replaceAll('(?i)le( Tournée)', 'la$1')
+                              .replaceAll('(?i)un nouveau( Tournée)', 'une nouvelle$1')
+                              .replaceAll('(?i)nouveau( Tournée)', 'nouvelle$1')
+                              .replaceAll('([^_"])signets([^_"])', '$1points$2')
+                              .replaceAll('([^_"])signet([^_"])', '$1point$2')
+                              .replaceAll('(?i)([^_"])Signets([^_"])', '$1Points$2')
+                              .replaceAll('(?i)([^_"])Signet([^_"])', '$1Point$2')
+  }
+  into 'res_tmp'
+}
+
+task mapotempoLocalize2(type: org.gradle.api.tasks.Copy) {
+  from 'res_tmp'
+  into 'res'
+}
+
+task mapotempoLocalize3(type: org.gradle.api.tasks.Delete) {
+  delete 'res_tmp'
+}
+
+task mapotempoLocalize4(type: org.gradle.api.tasks.Copy) {
+  from '../data'
+  include 'copyright.html'
+  filter {
+    line ->
+      line
+              .replaceAll('(?i)<strong>maps.me</strong>', '<strong>Mapotempo-Route</strong>')
+  }
+  into 'tmp'
+}
+
+task mapotempoLocalize5(type: org.gradle.api.tasks.Copy) {
+  from 'tmp'
+  include 'copyright.html'
+  into '../data'
+}
+
+task mapotempoLocalize6(type: org.gradle.api.tasks.Delete) {
+  delete 'tmp'
+}
+
+task mapotempoLocalized(dependsOn: ['mapotempoLocalize1', 'mapotempoLocalize2', 'mapotempoLocalize3', 'mapotempoLocalize4', 'mapotempoLocalize5', 'mapotempoLocalize6']) {
+}
