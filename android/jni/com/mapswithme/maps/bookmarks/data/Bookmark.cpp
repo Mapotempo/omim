@@ -34,6 +34,13 @@ Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeGetBookmarkAddress(
 }
 
 JNIEXPORT jstring JNICALL
+Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeGetBookmarkPhoneNumber(
+     JNIEnv * env, jobject thiz, jint cat, jlong bmk)
+{
+  return jni::ToJavaString(env, getBookmark(cat, bmk)->GetBookmarkPhoneNumber());
+}
+
+JNIEXPORT jstring JNICALL
 Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeGetBookmarkDescription(
      JNIEnv * env, jobject thiz, jint cat, jlong bmk)
 {

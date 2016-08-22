@@ -32,7 +32,7 @@ public:
   }
 
   BookmarkData(string const & name, string const & type, string const & address = "",
-                     string const & description = "", double scale = -1.0,
+                     string const & description = "", string const & phoneNumber = "", double scale = -1.0,
                      time_t timeStamp = my::INVALID_TIME_STAMP)
     : m_name(name)
     , m_description(description)
@@ -40,6 +40,7 @@ public:
     , m_scale(scale)
     , m_timeStamp(timeStamp)
     , m_address(address)
+    , m_phoneNumber(phoneNumber)
   {
   }
 
@@ -61,6 +62,9 @@ public:
   time_t const & GetTimeStamp() const { return m_timeStamp; }
   void SetTimeStamp(const time_t & timeStamp) { m_timeStamp = timeStamp; }
 
+  string const & GetPhoneNumber() const { return m_phoneNumber;}
+  void SetPhoneNumber(const string & phoneNumber) { m_phoneNumber = phoneNumber;}
+
 private:
   string m_name;
   string m_description;
@@ -68,6 +72,7 @@ private:
   double m_scale; ///< Viewport scale. -1.0 - is a default value (no scale set).
   time_t m_timeStamp;
   string m_address;
+  string m_phoneNumber;
 };
 
 class Bookmark : public UserMark
@@ -107,6 +112,9 @@ public:
 
   double GetScale() const;
   void SetScale(double scale);
+
+  string const & GetBookmarkPhoneNumber() const;
+  void SetBookmarkPhoneNumber(string const & address);
 
 private:
   BookmarkData m_data;

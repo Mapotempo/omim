@@ -17,6 +17,7 @@ public class Bookmark extends MapObject
   private int mBookmarkId;
   private double mMerX;
   private double mMerY;
+  private String mPhoneNumber;
 
   Bookmark(@IntRange(from = 0) int categoryId, @IntRange(from = 0) int bookmarkId, String title)
   {
@@ -64,6 +65,10 @@ public class Bookmark extends MapObject
       res = nativeGetAddress(mCategoryId, mBookmarkId);
     }
     return res;
+  }
+
+  public String getPhoneNumber() {
+    return nativeGetBookmarkPhoneNumber(mCategoryId, mBookmarkId);
   }
 
   @Override
@@ -157,6 +162,8 @@ public class Bookmark extends MapObject
   {
     return getGe0Url(addName).replaceFirst(Constants.Url.GE0_PREFIX, Constants.Url.HTTP_GE0_PREFIX);
   }
+
+  private native String nativeGetBookmarkPhoneNumber(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);
 
   private native String nativeGetBookmarkAddress(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);
 

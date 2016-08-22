@@ -135,6 +135,16 @@ void Bookmark::SetScale(double scale)
   m_data.SetScale(scale);
 }
 
+string const & Bookmark::GetBookmarkPhoneNumber() const
+{
+  return m_data.GetPhoneNumber();
+}
+
+void Bookmark::SetBookmarkPhoneNumber(string const & phoneNumber)
+{
+  m_data.SetPhoneNumber(phoneNumber);
+}
+
 void BookmarkCategory::AddTrack(unique_ptr<Track> && track)
 {
   SetDirty();
@@ -242,6 +252,7 @@ namespace
     string m_description;
     time_t m_timeStamp;
     string m_address;
+    string m_phoneNumber;
 
     m2::PointD m_org;
     double m_scale;
@@ -255,6 +266,7 @@ namespace
       m_scale = -1.0;
       m_timeStamp = my::INVALID_TIME_STAMP;
       m_address.clear();
+      m_phoneNumber.clear();
 
       m_trackColor = kDefaultTrackColor;
       m_styleId.clear();
@@ -416,7 +428,7 @@ namespace
           if (GEOMETRY_TYPE_POINT == m_geometryType)
           {
             Bookmark * bm = static_cast<Bookmark *>(m_controller.CreateUserMark(m_org));
-            bm->SetData(BookmarkData(m_name, m_type, m_address, m_description, m_scale, m_timeStamp));
+            bm->SetData(BookmarkData(m_name, m_type, m_address, m_description, m_phoneNumber, m_scale, m_timeStamp));
             bm->RunCreationAnim();
           }
           else if (GEOMETRY_TYPE_LINE == m_geometryType)
@@ -486,6 +498,8 @@ namespace
             m_description = value;
           else if (currTag == "address")
             m_address = value;
+          else if (currTag == "phoneNumber")
+            m_phoneNumber = value;
         }
         else if (prevTag == "LineStyle" && currTag == "color")
         {
@@ -727,6 +741,13 @@ void BookmarkCategory::SaveToKML(ostream & s)
       s << "    <address>";
       SaveStringWithCDATA(s, bm->GetBookmarkAddress());
       s << "</address>\n";
+    }
+
+    if (!bm->GetBookmarkPhoneNumber().empty())
+    {
+      s << "    <phoneNumber>";
+      SaveStringWithCDATA(s, bm->GetBookmarkPhoneNumber());
+      s << "</phoneNumber>\n";
     }
 
     if (!bm->GetDescription().empty())
