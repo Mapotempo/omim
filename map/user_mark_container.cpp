@@ -225,6 +225,11 @@ void UserMarkContainer::SetIsVisible(bool isVisible)
     m_flags[VisibleFlag] = isVisible;
 }
 
+void UserMarkContainer::ReverseUserMarks()
+{
+  reverse(m_userMarks.begin(), m_userMarks.end());
+}
+
 void UserMarkContainer::Update()
 {
   SetDirty();
