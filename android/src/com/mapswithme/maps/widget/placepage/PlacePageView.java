@@ -754,9 +754,23 @@ public class PlacePageView extends RelativeLayout
   private void showBookmarkDetails()
   {
     mBookmarkSet = true;
+    hideMapotempoDetails();
     UiUtils.show(mBookmarkFrame);
     UiUtils.setTextAndHideIfEmpty(mBookmarkNote, ((Bookmark) mMapObject).getBookmarkDescription());
     updateButtons();
+  }
+
+  // Hide some details for mapotempo app.
+  private void hideMapotempoDetails()
+  {
+    UiUtils.hide(mWebsite);
+    UiUtils.hide(mEmail);
+    UiUtils.hide(mOperator);
+    UiUtils.hide(mCuisine);
+    UiUtils.hide(mWiki);
+    UiUtils.hide(mWifi);
+    UiUtils.hide(mEntrance);
+    UiUtils.hide(mMoreInfo);
   }
 
   private void setButtons(boolean showBackButton, boolean showRoutingButton)

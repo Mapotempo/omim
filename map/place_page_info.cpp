@@ -19,16 +19,16 @@ bool Info::IsHotel() const { return m_isHotel; }
 bool Info::ShouldShowAddPlace() const
 {
   auto const isPointOrBuilding = IsPointType() || IsBuilding();
-  return m_canEditOrAdd && !(IsFeature() && isPointOrBuilding);
+  return m_canEditOrAdd && !(IsFeature() && isPointOrBuilding) && !IsBookmark();
 }
 
-bool Info::ShouldShowAddBusiness() const { return m_canEditOrAdd && IsBuilding(); }
+bool Info::ShouldShowAddBusiness() const { return m_canEditOrAdd && IsBuilding() && !IsBookmark(); }
 
 bool Info::ShouldShowEditPlace() const
 {
   return m_canEditOrAdd &&
          // TODO(mgsergio): Does IsFeature() imply !IsMyPosition()?
-         !IsMyPosition() && IsFeature();
+         !IsMyPosition() && IsFeature() && !IsBookmark();
 }
 
 bool Info::HasApiUrl() const { return !m_apiUrl.empty(); }
