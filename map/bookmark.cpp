@@ -567,7 +567,11 @@ bool BookmarkCategory::LoadFromKML(ReaderPtr<Reader> const & reader)
   ReaderSource<ReaderPtr<Reader> > src(reader);
   KMLParser parser(*this);
   if (ParseXML(src, parser, true))
+  {
+    // MAPOTEMPO - Reverse the loaded bookmarks.
+    ReverseUserMarks();
     return true;
+  }
   else
   {
     LOG(LERROR, ("XML read error. Probably, incorrect file encoding."));
@@ -686,6 +690,7 @@ void BookmarkCategory::SaveToKML(ostream & s)
 
   s << "  <visibility>" << (IsVisible() ? "1" : "0") <<"</visibility>\n";
 
+  // [MAPOTEMPO - OLD BEHAVIOR]
   // Bookmarks are stored to KML file in reverse order, so, least
   // recently added bookmark will be stored last. The reason is that
   // when bookmarks will be loaded from the KML file, most recently
@@ -699,8 +704,12 @@ void BookmarkCategory::SaveToKML(ostream & s)
   // processed during the iteration. That's why i is initially set to
   // GetBookmarksCount() - 1, i.e. to the last bookmark in the
   // bookmarks list.
-  for (size_t count = 0, i = GetUserMarkCount() - 1;
-       count < GetUserPointCount(); ++count, --i)
+  // [MAPOTEMPO - NEW BEHAVIOR]
+  // Bookmarks are stored to KML file in normal order because loading system
+  // has changed, it's now reversed.
+
+  for (size_t count = 0, i = 0;
+       count < GetUserPointCount(); ++count, ++i)
   {
     Bookmark const * bm = static_cast<Bookmark const *>(GetUserMark(i));
     s << "  <Placemark>\n";

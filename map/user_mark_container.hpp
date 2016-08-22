@@ -38,6 +38,8 @@ public:
   virtual void DeleteUserMark(size_t index) = 0;
   virtual void Clear(size_t skipCount = 0) = 0;
   virtual void Update() = 0;
+  virtual void ReverseUserMarks() = 0;
+
 };
 
 class UserMarkContainer : public df::UserMarksProvider
@@ -87,6 +89,7 @@ protected:
   void SetIsDrawable(bool isDrawable) override;
   void SetIsVisible(bool isVisible) override;
   void Update() override;
+  void ReverseUserMarks() override;
 
   virtual UserMark * AllocateUserMark(m2::PointD const & ptOrg) = 0;
 
