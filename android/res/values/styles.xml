@@ -249,4 +249,8 @@
     <item name="android:background">?selectableItemBackgroundBorderless</item>
     <item name="android:tint">?iconTint</item>
   </style>
+
+  <style name="MwmWidget.SplashTheme" parent="Theme.AppCompat.NoActionBar">
+    <item name="android:windowBackground">@drawable/splash_screen</item>
+  </style>
 </resources>
