@@ -291,6 +291,12 @@ abstract class BaseNewsFragment extends BaseMwmDialogFragment
     try
     {
       final BaseNewsFragment fragment = clazz.newInstance();
+      // Mapotempo - do not display is nothing to do, not the better way, because instantiate the adapter here
+      Adapter adapter = fragment.createAdapter();
+      int pageCount = adapter.getCount();
+      if (pageCount == 0)
+        return;
+      // Mapotempo
       fragment.show(activity.getSupportFragmentManager(), clazz.getName());
     } catch (java.lang.InstantiationException ignored)
     {}
