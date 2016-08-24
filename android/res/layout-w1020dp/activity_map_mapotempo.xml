@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:placePage="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+
+  <include
+      layout="@layout/activity_map"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="1"/>
+
+  <include
+      layout="@layout/layout_nav_mapotempo"
+      android:layout_width="match_parent"
+      android:layout_height="48dp"
+      android:layout_weight="0"/>
+
+</LinearLayout>

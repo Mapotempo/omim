@@ -328,7 +328,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     if (!mIsFragmentContainer && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP))
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-    setContentView(R.layout.activity_map);
+    setContentView(R.layout.activity_map_mapotempo);
     initViews();
 
     Statistics.INSTANCE.trackConnectionState();
