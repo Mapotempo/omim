@@ -1,6 +1,8 @@
 package com.mapswithme.maps.bookmarks;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
@@ -21,10 +24,12 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
   private final static int TYPE_HELP = 1;
   private RecyclerLongClickListener mLongClickListener;
   private RecyclerClickListener mClickListener;
+  private Context mContext;
 
   public BookmarkCategoriesAdapter(Context context)
   {
     super(context);
+    mContext = context;
   }
 
   public void setOnClickListener(RecyclerClickListener listener)
@@ -89,10 +94,26 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
       @Override
       public void onClick(View v)
       {
+        hideAllCategories();
         BookmarkManager.INSTANCE.toggleCategoryVisibility(holder.getAdapterPosition());
         holder.setVisibilityState(set.isVisible());
+        notifyDataSetChanged();
+        if(set.getBookmark(0) != null) {
+          BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(set.getId(), 0);
+          final Intent i = new Intent((Activity) mContext, MwmActivity.class);
+          i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+          mContext.startActivity(i);
+        }
       }
     });
+  }
+
+  private void hideAllCategories()
+  {
+    for(int i = 0; i < BookmarkManager.INSTANCE.nativeGetCategoriesCount(); i++)
+    {
+      getItem(i).setVisibility(false);
+    }
   }
 
   @Override
