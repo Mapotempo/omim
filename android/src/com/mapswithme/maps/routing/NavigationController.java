@@ -7,6 +7,8 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 import com.mapswithme.maps.Framework;
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
+import com.mapswithme.maps.bookmarks.data.Bookmark;
+import com.mapswithme.maps.bookmarks.data.BookmarkManager;
+import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.location.LocationHelper;
 import com.mapswithme.maps.settings.SettingsActivity;
@@ -33,6 +38,7 @@ public class NavigationController
 {
   private final View mFrame;
   private final View mBottomFrame;
+  private final View mBottomMapotempoFrame;
   private final NavMenu mNavMenu;
 
   private final ImageView mNextTurnImage;
@@ -63,6 +69,9 @@ public class NavigationController
 
   private double mNorth;
 
+  // MAPOTEMPO ROUTING
+  private TextView    mMPCurrentBM;
+
   public NavigationController(Activity activity)
   {
     mFrame = activity.findViewById(R.id.navigation_frame);
@@ -77,6 +86,8 @@ public class NavigationController
     });
     mNavMenu = createNavMenu();
     mNavMenu.refreshTts();
+    mBottomMapotempoFrame = activity.findViewById(R.id.nav_mapotempo_bottom_frame);
+
 
     // Top frame
     View topFrame = mFrame.findViewById(R.id.nav_top_frame);

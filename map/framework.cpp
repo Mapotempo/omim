@@ -319,7 +319,9 @@ Framework::Framework()
     CallDrapeFunction(bind(&df::DrapeEngine::SetDisplacementMode, _1, mode));
   })
   , m_lastReportedCountry(kInvalidCountryId)
+  , m_rountingManager(&m_bmManager)
 {
+
   m_startBackgroundTime = my::Timer::LocalTime();
 
   // Restore map style before classificator loading
@@ -655,6 +657,46 @@ size_t Framework::AddCategory(string const & categoryName)
 {
   return m_bmManager.CreateBmCategory(categoryName);
 }
+
+bool Framework::MT_GetStatus()
+{
+  return m_rountingManager.GetStatus();
+}
+
+bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
+{
+  bool res = m_rountingManager.InitManager(indexBmCat, indexBm);
+  if(res && m_activateMapotempoRouteFn)
+  {
+    m_activateMapotempoRouteFn();
+  }
+  return res;
+}
+
+int64_t Framework::MT_GetCurrentBookmarkCategory(){
+  return m_rountingManager.GetCurrentBookmarkCategory();
+}
+
+int64_t Framework::MT_GetCurrentBookmark(){
+  return m_rountingManager.GetCurrentBookmark();
+}
+
+int64_t Framework::MT_StepNextBookmark(){
+  return m_rountingManager.StepNextBookmark();
+}
+
+int64_t Framework::MT_StepPreviousBookmark(){
+  return m_rountingManager.StepPreviousBookmark();
+}
+
+void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
+                                         TDeactivateMapotempoFn const & deactivator)
+{
+  m_activateMapotempoRouteFn = activator;
+  m_deactivateMapotempoRouteFn = deactivator;
+}
+
+
 
 namespace
 {

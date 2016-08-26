@@ -20,6 +20,7 @@ import com.mapswithme.maps.base.BaseMwmListFragment;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
+import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.Track;
 import com.mapswithme.maps.widget.placepage.EditBookmarkFragment;
 import com.mapswithme.maps.widget.placepage.SponsoredHotel;
@@ -96,7 +97,7 @@ public class BookmarksListFragment extends BaseMwmListFragment
       return;
     case BookmarkListAdapter.TYPE_BOOKMARK:
       final Bookmark bookmark = (Bookmark) mAdapter.getItem(position);
-      BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(mCategoryIndex, bookmark.getBookmarkId());
+      BookmarkRoutingManager.INSTANCE.initRoutingManager(bookmark.getCategoryId(), bookmark.getBookmarkId());
       break;
     case BookmarkListAdapter.TYPE_TRACK:
       final Track track = (Track) mAdapter.getItem(position);

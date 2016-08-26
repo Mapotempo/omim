@@ -9,6 +9,7 @@
 #include "map/mwm_url.hpp"
 #include "map/place_page_info.hpp"
 #include "map/track.hpp"
+#include "map/mt_routing_manager.hpp"
 
 #include "drape_frontend/gui/skin.hpp"
 #include "drape_frontend/drape_engine.hpp"
@@ -153,6 +154,8 @@ protected:
 
   BookmarkManager m_bmManager;
 
+  MTRoutingManager m_rountingManager;
+
   BookingApi m_bookingApi;
 
   bool m_isRenderingEnabled;
@@ -288,6 +291,18 @@ public:
 
   m2::PointD GetSearchMarkSize(SearchMarkType searchMarkType);
 
+  bool MT_GetStatus();
+
+  bool MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm = 0);
+
+  int64_t MT_GetCurrentBookmarkCategory();
+
+  int64_t MT_GetCurrentBookmark();
+
+  int64_t MT_StepNextBookmark();
+
+  int64_t MT_StepPreviousBookmark();
+
 protected:
   // search::ViewportSearchCallback::Delegate overrides:
   void RunUITask(function<void()> fn) override { GetPlatform().RunOnGuiThread(move(fn)); }
@@ -326,6 +341,13 @@ public:
   using TDeactivateMapSelectionFn = function<void (bool /*switchFullScreenMode*/)>;
   void SetMapSelectionListeners(TActivateMapSelectionFn const & activator,
                                 TDeactivateMapSelectionFn const & deactivator);
+
+  /// Called to notify UI that mapotempo routing is activated.
+  using TActivateMapotempoRouteFn = function<void ()>;
+  /// Called to notify UI that mapotempo routing is deactivate;
+  using TDeactivateMapotempoFn = function<void ()>;
+  void MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
+                                TDeactivateMapotempoFn const & deactivator);
 
   void ResetLastTapEvent();
 
@@ -370,6 +392,9 @@ private:
 
   TActivateMapSelectionFn m_activateMapSelectionFn;
   TDeactivateMapSelectionFn m_deactivateMapSelectionFn;
+
+  TActivateMapotempoRouteFn m_activateMapotempoRouteFn;
+  TDeactivateMapotempoFn m_deactivateMapotempoRouteFn;
 
   /// Here we store last selected feature to get its polygons in case of adding organization.
   mutable FeatureID m_selectedFeature;
