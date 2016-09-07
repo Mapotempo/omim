@@ -82,4 +82,11 @@ using namespace jni;
     frm()->FillBookmarkInfo(*static_cast<Bookmark const *>(category->GetUserMark(bmkId)), {catId, bmkId}, info);
     return usermark_helper::CreateMapObject(env, info);
   }
+
+  JNIEXPORT jboolean JNICALL
+  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeSetCurrentBookmark(
+        JNIEnv * env, jobject thiz, int bmIndex)
+    {
+      return frm()->MT_SetCurrentBookmark(bmIndex);
+    }
 }  // extern "C"

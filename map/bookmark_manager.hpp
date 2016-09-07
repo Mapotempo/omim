@@ -34,7 +34,7 @@ public:
 
   /// Scans and loads all kml files with bookmarks in WritableDir.
   void LoadBookmarks();
-  void LoadBookmark(string const & filePath);
+  virtual void LoadBookmark(string const & filePath);
 
   void InitBookmarks();
 
@@ -52,12 +52,12 @@ public:
   /// @returns 0 if category is not found
   BookmarkCategory * GetBmCategory(size_t index) const;
 
-  size_t CreateBmCategory(string const & name);
+  virtual size_t CreateBmCategory(string const & name);
 
   /// @name Delete bookmarks category with all bookmarks.
   /// @return true if category was deleted
   void DeleteBmCategory(CategoryIter i);
-  bool DeleteBmCategory(size_t index);
+  virtual bool DeleteBmCategory(size_t index);
 
   typedef function<m2::AnyRectD const & (UserMarkType)> TTouchRectHolder;
 

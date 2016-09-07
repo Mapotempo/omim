@@ -31,7 +31,7 @@ HEADERS += \
     track.hpp \
     user_mark.hpp \
     user_mark_container.hpp \
-    mt_routing_manager.hpp
+    mt_route_manager.hpp
 
 SOURCES += \
     ../api/src/c/api-client.c \

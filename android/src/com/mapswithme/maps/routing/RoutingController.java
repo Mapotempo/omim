@@ -410,7 +410,11 @@ public class RoutingController
     if (mStartButton == null)
       return;
 
-    mStartButton.setEnabled(mState == State.PREPARE && mBuildState == BuildState.BUILT);
+    if(mState == State.PREPARE && mBuildState == BuildState.BUILT) {
+      //mStartButton.setEnabled(mState == State.PREPARE && mBuildState == BuildState.BUILT);
+      start();
+    }
+
     UiUtils.updateAccentButton(mStartButton);
   }
 

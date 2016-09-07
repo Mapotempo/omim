@@ -6,39 +6,57 @@
   android:id="@+id/nav_mapotempo_bottom_frame"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:orientation="vertical"
+  android:orientation="horizontal"
   android:layout_gravity="bottom"
   android:clickable="true"
   android:visibility="gone"
   android:background="?menuBackgroundOpen"
   tools:visibility="visible">
 
-  <FrameLayout
-    android:id="@+id/line_frame_mt"
-    android:layout_width="match_parent"
-    android:layout_height="64dp">
+  <ImageButton
+    android:layout_weight="0"
+    android:id="@+id/mt_prv_bm"
+    style="@style/MwmWidget.MTRouteButton"
+    android:background="@android:color/transparent"
+    android:src="@drawable/ic_menu_prev"
+    android:layout_gravity="left|center_vertical" />
 
-    <ImageButton
-      android:id="@+id/mp_prv_bm"
+  <ImageButton
+    android:id="@+id/mt_action_left"
+    style="@style/MwmWidget.MTRouteButton"
+    android:src="@drawable/ic_route_to"
+    android:background="@android:color/transparent"/>
+
+  <ImageButton
+      android:id="@+id/mt_action_left_second"
       style="@style/MwmWidget.MTRouteButton"
-      android:background="@android:color/transparent"
-      android:src="@drawable/ic_menu_prev"
-      android:layout_gravity="left|center_vertical" />
+      android:src="@drawable/ic_menu_bookmarks"
+      android:background="@android:color/transparent"/>
 
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textAppearance="?android:attr/textAppearanceLarge"
-      android:text="9. Client206"
-      android:id="@+id/mp_current_bm"
-      android:layout_gravity="center" />
+  <TextView
+    android:id="@+id/mt_current_bm"
+    android:layout_weight="1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="9. Client206 ddddd"
+    android:gravity="center_horizontal"
+    android:layout_gravity="center|center_vertical"/>
 
-    <ImageButton
-      android:id="@+id/mp_nxt_bm"
-      style="@style/MwmWidget.MTRouteButton"
-      android:background="@android:color/transparent"
-      android:src="@drawable/ic_menu_next"
-      android:layout_gravity="right|center_vertical" />
+  <ImageButton
+    android:id="@+id/mt_action_right"
+    android:layout_weight="0"
+    style="@style/MwmWidget.MTButton"
+    android:background="@android:color/transparent"
+    android:src="@drawable/ic_point_done"
+    android:layout_gravity="right|center_vertical" />
 
-  </FrameLayout>
+  <ImageButton
+    android:layout_weight="0"
+    android:id="@+id/mt_nxt_bm"
+    style="@style/MwmWidget.MTRouteButton"
+    android:background="@android:color/transparent"
+    android:src="@drawable/ic_menu_next"
+    android:layout_gravity="right|center_vertical" />
+
 </LinearLayout>

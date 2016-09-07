@@ -41,6 +41,14 @@ Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeShowBookmarkOnMap(
 }
 
 JNIEXPORT void JNICALL
+Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeMoveToBookmarkOnMap(
+    JNIEnv * env, jobject thiz, jint c, jint b)
+{
+  BookmarkAndCategory bnc = BookmarkAndCategory(c,b);
+  frm()->MoveToBookmark(bnc);
+}
+
+JNIEXPORT void JNICALL
 Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeLoadBookmarks(JNIEnv * env, jobject thiz)
 {
   frm()->LoadBookmarks();

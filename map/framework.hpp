@@ -9,7 +9,7 @@
 #include "map/mwm_url.hpp"
 #include "map/place_page_info.hpp"
 #include "map/track.hpp"
-#include "map/mt_routing_manager.hpp"
+#include "map/mt_route_manager.hpp"
 
 #include "drape_frontend/gui/skin.hpp"
 #include "drape_frontend/drape_engine.hpp"
@@ -152,9 +152,9 @@ protected:
 
   location::TMyPositionModeChanged m_myPositionListener;
 
-  BookmarkManager m_bmManager;
-
   MTRoutingManager m_rountingManager;
+
+  BookmarkManager &m_bmManager = m_rountingManager;
 
   BookingApi m_bookingApi;
 
@@ -280,6 +280,7 @@ public:
   bool DeleteBmCategory(size_t index);
 
   void ShowBookmark(BookmarkAndCategory const & bnc);
+  void MoveToBookmark(BookmarkAndCategory const & bnc);
   void ShowTrack(Track const & track);
 
   void ClearBookmarks();
@@ -298,6 +299,8 @@ public:
   int64_t MT_GetCurrentBookmarkCategory();
 
   int64_t MT_GetCurrentBookmark();
+
+  bool MT_SetCurrentBookmark(int64_t indexBm);
 
   int64_t MT_StepNextBookmark();
 
@@ -326,6 +329,9 @@ protected:
 
 private:
   void ActivateMapSelection(bool needAnimation,
+                            df::SelectionShape::ESelectedObject selectionType,
+                            place_page::Info const & info);
+  void ActivateMapSelectionAndCloseUI(bool needAnimation,
                             df::SelectionShape::ESelectedObject selectionType,
                             place_page::Info const & info);
   void InvalidateUserMarks();

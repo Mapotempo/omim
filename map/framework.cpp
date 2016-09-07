@@ -312,16 +312,14 @@ void Framework::Migrate(bool keepDownloaded)
 Framework::Framework()
   : m_startForegroundTime(0.0)
   , m_storage(platform::migrate::NeedMigrate() ? COUNTRIES_OBSOLETE_FILE : COUNTRIES_FILE)
-  , m_bmManager(*this)
+  , m_rountingManager(*this)
   , m_isRenderingEnabled(true)
   , m_displacementModeManager([this](bool show) {
     int const mode = show ? dp::displacement::kHotelMode : dp::displacement::kDefaultMode;
     CallDrapeFunction(bind(&df::DrapeEngine::SetDisplacementMode, _1, mode));
   })
   , m_lastReportedCountry(kInvalidCountryId)
-  , m_rountingManager(&m_bmManager)
 {
-
   m_startBackgroundTime = my::Timer::LocalTime();
 
   // Restore map style before classificator loading
@@ -665,7 +663,7 @@ bool Framework::MT_GetStatus()
 
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingManager.InitManager(indexBmCat, indexBm);
+  bool res = m_rountingManager.InitMTRouteManager(indexBmCat, indexBm);
   if(res && m_activateMapotempoRouteFn)
   {
     m_activateMapotempoRouteFn();
@@ -679,6 +677,10 @@ int64_t Framework::MT_GetCurrentBookmarkCategory(){
 
 int64_t Framework::MT_GetCurrentBookmark(){
   return m_rountingManager.GetCurrentBookmark();
+}
+
+bool Framework::MT_SetCurrentBookmark(int64_t indexBm){
+  return m_rountingManager.SetCurrentBookmark(indexBm);
 }
 
 int64_t Framework::MT_StepNextBookmark(){
@@ -855,6 +857,23 @@ void Framework::ShowBookmark(BookmarkAndCategory const & bnc)
   FillBookmarkInfo(*mark, bnc, info);
   ActivateMapSelection(true, df::SelectionShape::OBJECT_USER_MARK, info);
   m_lastTapEvent = MakeTapEvent(info.GetMercator(), info.GetID(), TapEvent::Source::Other);
+}
+
+void Framework::MoveToBookmark(BookmarkAndCategory const & bnc)
+{
+  StopLocationFollow();
+
+  Bookmark const * mark = static_cast<Bookmark const *>(GetBmCategory(bnc.first)->GetUserMark(bnc.second));
+
+  double scale = mark->GetScale();
+  if (scale == -1.0)
+    scale = scales::GetUpperComfortScale();
+
+  CallDrapeFunction(bind(&df::DrapeEngine::SetModelViewCenter, _1, mark->GetPivot(), scale, true));
+
+  place_page::Info info;
+  FillBookmarkInfo(*mark, bnc, info);
+  ActivateMapSelectionAndCloseUI(true, df::SelectionShape::OBJECT_USER_MARK, info);
 }
 
 void Framework::ShowTrack(Track const & track)
@@ -1948,6 +1967,18 @@ void Framework::ActivateMapSelection(bool needAnimation, df::SelectionShape::ESe
     m_activateMapSelectionFn(info);
   else
     LOG(LWARNING, ("m_activateMapSelectionFn has not been set up."));
+}
+
+void Framework::ActivateMapSelectionAndCloseUI(bool needAnimation, df::SelectionShape::ESelectedObject selectionType,
+                                     place_page::Info const & info)
+{
+  ASSERT_NOT_EQUAL(selectionType, df::SelectionShape::OBJECT_EMPTY, ("Empty selections are impossible."));
+  m_selectedFeature = info.GetID();
+  CallDrapeFunction(bind(&df::DrapeEngine::SelectObject, _1, selectionType, info.GetMercator(), info.GetID(),
+                         needAnimation));
+
+  if (m_deactivateMapSelectionFn)
+    m_deactivateMapSelectionFn(false);
 }
 
 void Framework::DeactivateMapSelection(bool notifyUI)

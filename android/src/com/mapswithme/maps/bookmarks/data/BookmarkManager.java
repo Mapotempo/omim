@@ -97,6 +97,8 @@ public enum BookmarkManager
 
   public native void nativeShowBookmarkOnMap(int catId, int bmkId);
 
+  public native void nativeMoveToBookmarkOnMap(int catId, int bmkId);
+
   /**
    * @return null, if wrong category is passed.
    */

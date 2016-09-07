@@ -11,6 +11,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.downloader.MapManager;
 import com.mapswithme.maps.downloader.UpdateInfo;
 import com.mapswithme.maps.routing.RoutingController;
+import com.mapswithme.maps.routing.RoutingPlanController;
 import com.mapswithme.util.Graphics;
 import com.mapswithme.util.UiUtils;
 import com.mapswithme.util.log.DebugLogger;
@@ -266,7 +267,8 @@ public class MainMenu extends BaseMenu
       } else
       {
         UiUtils.showIf(state == State.MENU, mButtonsFrame);
-        UiUtils.showIf(state == State.ROUTE_PREPARE, mRoutePlanFrame);
+        //UiUtils.showIf(state == State.ROUTE_PREPARE, mRoutePlanFrame);
+        UiUtils.hide(mRoutePlanFrame);
         expandContent = isRouting;
       }
 
