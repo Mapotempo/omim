@@ -156,6 +156,8 @@ class FileHttpRequest : public HttpRequest, public IHttpThreadCallback
   size_t m_goodChunksCount;
   bool m_doCleanProgressFiles;
 
+  bool m_checkSize;
+
   ChunksDownloadStrategy::ResultT StartThreads()
   {
     string url;
@@ -163,7 +165,15 @@ class FileHttpRequest : public HttpRequest, public IHttpThreadCallback
     ChunksDownloadStrategy::ResultT result;
     while ((result = m_strategy.NextChunk(url, range)) == ChunksDownloadStrategy::ENextChunk)
     {
-      HttpThread * p = CreateNativeHttpThread(url, *this, range.first, range.second, m_progress.second);
+      HttpThread * p;
+      if(m_checkSize)
+      {
+        p = CreateNativeHttpThread(url, *this, range.first, range.second, m_progress.second);
+      }
+      else
+      {
+        p = CreateNativeHttpThread(url, *this, range.first, range.second);
+      }
       ASSERT ( p, () );
       m_threads.push_back(make_pair(p, range.first));
     }
@@ -320,9 +330,9 @@ class FileHttpRequest : public HttpRequest, public IHttpThreadCallback
 public:
   FileHttpRequest(vector<string> const & urls, string const & filePath, int64_t fileSize,
                   CallbackT const & onFinish, CallbackT const & onProgress,
-                  int64_t chunkSize, bool doCleanProgressFiles)
+                  int64_t chunkSize, bool doCleanProgressFiles, bool checkSize)
     : HttpRequest(onFinish, onProgress), m_strategy(urls), m_filePath(filePath),
-      m_goodChunksCount(0), m_doCleanProgressFiles(doCleanProgressFiles)
+      m_goodChunksCount(0), m_doCleanProgressFiles(doCleanProgressFiles), m_checkSize(checkSize)
   {
     ASSERT ( !urls.empty(), () );
 
@@ -412,11 +422,11 @@ HttpRequest * HttpRequest::PostJson(string const & url, string const & postData,
 HttpRequest * HttpRequest::GetFile(vector<string> const & urls,
                                    string const & filePath, int64_t fileSize,
                                    CallbackT const & onFinish, CallbackT const & onProgress,
-                                   int64_t chunkSize, bool doCleanOnCancel)
+                                   int64_t chunkSize, bool doCleanOnCancel, bool checkSize)
 {
   try
   {
-    return new FileHttpRequest(urls, filePath, fileSize, onFinish, onProgress, chunkSize, doCleanOnCancel);
+    return new FileHttpRequest(urls, filePath, fileSize, onFinish, onProgress, chunkSize, doCleanOnCancel, checkSize);
   }
   catch (FileWriter::Exception const & e)
   {

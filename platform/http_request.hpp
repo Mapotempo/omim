@@ -57,7 +57,7 @@ public:
                                CallbackT const & onFinish,
                                CallbackT const & onProgress = CallbackT(),
                                int64_t chunkSize = 512 * 1024,
-                               bool doCleanOnCancel = true);
+                               bool doCleanOnCancel = true, bool checkSize = true);
 };
 
 } // namespace downloader

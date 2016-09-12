@@ -220,4 +220,154 @@ extern "C"
     LOG(LDEBUG, ("cancelCurrentFile, currentRequest=", g_currentRequest));
     g_currentRequest.reset();
   }
+
+  // MAPOTEMPO
+
+  // Check if we need to download mandatory resource file.
+  static bool MapotempoNeedToDownload(Platform & pl, string const & name)
+  {
+    try
+    {
+      ModelReaderPtr reader(pl.GetReader(name, "w"));
+      return false;
+    }
+    catch (RootException const &)
+    {
+    }
+    return true;
+  }
+
+  static void DownloadMapotempoFileFinished(shared_ptr<jobject> obj, HttpRequest const & req)
+  {
+    HttpRequest::StatusT const status = req.Status();
+    ASSERT_NOT_EQUAL(status, HttpRequest::EInProgress, ());
+
+    int errorCode = ERR_DOWNLOAD_ERROR;
+    if (status == HttpRequest::ECompleted)
+      errorCode = ERR_DOWNLOAD_SUCCESS;
+
+    g_currentRequest.reset();
+
+    if (errorCode == ERR_DOWNLOAD_SUCCESS)
+    {
+      FileToDownload & curFile = g_filesToDownload.back();
+      LOG(LDEBUG, ("finished downloading", curFile.m_fileName, "size", curFile.m_fileSize, "bytes"));
+
+      g_totalDownloadedBytes += curFile.m_fileSize;
+      LOG(LDEBUG, ("totalDownloadedBytes:", g_totalDownloadedBytes));
+
+      g_filesToDownload.pop_back();
+    }
+
+    JNIEnv * env = jni::GetEnv();
+
+    jmethodID methodID = jni::GetMethodID(env, *obj, "onMapotempoPreloadFinish", "(I)V");
+    env->CallVoidMethod(*obj, methodID, errorCode);
+  }
+
+  static void DownloadMapotempoURLListFinished(HttpRequest const & req, TCallback const & onFinish, TCallback const & onProgress)
+  {
+    FileToDownload & curFile = g_filesToDownload.back();
+
+    LOG(LINFO, ("Finished URL list download for", curFile.m_fileName));
+
+    GetServerListFromRequest(req, curFile.m_urls);
+
+    storage::Storage const & storage = g_framework->GetStorage();
+    for (size_t i = 0; i < curFile.m_urls.size(); ++i)
+    {
+      curFile.m_urls[i] = storage.GetFileDownloadUrl(curFile.m_urls[i], curFile.m_fileName);
+      LOG(LDEBUG, (curFile.m_urls[i]));
+    }
+
+    g_currentRequest.reset(HttpRequest::GetFile(curFile.m_urls, curFile.m_pathOnSdcard, curFile.m_fileSize, onFinish, onProgress, 512 * 1024, false, false));
+  }
+
+  static vector<string> MapotempoFiles()
+  {
+    return {COUNTRIES_FILE, EXTERNAL_RESOURCES_FILE};
+  }
+
+  JNIEXPORT jint JNICALL
+  Java_com_mapswithme_maps_DownloadResourcesActivity_nativeStartNextMapotempoFileDownload(JNIEnv * env, jclass clazz, jobject listener)
+  {
+    if (g_filesToDownload.empty())
+      return ERR_NO_MORE_FILES;
+
+    FileToDownload & curFile = g_filesToDownload.back();
+
+    LOG(LDEBUG, ("downloading", curFile.m_fileName, "sized", curFile.m_fileSize, "bytes"));
+
+    TCallback onFinish(bind(&DownloadMapotempoFileFinished, jni::make_global_ref(listener), _1));
+    TCallback onProgress(bind(&DownloadFileProgress, jni::make_global_ref(listener), _1));
+
+    g_currentRequest.reset(HttpRequest::PostJson(GetPlatform().ResourcesMetaServerUrl(), curFile.m_fileName,
+                                               bind(&DownloadMapotempoURLListFinished, _1, onFinish, onProgress)));
+    return ERR_FILE_IN_PROGRESS;
+  }
+
+  JNIEXPORT jboolean JNICALL
+  Java_com_mapswithme_maps_DownloadResourcesActivity_nativeCheckMapotempoFile(JNIEnv * env, jclass clazz)
+  {
+    jboolean res = false;
+    Platform & pl = GetPlatform();
+
+    auto files = MapotempoFiles();
+    int size = 0;
+
+    for(int unsigned i=0;i<files.size();i++)
+    {
+      if(MapotempoNeedToDownload(pl, files.at(i)))
+      {
+        res = false;
+        break;
+      }
+      res = true;
+    }
+    return res;
+  }
+
+  JNIEXPORT jint JNICALL
+  Java_com_mapswithme_maps_DownloadResourcesActivity_nativeGetMapotempoBytesToDownload(JNIEnv * env, jclass clazz)
+  {
+    // clear all
+    g_filesToDownload.clear();
+    g_totalBytesToDownload = 0;
+    g_totalDownloadedBytes = 0;
+
+    Platform & pl = GetPlatform();
+    string const path = pl.WritableDir();
+
+    auto files = MapotempoFiles();
+
+    for(int unsigned i=0;i<files.size();i++)
+    {
+      int size = 5000;
+      FileToDownload f;
+      f.m_pathOnSdcard = path + files.at(i);
+      f.m_fileName = files.at(i);
+      f.m_fileSize = size;
+
+      g_filesToDownload.push_back(f);
+      g_totalBytesToDownload += size;
+    }
+
+    int const res = HasSpaceForFiles(pl, path, g_totalBytesToDownload);
+    if (res == ERR_STORAGE_DISCONNECTED)
+      LOG(LWARNING, ("External file system is not available"));
+    else if (res == ERR_NOT_ENOUGH_FREE_SPACE)
+      LOG(LWARNING, ("Not enough space to extract files"));
+
+    g_currentRequest.reset();
+
+    return res;
+  }
+
+  JNIEXPORT void JNICALL
+  Java_com_mapswithme_maps_DownloadResourcesActivity_nativeReLoadCountries(JNIEnv * env, jclass clazz)
+  {
+    string const & dataDir = string();
+    storage::Storage & storage = g_framework->GetStorage();
+    storage.ReLoadCountriesFile(COUNTRIES_FILE, dataDir);
+  }
 }
