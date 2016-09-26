@@ -31,19 +31,24 @@ public:
   {
   }
 
-  BookmarkData(string const & name, string const & type,
-                     string const & description = "", double scale = -1.0,
+  BookmarkData(string const & name, string const & type, string const & address = "",
+                     string const & description = "", string const & phoneNumber = "", double scale = -1.0,
                      time_t timeStamp = my::INVALID_TIME_STAMP)
     : m_name(name)
     , m_description(description)
     , m_type(type)
     , m_scale(scale)
     , m_timeStamp(timeStamp)
+    , m_address(address)
+    , m_phoneNumber(phoneNumber)
   {
   }
 
   string const & GetName() const { return m_name; }
   void SetName(const string & name) { m_name = name; }
+
+  string const & GetAddress() const { return m_address;}
+  void SetAddress(const string & address) { m_address = address;}
 
   string const & GetDescription() const { return m_description; }
   void SetDescription(const string & description) { m_description = description; }
@@ -57,12 +62,17 @@ public:
   time_t const & GetTimeStamp() const { return m_timeStamp; }
   void SetTimeStamp(const time_t & timeStamp) { m_timeStamp = timeStamp; }
 
+  string const & GetPhoneNumber() const { return m_phoneNumber;}
+  void SetPhoneNumber(const string & phoneNumber) { m_phoneNumber = phoneNumber;}
+
 private:
   string m_name;
   string m_description;
   string m_type;  ///< Now it stores bookmark color (category style).
   double m_scale; ///< Viewport scale. -1.0 - is a default value (no scale set).
   time_t m_timeStamp;
+  string m_address;
+  string m_phoneNumber;
 };
 
 class Bookmark : public UserMark
@@ -90,6 +100,9 @@ public:
   void SetType(string const & type);
   m2::RectD GetViewport() const;
 
+  string const & GetBookmarkAddress() const;
+  void SetBookmarkAddress(string const & address);
+
   string const & GetDescription() const;
   void SetDescription(string const & description);
 
@@ -99,6 +112,9 @@ public:
 
   double GetScale() const;
   void SetScale(double scale);
+
+  string const & GetBookmarkPhoneNumber() const;
+  void SetBookmarkPhoneNumber(string const & address);
 
 private:
   BookmarkData m_data;
