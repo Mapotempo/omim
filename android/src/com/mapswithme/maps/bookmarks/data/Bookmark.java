@@ -18,6 +18,7 @@ public class Bookmark extends MapObject
   private int mBookmarkId;
   private double mMerX;
   private double mMerY;
+  private String mPhoneNumber;
 
   Bookmark(@IntRange(from = 0) int categoryId, @IntRange(from = 0) int bookmarkId, String title,
            @Nullable Banner banner, boolean reachableByTaxi)
@@ -60,7 +61,16 @@ public class Bookmark extends MapObject
   @Override
   public String getAddress()
   {
-    return nativeGetAddress(mCategoryId, mBookmarkId);
+    String res = nativeGetBookmarkAddress(mCategoryId, mBookmarkId);
+    if(res == null || res.isEmpty())
+    {
+      res = nativeGetAddress(mCategoryId, mBookmarkId);
+    }
+    return res;
+  }
+
+  public String getPhoneNumber() {
+    return nativeGetBookmarkPhoneNumber(mCategoryId, mBookmarkId);
   }
 
   @Override
@@ -154,6 +164,10 @@ public class Bookmark extends MapObject
   {
     return getGe0Url(addName).replaceFirst(Constants.Url.GE0_PREFIX, Constants.Url.HTTP_GE0_PREFIX);
   }
+
+  private native String nativeGetBookmarkPhoneNumber(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);
+
+  private native String nativeGetBookmarkAddress(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);
 
   private native String nativeGetBookmarkDescription(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);
 

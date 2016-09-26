@@ -1081,6 +1081,12 @@ public class PlacePageView extends RelativeLayout
   {
     mBookmarkSet = true;
     hideMapotempoDetails();
+
+    String phoneNumber = ((Bookmark) mMapObject).getPhoneNumber();
+    if(phoneNumber != null && !phoneNumber.isEmpty()) {
+      refreshMetadataOrHide(phoneNumber, mPhone, mTvPhone);
+    }
+
     UiUtils.show(mBookmarkFrame);
 
     final String notes = ((Bookmark) mMapObject).getBookmarkDescription();
