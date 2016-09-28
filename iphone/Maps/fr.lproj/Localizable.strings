@@ -1796,3 +1796,5 @@
 "uber" = "Uber";
 
 "pref_url_server_title" = "URL serveur";
+
+"download_resources_mapotempo" = "Pre-téléchargement, cette étape est nécessaire au lancement de mapotempo mobile.";

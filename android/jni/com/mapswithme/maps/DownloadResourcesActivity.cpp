@@ -77,6 +77,8 @@ extern "C"
   {
     try
     {
+      if (name == "countries.txt" || name == "external_resources.txt")
+        return true;
       ModelReaderPtr reader(pl.GetReader(name));
       return false;
     }
@@ -101,7 +103,7 @@ extern "C"
     Platform & pl = GetPlatform();
     string const path = pl.WritableDir();
 
-    ReaderStreamBuf buffer(pl.GetReader(EXTERNAL_RESOURCES_FILE));
+    ReaderStreamBuf buffer(pl.GetReader(EXTERNAL_RESOURCES_FILE, "efwr"));
     istream in(&buffer);
 
     string name;
@@ -222,7 +224,6 @@ extern "C"
   }
 
   // MAPOTEMPO
-
   // Check if we need to download mandatory resource file.
   static bool MapotempoNeedToDownload(Platform & pl, string const & name)
   {

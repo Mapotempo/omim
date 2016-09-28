@@ -1796,3 +1796,5 @@
 "uber" = "Uber";
 
 "pref_url_server_title" = "Server URL";
+
+"download_resources_mapotempo" = "Pre-download, this step is necessary to lunch mapotempo mobile.";

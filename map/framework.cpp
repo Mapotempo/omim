@@ -351,7 +351,8 @@ void Framework::Migrate(bool keepDownloaded)
 
 Framework::Framework()
   : m_startForegroundTime(0.0)
-  , m_storage(platform::migrate::NeedMigrate() ? COUNTRIES_OBSOLETE_FILE : COUNTRIES_FILE)
+  , m_storage(COUNTRIES_FILE)
+  //, m_storage(platform::migrate::NeedMigrate() ? COUNTRIES_OBSOLETE_FILE : COUNTRIES_FILE)
   , m_rountingPlanningManager(*this)
   , m_isRenderingEnabled(true)
   , m_trackingReporter(platform::CreateSocket(), TRACKING_REALTIME_HOST, TRACKING_REALTIME_PORT,

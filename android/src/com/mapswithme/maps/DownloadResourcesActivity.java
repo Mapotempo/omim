@@ -7,12 +7,12 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +28,7 @@ import com.mapswithme.maps.downloader.MapManager;
 import com.mapswithme.maps.location.LocationHelper;
 import com.mapswithme.maps.location.LocationListener;
 import com.mapswithme.maps.search.SearchEngine;
+import com.mapswithme.util.Config;
 import com.mapswithme.util.ConnectionState;
 import com.mapswithme.util.Constants;
 import com.mapswithme.util.StringUtils;
@@ -83,11 +84,16 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
 
   private int mCountryDownloadListenerSlot;
 
+  private MapotempoPreDownload mapotempoPreDownload = new MapotempoPreDownload();
+
+  private static LinearLayout mapotempoLayout;
+
   @SuppressWarnings("unused")
   private interface Listener
   {
     void onProgress(int percent);
     void onFinish(int errorCode);
+    void onMapotempoPreloadFinish(final int errorCode);
   }
 
   private final IntentProcessor[] mIntentProcessors = {
@@ -124,21 +130,17 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
 
       if (status == CountryItem.STATUS_DONE)
         mTvLocation.setText(String.format(getString(R.string.download_location_map_up_to_date), name));
-      else
-      {
+      else {
         final CheckBox checkBox = (CheckBox) findViewById(R.id.chb__download_country);
         UiUtils.show(checkBox);
 
         String locationText;
         String checkBoxText;
 
-        if (status == CountryItem.STATUS_UPDATABLE)
-        {
+        if (status == CountryItem.STATUS_UPDATABLE) {
           locationText = getString(R.string.download_location_update_map_proposal);
           checkBoxText = String.format(getString(R.string.update_country_ask), name);
-        }
-        else
-        {
+        } else {
           locationText = getString(R.string.download_location_map_proposal);
           checkBoxText = String.format(getString(R.string.download_country_ask), name);
         }
@@ -146,7 +148,6 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
         mTvLocation.setText(locationText);
         checkBox.setText(checkBoxText);
       }
-
       LocationHelper.INSTANCE.removeListener(this);
     }
   };
@@ -174,6 +175,13 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
       }
       else
         finishFilesDownload(errorCode);
+    }
+
+    @Override
+    public void onMapotempoPreloadFinish(final int errorCode)
+    {
+      mapotempoPreDownload.onPreDownLoadfinish(errorCode);
+
     }
   };
 
@@ -212,9 +220,18 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+
+    Utils.keepScreenOn(true, getWindow());
+    suggestRemoveLiteOrSamsung();
+    dispatchIntent();
+
+    mapotempoPreDownload.onCreate();
+  }
+
+  void startMainDownLoad()
+  {
     setContentView(R.layout.activity_download_resources);
     initViewsAndListeners();
-
     if (prepareFilesDownload(false))
     {
       Utils.keepScreenOn(true, getWindow());
@@ -228,7 +245,6 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
       return;
     }
 
-    dispatchIntent();
     showMap();
   }
 
@@ -403,7 +419,7 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
     showMap();
   }
 
-  private static @StringRes int getErrorMessage(int res)
+  private static int getErrorMessage(int res)
   {
     switch (res)
     {
@@ -745,7 +761,156 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
     }
   }
 
+  private class MapotempoPreDownload
+  {
+
+    public void onCreate()
+    {
+
+      setContentView(R.layout.activity_download_resources_mapotempo);
+      initViewsAndListenersMapotempo();
+
+      final long millisecondInADay = 60 * 60 *24 * 1000; // millisecond in 24 hours
+      final long lastUpdate = Config.getMapotempoPredownloadTime();
+      final long currentTime = System.currentTimeMillis();
+
+      setAction(DOWNLOAD);
+      // Si last update > 24h + wifi ou que les fichiers ne sont pas présent on demande le
+      // pretelechargement sinon on lance le téléchargement principal.
+      if(!(((currentTime - lastUpdate) > millisecondInADay) && ConnectionState.isWifiConnected())
+        && nativeCheckMapotempoFile())
+      {
+        startMainDownLoad();
+        return;
+      }
+
+      doMapotempoDownload();
+    }
+
+    void doMapotempoDownload()
+    {
+      if(prepareFilesPreDownload())
+      {
+        if (nativeStartNextMapotempoFileDownload(mResourcesDownloadListener) == ERR_NO_MORE_FILES)
+        {
+          startMainDownLoad();
+        }
+      }
+      else {
+        startMainDownLoad();
+      }
+    }
+
+    public void onPreDownLoadfinish(final int errorCode)
+    {
+      if (errorCode == ERR_DOWNLOAD_SUCCESS)
+      {
+        final int res = nativeStartNextMapotempoFileDownload(mResourcesDownloadListener);
+        if (res == ERR_NO_MORE_FILES && checkDownload()) {
+          startMainDownLoad();
+        }
+      }
+    }
+
+    private boolean prepareFilesPreDownload()
+    {
+      final int bytes = nativeGetMapotempoBytesToDownload();
+
+      if (bytes > 0)
+      {
+        setDownloadMessageMapotempo(bytes);
+
+        mProgress.setMax(bytes);
+        mProgress.setProgress(0);
+      }
+      else
+      {
+        return false;
+      }
+      return true;
+    }
+
+    private boolean checkDownload()
+    {
+      if(nativeCheckMapotempoFile())
+      {
+        Config.setMapotempoPredownloadTime(System.currentTimeMillis());
+        nativeReLoadCountries();
+        return true;
+      }
+      else
+        return false;
+    }
+
+    private void setDownloadMessageMapotempo(int bytesToDownload)
+    {
+      mTvMessage.setText(getString(R.string.download_resources_mapotempo, StringUtils.getFileSizeString(bytesToDownload)));
+    }
+
+    private void initViewsAndListenersMapotempo()
+    {
+      mTvMessage = (TextView) findViewById(R.id.tv__download_message);
+      mProgress = (ProgressBar) findViewById(R.id.pb__download_resources);
+      mBtnDownload = (Button) findViewById(R.id.btn__download_resources);
+      mChbDownloadCountry = (CheckBox) findViewById(R.id.chb__download_country);
+      mTvLocation = (TextView) findViewById(R.id.tv__location);
+
+      mBtnListeners = new View.OnClickListener[BTN_COUNT];
+      mBtnNames = new String[BTN_COUNT];
+
+      mBtnListeners[DOWNLOAD] = new View.OnClickListener()
+      {
+        @Override
+        public void onClick(View v)
+        {
+          doMapotempoDownload();
+        }
+      };
+      mBtnNames[DOWNLOAD] = getString(R.string.download);
+
+      mBtnListeners[PAUSE] = new View.OnClickListener()
+      {
+        @Override
+        public void onClick(View v)
+        {
+        }
+      };
+      mBtnNames[PAUSE] = getString(R.string.pause);
+
+      mBtnListeners[RESUME] = new View.OnClickListener()
+      {
+        @Override
+        public void onClick(View v)
+        {
+        }
+      };
+      mBtnNames[RESUME] = getString(R.string.continue_download);
+
+      mBtnListeners[TRY_AGAIN] = new View.OnClickListener()
+      {
+        @Override
+        public void onClick(View v)
+        {
+        }
+      };
+      mBtnNames[TRY_AGAIN] = getString(R.string.try_again);
+
+      mBtnListeners[PROCEED_TO_MAP] = new View.OnClickListener()
+      {
+        @Override
+        public void onClick(View v)
+        {
+        }
+      };
+      mBtnNames[PROCEED_TO_MAP] = getString(R.string.download_resources_continue);
+    }
+  }
+
+  private static native int nativeStartNextMapotempoFileDownload(Listener listener);
+  private static native int nativeGetMapotempoBytesToDownload();
+  private static native boolean nativeCheckMapotempoFile();
   private static native int nativeGetBytesToDownload();
   private static native int nativeStartNextFileDownload(Listener listener);
   private static native void nativeCancelCurrentFile();
+  private static native void nativeReLoadCountries();
 }

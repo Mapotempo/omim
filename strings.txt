@@ -22075,3 +22075,7 @@
   [pref_url_server_title]
     en = Server URL
     fr = URL serveur
+
+  [download_resources_mapotempo]
+    en = Pre-download, this step is necessary to lunch mapotempo mobile.
+    fr = Pre-téléchargement, cette étape est nécessaire au lancement de mapotempo mobile.

@@ -34,6 +34,7 @@ public final class Config
   private static final String KEY_MISC_UI_THEME = "UiTheme";
   private static final String KEY_MISC_UI_THEME_SETTINGS = "UiThemeSettings";
   private static final String KEY_URL_SERVER = "URLServer";
+  private static final String KEY_MAPOTEMPO_PREDOWNLOAD_TIME = "MapotempoPreDownloadTime";
 
   private Config() {}
 
@@ -353,6 +354,16 @@ public final class Config
   public static String  getURLServer()
   {
     return getString(KEY_URL_SERVER, "no server");
+  }
+
+  public static long  getMapotempoPredownloadTime()
+  {
+    return getLong(KEY_MAPOTEMPO_PREDOWNLOAD_TIME, 0);
+  }
+
+  public static void  setMapotempoPredownloadTime(long time)
+  {
+    setLong(KEY_MAPOTEMPO_PREDOWNLOAD_TIME, time);
   }
 
   private static native boolean nativeGetBoolean(String name, boolean defaultValue);

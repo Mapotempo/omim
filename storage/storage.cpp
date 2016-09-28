@@ -632,6 +632,13 @@ TCountryId Storage::GetCurrentDownloadingCountryId() const
   return IsDownloadInProgress() ? m_queue.front().GetCountryId() : storage::TCountryId();
 }
 
+void Storage::ReLoadCountriesFile(string const & pathToCountriesFile, string const & dataDir,
+                                TMappingOldMwm * mapping /* = nullptr */)
+{
+  m_countries.Clear();
+  LoadCountriesFile(pathToCountriesFile, dataDir, mapping);
+}
+
 void Storage::LoadCountriesFile(string const & pathToCountriesFile, string const & dataDir,
                                 TMappingOldMwm * mapping /* = nullptr */)
 {
@@ -646,7 +653,7 @@ void Storage::LoadCountriesFile(string const & pathToCountriesFile, string const
   if (m_countries.IsEmpty())
   {
     string json;
-    ReaderPtr<Reader>(GetPlatform().GetReader(pathToCountriesFile)).ReadAsString(json);
+    ReaderPtr<Reader>(GetPlatform().GetReader(pathToCountriesFile, "efwr")).ReadAsString(json);
     m_currentVersion = LoadCountries(json, m_countries, m_affiliations, mapping);
     LOG_SHORT(LINFO, ("Loaded countries list for version:", m_currentVersion));
     if (m_currentVersion < 0)

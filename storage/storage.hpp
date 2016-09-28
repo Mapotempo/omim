@@ -270,6 +270,9 @@ private:
   void DownloadNextFile(QueuedCountry const & country);
 
 public:
+  void ReLoadCountriesFile(string const & pathToCountriesFile, string const & dataDir,
+                           TMappingOldMwm * mapping = nullptr);
+
   ThreadChecker const & GetThreadChecker() const {return m_threadChecker;}
 
   /// \brief Storage will create its directories in Writable Directory
