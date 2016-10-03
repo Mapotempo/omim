@@ -9,6 +9,9 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:2.1.3'
     classpath 'io.fabric.tools:gradle:1.+'
+
+      //Add this line
+      classpath 'com.google.gms:google-services:3.0.0'
   }
 }
 
@@ -37,10 +40,10 @@ dependencies {
   compile 'com.android.support:design:22.2.1'
   compile 'com.android.support:cardview-v7:22.2.1'
   // google play services
-  compile 'com.google.android.gms:play-services-location:8.4.0'
-  compile 'com.google.android.gms:play-services-analytics:8.4.0'
-  compile 'com.google.android.gms:play-services-plus:8.4.0'
-  compile 'com.google.android.gms:play-services-gcm:8.4.0'
+  compile 'com.google.android.gms:play-services-location:9.0.0'
+  compile 'com.google.android.gms:play-services-analytics:9.0.0'
+  compile 'com.google.android.gms:play-services-plus:9.0.0'
+  compile 'com.google.android.gms:play-services-gcm:9.0.0'
   // crash reporting
   compile 'net.hockeyapp.android:HockeySDK:3.7.1'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') { transitive = true }
@@ -58,7 +61,13 @@ dependencies {
   compile 'org.solovyev.android.views:linear-layout-manager:0.5@aar'
   compile 'com.timehop.stickyheadersrecyclerview:library:0.4.3@aar'
   compile 'com.github.woxthebox:draglistview:1.3@aar'
+
+  //Add this line
+  compile 'com.google.firebase:firebase-messaging:9.0.0'
 }
+
+//Add this line
+apply plugin: 'com.google.gms.google-services'
 
 def getDate() {
   def date = new Date()

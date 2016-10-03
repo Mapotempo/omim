@@ -36,10 +36,13 @@ import com.mapswithme.util.Utils;
 import com.mapswithme.util.concurrency.ThreadPool;
 import com.mapswithme.util.statistics.Statistics;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 @SuppressLint("StringFormatMatches")
@@ -678,39 +681,79 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
       if (scheme != null && !scheme.equalsIgnoreCase(ContentResolver.SCHEME_FILE))
       {
         // scheme is "content" or "http" - need to download or read file first
-        InputStream input = null;
-        OutputStream output = null;
-
-        try
+        if (scheme.equals("content"))
         {
-          final ContentResolver resolver = getContentResolver();
-          final String ext = getExtensionFromMime(resolver.getType(mData));
-          if (ext != null)
+          InputStream input = null;
+          OutputStream output = null;
+
+          try
           {
-            final String filePath = MwmApplication.get().getTempPath() + "Attachment" + ext;
+            final ContentResolver resolver = getContentResolver();
+            final String ext = getExtensionFromMime(resolver.getType(mData));
+            if (ext != null)
+            {
+              final String filePath = MwmApplication.get().getTempPath() + "Attachment" + ext;
 
-            tmpFile = new File(filePath);
-            output = new FileOutputStream(tmpFile);
-            input = resolver.openInputStream(mData);
+              tmpFile = new File(filePath);
+              output = new FileOutputStream(tmpFile);
+              input = resolver.openInputStream(mData);
 
-            final byte buffer[] = new byte[Constants.MB / 2];
-            int read;
-            while ((read = input.read(buffer)) != -1)
-              output.write(buffer, 0, read);
-            output.flush();
+              final byte buffer[] = new byte[Constants.MB / 2];
+              int read;
+              while ((read = input.read(buffer)) != -1)
+                output.write(buffer, 0, read);
+              output.flush();
 
-            path = filePath;
+              path = filePath;
+            }
+          } catch (final Exception ex)
+          {
+            Log.w(TAG, "Attachment not found or io error: " + ex);
+          } finally
+          {
+            Utils.closeStream(input);
+            Utils.closeStream(output);
           }
-        } catch (final Exception ex)
+        } else if (scheme.equals("http") || scheme.equals("https"))
         {
-          Log.w(TAG, "Attachment not found or io error: " + ex);
-        } finally
-        {
-          Utils.closeStream(input);
-          Utils.closeStream(output);
+          InputStream input = null;
+          OutputStream output = null;
+
+          try
+          {
+            final int TIMEOUT_IN_SECONDS = 60;
+            HttpURLConnection urlConnection = null;
+            final URL url = new URL(mData.toString());
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            final ContentResolver resolver = getContentResolver();
+            final String ext = getExtensionFromUrlString(mData.toString());
+            if (ext != null)
+            {
+              final String filePath = MwmApplication.get().getTempPath() + "Attachment" + ext;
+
+              tmpFile = new File(filePath);
+              output = new FileOutputStream(tmpFile);
+              input = urlConnection.getInputStream();
+
+              final byte buffer[] = new byte[Constants.MB / 2];
+              int read;
+              while ((read = input.read(buffer)) != -1)
+                output.write(buffer, 0, read);
+              output.flush();
+
+              path = filePath;
+            }
+          } catch (final Exception ex)
+          {
+            Log.w(TAG, "Attachment not found or io error: " + ex);
+          } finally
+          {
+            Utils.closeStream(input);
+            Utils.closeStream(output);
+          }
         }
-      }
-      else
+      } else
         path = mData.getPath();
 
       boolean result = false;
@@ -718,8 +761,7 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
       {
         Log.d(TAG, "Loading bookmarks file from: " + path);
         result = BookmarkManager.nativeLoadKmzFile(path);
-      }
-      else
+      } else
         Log.w(TAG, "Can't get bookmarks file from URI: " + mData);
 
       if (tmpFile != null)
@@ -743,9 +785,26 @@ public class DownloadResourcesActivity extends BaseMwmFragmentActivity
       else
         return null;
     }
+
+    private String getExtensionFromUrlString(String urlString)
+    {
+      final int i = urlString.lastIndexOf('.');
+      if (i == -1)
+        return null;
+
+      urlString = urlString.substring(i + 1);
+      if (urlString.equalsIgnoreCase("kmz"))
+        return ".kmz";
+      else if (urlString.equalsIgnoreCase("kml"))
+        return ".kml";
+      else
+        return null;
+    }
   }
 
   private static native int nativeGetBytesToDownload();
+
   private static native int nativeStartNextFileDownload(Listener listener);
+
   private static native void nativeCancelCurrentFile();
 }

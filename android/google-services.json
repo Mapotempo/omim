@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "25216508891",
+    "firebase_url": "https://mapotempo-route-38e78.firebaseio.com",
+    "project_id": "mapotempo-route-38e78",
+    "storage_bucket": "mapotempo-route-38e78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25216508891:android:03104959addbdbad",
+        "android_client_info": {
+          "package_name": "com.mapotempo.mobile.route"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25216508891-tr1e5lupdhs97sfjnqs2t6gvc9o0alma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHKrc8jIilUx4VC2ALbHuy5E9X_zCmJew"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25216508891:android:d083f6c0a9106757",
+        "android_client_info": {
+          "package_name": "com.mapotempo.mobile.route.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25216508891-tr1e5lupdhs97sfjnqs2t6gvc9o0alma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHKrc8jIilUx4VC2ALbHuy5E9X_zCmJew"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
