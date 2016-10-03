@@ -584,7 +584,7 @@ public class PlacePageView extends RelativeLayout
     case MapObject.BOOKMARK:
       refreshDistanceToObject(loc);
       showBookmarkDetails();
-      setButtons(false, true);
+      unsetButtons();
       break;
     case MapObject.POI:
     case MapObject.SEARCH:
@@ -789,7 +789,7 @@ public class PlacePageView extends RelativeLayout
     if (mSponsoredHotel != null)
       buttons.add(PlacePageButtons.Item.BOOKING);
 
-    // buttons.add(PlacePageButtons.Item.BOOKMARK);
+    buttons.add(PlacePageButtons.Item.BOOKMARK);
 
     if (RoutingController.get().isPlanning())
     {
@@ -802,9 +802,14 @@ public class PlacePageView extends RelativeLayout
         buttons.add(PlacePageButtons.Item.ROUTE_TO);
     }
 
-    // buttons.add(PlacePageButtons.Item.SHARE);
+    buttons.add(PlacePageButtons.Item.SHARE);
 
     mButtons.setItems(buttons);
+  }
+
+  private void unsetButtons()
+  {
+    mButtons.setItems(new ArrayList<PlacePageButtons.Item>());
   }
 
   public void refreshLocation(Location l)
