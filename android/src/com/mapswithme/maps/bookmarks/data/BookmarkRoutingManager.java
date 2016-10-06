@@ -36,6 +36,8 @@ public enum BookmarkRoutingManager
 
   public static native boolean nativeGetStatus();
 
+  public static native void nativeStopRoutingManager();
+
   public static native boolean nativeInitRoutingManager(int catIndex, int bmIndex);
 
   public static native Bookmark nativeGetCurrentBookmark();
@@ -45,4 +47,6 @@ public enum BookmarkRoutingManager
   public static native Bookmark nativeStepNextBookmark();
 
   public static native Bookmark nativeStepPreviousBookmark();
+
+  public static native boolean nativeRestoreRoutingManager();
 }

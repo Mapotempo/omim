@@ -93,15 +93,18 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
       @Override
       public void onClick(View v) {
         BookmarkManager.INSTANCE.toggleCategoryVisibility(holder.getAdapterPosition());
-        holder.setVisibilityState(set.isVisible());
-        if (set.getBookmark(0) != null) {
-          BookmarkRoutingManager.INSTANCE.initRoutingManager(set.getId(), 0);
-          notifyDataSetChanged();
+        boolean visibility = !set.isVisible();
 
-          final Intent i = new Intent((Activity) mContext, MwmActivity.class);
-          i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          mContext.startActivity(i);
-        }
+        if (set.getBookmark(0) != null && !visibility)
+          BookmarkRoutingManager.INSTANCE.initRoutingManager(set.getId(), 0);
+        else
+          BookmarkRoutingManager.INSTANCE.nativeStopRoutingManager();
+
+        holder.setVisibilityState(set.isVisible());
+        notifyDataSetChanged();
+        final Intent i = new Intent((Activity) mContext, MwmActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mContext.startActivity(i);
       }
     });
   }

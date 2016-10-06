@@ -7,12 +7,12 @@
 #include "std/unique_ptr.hpp"
 class MTRoutingManager : public BookmarkManager
 {
-  Framework & m_framework;
 public:
   MTRoutingManager(Framework & f);
   ~MTRoutingManager();
 
   bool GetStatus();
+  void StopMTRouteManager();
   bool InitMTRouteManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay);
   int64_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
 
@@ -31,4 +31,5 @@ public:
 private :
   int64_t m_indexCurrentBmCat;
   int64_t m_indexCurrentBm;
+  Framework &m_framework;
 };

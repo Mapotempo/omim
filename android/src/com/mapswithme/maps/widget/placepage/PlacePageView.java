@@ -48,6 +48,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.api.ParsedMwmRequest;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
+import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.data.Metadata;
@@ -992,7 +993,7 @@ public class PlacePageView extends RelativeLayout
       setMapObject(Framework.nativeDeleteBookmarkFromMapObject(), true);
     else
       setMapObject(BookmarkManager.INSTANCE.addNewBookmark(BookmarkManager.nativeFormatNewBookmarkName(),
-                                                           mMapObject.getLat(), mMapObject.getLon()), true);
+                                                             mMapObject.getLat(), mMapObject.getLon()), true);
     post(new Runnable()
     {
       @Override

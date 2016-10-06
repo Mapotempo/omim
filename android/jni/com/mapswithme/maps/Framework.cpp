@@ -1172,20 +1172,15 @@ JNIEXPORT void JNICALL
 Java_com_mapswithme_maps_Framework_nativeSetMTRouteListener(JNIEnv * env, jclass clazz, jobject jListener)
 {
   g_mapObjectListener = env->NewGlobalRef(jListener);
-  // void onMtRouteActivated();
   jmethodID const activatedId = jni::GetMethodID(env, g_mapObjectListener, "onMtRouteActivated", "()V");
-  // void onMtRouteDeactivated();
   jmethodID const dismissId = jni::GetMethodID(env, g_mapObjectListener, "onMtRouteDeactivated", "()V");
   frm()->MT_SetMapotempoRouteStatusListeners([activatedId]()
   {
     JNIEnv * env = jni::GetEnv();
-    //g_framework->SetPlacePageInfo(info);
-    //jni::TScopedLocalRef mapObject(env, usermark_helper::CreateMapObject(env, info));
     env->CallVoidMethod(g_mapObjectListener, activatedId);
   }, [dismissId]()
   {
     JNIEnv * env = jni::GetEnv();
-    //g_framework->SetPlacePageInfo({});
     env->CallVoidMethod(g_mapObjectListener, dismissId );
   });
 }

@@ -661,9 +661,19 @@ bool Framework::MT_GetStatus()
   return m_rountingManager.GetStatus();
 }
 
+void Framework::MT_StopRouteManager()
+{
+  m_rountingManager.StopMTRouteManager();
+  if(m_deactivateMapotempoRouteFn)
+  {
+    m_deactivateMapotempoRouteFn();
+  }
+}
+
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
   bool res = m_rountingManager.InitMTRouteManager(indexBmCat, indexBm);
+
   if(res && m_activateMapotempoRouteFn)
   {
     m_activateMapotempoRouteFn();
@@ -698,7 +708,28 @@ void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn co
   m_deactivateMapotempoRouteFn = deactivator;
 }
 
+void Framework::MT_SaveRoutingManager()
+{
+  int64_t category = MT_GetCurrentBookmarkCategory();
+  int64_t bookmark = MT_GetCurrentBookmark();
+  settings::Set("category", category);
+  settings::Set("bookmark", bookmark);
+}
 
+bool Framework::MT_RestoreRoutingManager()
+{
+
+  int64_t category;
+  int64_t bookmark;
+
+  if(!settings::Get("category", category) || !settings::Get("bookmark", bookmark))
+    return false;
+
+  if(category < 0 || bookmark < 0)
+    return false;
+
+  return this->MT_InitRouteManager(category, bookmark);
+}
 
 namespace
 {
