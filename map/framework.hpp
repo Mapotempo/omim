@@ -321,6 +321,8 @@ public:
 
   bool MT_GetStatus();
 
+  void MT_StopRouteManager();
+
   bool MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm = 0);
 
   int64_t MT_GetCurrentBookmarkCategory();
@@ -332,6 +334,10 @@ public:
   int64_t MT_StepNextBookmark();
 
   int64_t MT_StepPreviousBookmark();
+
+  void MT_SaveRoutingManager();
+
+  bool MT_RestoreRoutingManager();
 
 protected:
   // search::ViewportSearchCallback::Delegate overrides:

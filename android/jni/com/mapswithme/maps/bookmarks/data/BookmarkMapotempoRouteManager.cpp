@@ -25,6 +25,12 @@ using namespace jni;
     return frm()->MT_GetStatus();
   }
 
+  JNIEXPORT void JNICALL
+  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeStopRoutingManager()
+  {
+    frm()->MT_StopRouteManager();
+  }
+
   JNIEXPORT jboolean JNICALL
   Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeInitRoutingManager(
       JNIEnv * env, jobject thiz, jint bmCatIndex, jint bmIndex)
@@ -86,7 +92,14 @@ using namespace jni;
   JNIEXPORT jboolean JNICALL
   Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeSetCurrentBookmark(
         JNIEnv * env, jobject thiz, int bmIndex)
-    {
-      return frm()->MT_SetCurrentBookmark(bmIndex);
-    }
+  {
+   return frm()->MT_SetCurrentBookmark(bmIndex);
+  }
+
+  JNIEXPORT jboolean JNICALL
+  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeRestoreRoutingManager(
+        JNIEnv * env, jobject thiz)
+  {
+    return frm()->MT_RestoreRoutingManager();
+  }
 }  // extern "C"

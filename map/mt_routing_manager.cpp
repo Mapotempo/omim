@@ -1,5 +1,6 @@
 #include "mt_route_manager.hpp"
 
+#include "map/framework.hpp"
 #include "map/bookmark.hpp"
 #include "base/logging.hpp"
 
@@ -22,6 +23,25 @@ bool MTRoutingManager::GetStatus()
   return true;
 }
 
+void MTRoutingManager::StopMTRouteManager()
+{
+  m_indexCurrentBmCat = -1;
+  m_indexCurrentBm = -1;
+
+  // Hide all other category
+  for(int i = 0; i < GetBmCategoriesCount(); i++)
+  {
+    BookmarkCategory * otherCat = GetBmCategory(i);
+    {
+      BookmarkCategory::Guard guard(*otherCat);
+      guard.m_controller.SetIsVisible(false);
+    }
+    otherCat->SaveToKMLFile();
+  }
+
+  m_framework.MT_SaveRoutingManager();
+}
+
 bool MTRoutingManager::InitMTRouteManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay)
 {
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
@@ -35,9 +55,8 @@ bool MTRoutingManager::InitMTRouteManager(int64_t indexBmCat, int64_t indexFirst
   {
       bool visibily = false;
       if(i == indexBmCat)
-      {
         visibily = true;
-      }
+
       BookmarkCategory * otherCat = GetBmCategory(i);
       {
         BookmarkCategory::Guard guard(*otherCat);
@@ -48,12 +67,14 @@ bool MTRoutingManager::InitMTRouteManager(int64_t indexBmCat, int64_t indexFirst
 
   m_indexCurrentBmCat = indexBmCat;
   m_indexCurrentBm = indexFirstBmToDisplay;
+  m_framework.MT_SaveRoutingManager();
   return true;
 }
 
 void MTRoutingManager::ResetManager(){
   m_indexCurrentBmCat = -1;
   m_indexCurrentBm = -1;
+  m_framework.MT_SaveRoutingManager();
 }
 
 bool MTRoutingManager::SetCurrentBookmark(int64_t indexBm)
@@ -65,6 +86,7 @@ bool MTRoutingManager::SetCurrentBookmark(int64_t indexBm)
     m_indexCurrentBm = indexBm;
     res = true;
   }
+  m_framework.MT_SaveRoutingManager();
   return res;
 }
 
@@ -76,6 +98,7 @@ int64_t MTRoutingManager::StepNextBookmark()
   if(bmCat && (m_indexCurrentBm >= bmCat->GetUserPointCount()))
     m_indexCurrentBm = 0;
 
+  m_framework.MT_SaveRoutingManager();
   return GetCurrentBookmark();
 }
 
@@ -87,6 +110,7 @@ int64_t MTRoutingManager::StepPreviousBookmark()
   if(bmCat && (m_indexCurrentBm < 0))
     m_indexCurrentBm = bmCat->GetUserPointCount() - 1;
 
+  m_framework.MT_SaveRoutingManager();
   return GetCurrentBookmark();
 }
 
@@ -106,6 +130,7 @@ size_t MTRoutingManager::CreateBmCategory(string const & name)
     bmCat->SaveToKMLFile();
   }
 
+  m_framework.MT_SaveRoutingManager();
   return index;
 }
 
@@ -126,23 +151,26 @@ bool MTRoutingManager::DeleteBmCategory(size_t index)
       m_indexCurrentBm = -1;
     }
   }
+
+  m_framework.MT_SaveRoutingManager();
   return res;
 }
 
 /**
- * Redefinition du load pour voir passer les cahrgements de catégories
+ * Redefinition du load pour voir passer les chargements de catégories
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
 void MTRoutingManager::LoadBookmark(string const & filePath)
 {
   BookmarkManager::LoadBookmark(filePath);
-  for(int i = 0; i < GetBmCategoriesCount(); i++)
-  {
-      BookmarkCategory * bmCat = GetBmCategory(i);
-      BookmarkCategory::Guard guard(*bmCat);
-      guard.m_controller.SetIsVisible(false);
-      bmCat->SaveToKMLFile();
-  }
+
+//  for(int i = 0; i < GetBmCategoriesCount(); i++)
+//  {
+//      BookmarkCategory * bmCat = GetBmCategory(i);
+//      BookmarkCategory::Guard guard(*bmCat);
+//      guard.m_controller.SetIsVisible(false);
+//      bmCat->SaveToKMLFile();
+//  }
 }
 

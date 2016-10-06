@@ -3,18 +3,14 @@ package com.mapswithme.maps.mapotempo;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.mapswithme.maps.Framework;
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.BookmarkListActivity;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
-import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.Icon;
@@ -130,15 +126,15 @@ public class MapotempoRouteController
       }
     });
 
-    if(BookmarkRoutingManager.INSTANCE.getStatus())
-    {
-      showMapotempoRoutePanel(true);
-    }
+//    if(BookmarkRoutingManager.INSTANCE.getStatus())
+//    {
+//      showMapotempoRoutePanel(true);
+//    }
   }
 
   public void showMapotempoRoutePanel(boolean visibility)
   {
-    if(visibility) {
+    if(visibility && BookmarkRoutingManager.INSTANCE.getStatus()) {
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       Bookmark bookmark = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
       refreshUI(bookmark);

@@ -446,6 +446,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
     //  }
     //});
     //getWindow().getDecorView().addOnLayoutChangeListener(mVisibleRectMeasurer);
+
+    BookmarkRoutingManager.INSTANCE.nativeRestoreRoutingManager();
   }
 
   private void initViews()
@@ -1108,7 +1110,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     }
     else
     {
-      BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bm.getCategoryId(), bm.getBookmarkId());
+      BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bm.getCategoryId(), bm.getBookmarkId());
     }
 
     mMapotempoRouteController.showMapotempoRoutePanel(true);

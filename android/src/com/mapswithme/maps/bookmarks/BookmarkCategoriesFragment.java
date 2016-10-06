@@ -11,6 +11,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
+import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
@@ -89,6 +90,11 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
       break;
 
     case R.id.set_delete:
+      if(BookmarkRoutingManager.INSTANCE.getStatus()
+         && BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
+      {
+        BookmarkRoutingManager.nativeStopRoutingManager();
+      }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
       getAdapter().notifyDataSetChanged();
       break;
