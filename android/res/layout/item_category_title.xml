@@ -3,7 +3,7 @@
     android:id="@+id/text"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/height_item_oneline"
+    android:layout_height="@dimen/height_mt_item_oneline"
     android:gravity="left|center_vertical"
     android:paddingLeft="@dimen/margin_base"
     android:paddingTop="@dimen/margin_half"

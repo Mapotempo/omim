@@ -102,4 +102,23 @@ using namespace jni;
   {
     return frm()->MT_RestoreRoutingManager();
   }
+
+  JNIEXPORT jobject JNICALL
+  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeAddBookmarkToCurrentCategory(
+      JNIEnv * env, jobject thiz, jstring name, double lat, double lon)
+  {
+    if(frm()->MT_GetStatus())
+    {
+      m2::PointD const glbPoint(MercatorBounds::FromLatLon(lat, lon));
+      ::Framework * f = frm();
+      BookmarkData bmkData(ToNativeString(env, name), f->LastEditedBMType());
+      size_t const lastEditedCategory = frm()->MT_GetCurrentBookmarkCategory();
+      size_t const createdBookmarkIndex = f->AddBookmark(lastEditedCategory, glbPoint, bmkData);
+      place_page::Info & info = g_framework->GetPlacePageInfo();
+      info.m_bac = {lastEditedCategory, createdBookmarkIndex};
+      return usermark_helper::CreateMapObject(env, info);
+    }
+    else
+      return NULL;
+  }
 }  // extern "C"

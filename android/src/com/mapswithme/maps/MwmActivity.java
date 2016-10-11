@@ -50,7 +50,7 @@ import com.mapswithme.maps.editor.ReportFragment;
 import com.mapswithme.maps.editor.ViralFragment;
 import com.mapswithme.maps.location.CompassData;
 import com.mapswithme.maps.location.LocationHelper;
-import com.mapswithme.maps.mapotempo.MapotempoRouteController;
+import com.mapswithme.maps.widget.mapotempo.MapotempoRouteController;
 import com.mapswithme.maps.news.FirstStartFragment;
 import com.mapswithme.maps.news.NewsFragment;
 import com.mapswithme.maps.routing.NavigationController;

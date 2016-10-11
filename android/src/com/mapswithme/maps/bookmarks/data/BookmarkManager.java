@@ -75,7 +75,11 @@ public enum BookmarkManager
 
   public Bookmark addNewBookmark(String name, double lat, double lon)
   {
-    final Bookmark bookmark = nativeAddBookmarkToLastEditedCategory(name, lat, lon);
+    final Bookmark bookmark;
+    if(!BookmarkRoutingManager.INSTANCE.getStatus())
+      bookmark = nativeAddBookmarkToLastEditedCategory(name, lat, lon);
+    else
+      bookmark = BookmarkRoutingManager.INSTANCE.nativeAddBookmarkToCurrentCategory(name, lat, lon);
     Statistics.INSTANCE.trackBookmarkCreated();
     return bookmark;
   }

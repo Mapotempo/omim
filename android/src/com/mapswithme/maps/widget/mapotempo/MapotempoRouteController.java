@@ -1,13 +1,17 @@
-package com.mapswithme.maps.mapotempo;
+package com.mapswithme.maps.widget.mapotempo;
 
 import android.app.Activity;
+
 import android.content.Intent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
+import com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity;
 import com.mapswithme.maps.bookmarks.BookmarkListActivity;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
@@ -15,6 +19,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.Icon;
 import com.mapswithme.maps.routing.RoutingController;
+import com.mapswithme.maps.widget.menu.MapotempoMenu;
 import com.mapswithme.util.statistics.AlohaHelper;
 import com.mapswithme.util.statistics.Statistics;
 
@@ -37,19 +42,48 @@ public class MapotempoRouteController
   private ImageButton mMTNextBM;
   private ImageButton mMTPrevBM;
   private ImageButton mMTActionLeft;
-  private ImageButton mMTActionLeftSecond;
   private ImageButton mMTActionRight;
   private TextView mMTCurrentBM;
+  private Button mapotempoStartRoute;
+  private LinearLayout mLineFrame;
+  private MapotempoMenu mapotempoMenu;
 
   public MapotempoRouteController(final Activity activity) {
+
     mBottomMapotempoFrame = activity.findViewById(R.id.nav_mapotempo_bottom_frame);
 
+    mLineFrame = (LinearLayout) mBottomMapotempoFrame.findViewById(R.id.line_frame);
     mMTNextBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
     mMTPrevBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
     mMTActionLeft = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
-    mMTActionLeftSecond = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left_second);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
+    mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
+
+    mapotempoStartRoute.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        activity.startActivity(new Intent(activity, BookmarkCategoriesActivity.class));
+      }
+    });
+
+    mapotempoMenu = new MapotempoMenu(mBottomMapotempoFrame, new MapotempoMenu.ItemClickListener<MapotempoMenu.Item>(){
+      @Override
+      public void onItemClick(MapotempoMenu.Item item)
+      {
+        final MwmActivity parent = ((MwmActivity) mBottomMapotempoFrame.getContext());
+
+        switch (item)
+        {
+          case TOGGLE:
+            mapotempoMenu.toggle(true);
+            parent.refreshFade();
+            break;
+          default:
+            break;
+        }
+      }
+    });
 
     mMTNextBM.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -116,15 +150,6 @@ public class MapotempoRouteController
       }
     });
 
-    mMTActionLeftSecond.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-      Bookmark bookmark = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
-
-        activity.startActivity(new Intent(activity, BookmarkListActivity.class)
-            .putExtra(ChooseBookmarkCategoryFragment.CATEGORY_ID, bookmark.getCategoryId()));
-      }
-    });
 
 //    if(BookmarkRoutingManager.INSTANCE.getStatus())
 //    {
@@ -135,13 +160,16 @@ public class MapotempoRouteController
   public void showMapotempoRoutePanel(boolean visibility)
   {
     if(visibility && BookmarkRoutingManager.INSTANCE.getStatus()) {
-      mBottomMapotempoFrame.setVisibility(View.VISIBLE);
+      mLineFrame.setVisibility(View.VISIBLE);
+      mapotempoStartRoute.setVisibility(View.GONE);
       Bookmark bookmark = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
       refreshUI(bookmark);
     }
     else
     {
-      mBottomMapotempoFrame.setVisibility(View.GONE);
+      mLineFrame.setVisibility(View.GONE);
+      mapotempoStartRoute.setVisibility(View.VISIBLE);
+      mapotempoMenu.close(false);
     }
   }
 

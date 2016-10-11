@@ -14,7 +14,7 @@ import com.mapswithme.util.UiUtils;
 
 public abstract class BaseMenu
 {
-  public static final int ANIMATION_DURATION = MwmApplication.get().getResources().getInteger(R.integer.anim_menu);
+  public static final int ANIMATION_DURATION = 800;//MwmApplication.get().getResources().getInteger(R.integer.anim_menu);
 
   private boolean mIsOpen;
   private boolean mAnimating;
