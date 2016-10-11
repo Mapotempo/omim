@@ -49,4 +49,6 @@ public enum BookmarkRoutingManager
   public static native Bookmark nativeStepPreviousBookmark();
 
   public static native boolean nativeRestoreRoutingManager();
+
+  public static native Bookmark nativeAddBookmarkToCurrentCategory(String name, double lat, double lon);
 }

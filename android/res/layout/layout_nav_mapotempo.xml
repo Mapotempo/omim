@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,57 +7,105 @@
   android:id="@+id/nav_mapotempo_bottom_frame"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:orientation="horizontal"
+  android:orientation="vertical"
   android:layout_gravity="bottom"
   android:clickable="true"
-  android:visibility="gone"
   android:background="?menuBackgroundOpen"
+  android:gravity="bottom"
   tools:visibility="visible">
 
-  <ImageButton
-    android:layout_weight="0"
-    android:id="@+id/mt_prv_bm"
-    style="@style/MwmWidget.MTRouteButton"
-    android:background="@android:color/transparent"
-    android:src="@drawable/ic_menu_prev"
-    android:layout_gravity="left|center_vertical" />
+  <Button
+    android:id="@+id/mt_route_start"
+    android:visibility="visible"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@drawable/mt_background"/>
 
-  <ImageButton
-    android:id="@+id/mt_action_left"
-    style="@style/MwmWidget.MTRouteButton"
-    android:src="@drawable/ic_route_to"
-    android:background="@android:color/transparent"/>
+  <LinearLayout
+    android:id="@+id/line_frame"
+    android:visibility="gone"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-  <ImageButton
-      android:id="@+id/mt_action_left_second"
+    <ImageButton
+      android:layout_weight="0"
+      android:id="@+id/mt_prv_bm"
       style="@style/MwmWidget.MTRouteButton"
-      android:src="@drawable/ic_menu_bookmarks"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_menu_prev"
+      android:layout_gravity="left|center_vertical" />
+
+    <ImageButton
+      android:id="@+id/mt_action_left"
+      style="@style/MwmWidget.MTRouteButton"
+      android:src="@drawable/ic_route_to"
       android:background="@android:color/transparent"/>
 
-  <TextView
-    android:id="@+id/mt_current_bm"
-    android:layout_weight="1"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="9. Client206 ddddd"
-    android:gravity="center_horizontal"
-    android:layout_gravity="center|center_vertical"/>
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:orientation="vertical">
 
-  <ImageButton
-    android:id="@+id/mt_action_right"
-    android:layout_weight="0"
-    style="@style/MwmWidget.MTButton"
-    android:background="@android:color/transparent"
-    android:src="@drawable/ic_point_done"
-    android:layout_gravity="right|center_vertical" />
+      <ImageView
+        android:id="@+id/toggle"
+        android:layout_width="@dimen/nav_button_height"
+        android:layout_height="@dimen/nav_button_height"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:background="?clickableBackground"
+        android:scaleType="center"
+        android:tint="?iconTint"
+        tools:src="@drawable/ic_menu_close"/>
 
-  <ImageButton
-    android:layout_weight="0"
-    android:id="@+id/mt_nxt_bm"
-    style="@style/MwmWidget.MTRouteButton"
-    android:background="@android:color/transparent"
-    android:src="@drawable/ic_menu_next"
-    android:layout_gravity="right|center_vertical" />
+      <TextView
+        android:id="@+id/mt_current_bm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="9. Client206 ddddd"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center|center_vertical"
+        android:textSize="18sp"/>
+    </LinearLayout>
+
+
+    <ImageButton
+      android:id="@+id/mt_action_right"
+      android:layout_weight="0"
+      style="@style/MwmWidget.MTButton"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_point_done"
+      android:layout_gravity="right|center_vertical" />
+
+    <ImageButton
+      android:layout_weight="0"
+      android:id="@+id/mt_nxt_bm"
+      style="@style/MwmWidget.MTRouteButton"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_menu_next"
+      android:layout_gravity="right|center_vertical" />
+  </LinearLayout>
+
+
+  <android.support.v4.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+      android:id="@+id/content_frame"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      tools:visibility="visible">
+
+
+      <fragment
+      android:id="@+id/fragment_container"
+      android:name="com.mapswithme.maps.widget.mapotempo.MapotempoListFragment"
+      android:layout_width="match_parent"
+      android:layout_height="250dp"/>
+
+    </FrameLayout>
+  </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
@@ -42,6 +44,12 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   protected BookmarkCategoriesAdapter getAdapter()
   {
     return (BookmarkCategoriesAdapter)super.getAdapter();
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+  {
+    return super.onCreateView(inflater, container, savedInstanceState);
   }
 
   @Override

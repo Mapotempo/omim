@@ -26,6 +26,7 @@
   <dimen name="neg_margin_double">-32dp</dimen>
 
   <!-- base sizes -->
+  <dimen name="height_mt_item_oneline">36dp</dimen>
   <dimen name="height_block_base">48dp</dimen>
   <dimen name="height_item_oneline">56dp</dimen>
   <dimen name="height_item_multiline">72dp</dimen>

@@ -164,13 +164,17 @@ bool MTRoutingManager::DeleteBmCategory(size_t index)
 void MTRoutingManager::LoadBookmark(string const & filePath)
 {
   BookmarkManager::LoadBookmark(filePath);
+  // Hide the last bookmark load else if that the current bmCat.
+  if((GetBmCategoriesCount() - 1) != m_indexCurrentBmCat)
+  {
+    BookmarkCategory * bmCat = GetBmCategory(GetBmCategoriesCount() - 1);
 
-//  for(int i = 0; i < GetBmCategoriesCount(); i++)
-//  {
-//      BookmarkCategory * bmCat = GetBmCategory(i);
-//      BookmarkCategory::Guard guard(*bmCat);
-//      guard.m_controller.SetIsVisible(false);
-//      bmCat->SaveToKMLFile();
-//  }
+    if(bmCat)
+    {
+      BookmarkCategory::Guard guard(*bmCat);
+      guard.m_controller.SetIsVisible(false);
+      bmCat->SaveToKMLFile();
+    }
+  }
 }
 
