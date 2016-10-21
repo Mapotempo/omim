@@ -3,9 +3,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_mt_item_oneline">
 
+  <FrameLayout
+    android:id="@+id/bookmark_active_marker"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mapotempo_green"
+    android:alpha="0.2"
+    android:visibility="invisible"/>
+
   <ImageView
-    android:layout_marginLeft="@dimen/margin_base"
     android:id="@+id/iv__bookmark_color"
+    android:layout_marginLeft="@dimen/margin_base"
+    android:padding="2dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
 

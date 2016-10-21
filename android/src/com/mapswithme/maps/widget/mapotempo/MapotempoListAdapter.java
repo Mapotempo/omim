@@ -1,11 +1,11 @@
 package com.mapswithme.maps.widget.mapotempo;
 
-import android.graphics.Color;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,11 +22,11 @@ import java.util.List;
 
 public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, MapotempoListAdapter.BookmarkInformation>, MapotempoListAdapter.ViewHolder>
     implements Bookmark.BookmarkParamsChangeListener
-    //,BookmarkRoutingManager.CurrentBookmarkChangeListener
+    ,BookmarkRoutingManager.CurrentBookmarkChangeListener
 {
 
   private BookmarkCategory mCategory;
-//  private int mCurrentBookmarkIndex;
+  private int mCurrentBookmarkIndex;
   private int mLayoutId;
   private int mGrabHandleId;
   private boolean mDragOnLongPress;
@@ -37,7 +37,9 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     mDragOnLongPress = dragOnLongPress;
     setHasStableIds(true);
     mCategory = category;
-//    mCurrentBookmarkIndex = BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+
+    if(BookmarkRoutingManager.INSTANCE.getStatus())
+      mCurrentBookmarkIndex = BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId();
 
     List<Pair<Integer,BookmarkInformation>>mItemArray = new ArrayList<>();
     if(mCategory != null)
@@ -55,7 +57,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
   {
     super.onAttachedToRecyclerView(recyclerView);
     Bookmark.addBookmarkParamsChangeListener(this);
-//    BookmarkRoutingManager.INSTANCE.addCurrentBookmarkChangeListener(this);
+    BookmarkRoutingManager.INSTANCE.addCurrentBookmarkChangeListener(this);
   }
 
   @Override
@@ -63,7 +65,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
   {
     super.onDetachedFromRecyclerView(recyclerView);
     Bookmark.removeBookmarkParamsChangeListener(this);
-//    BookmarkRoutingManager.INSTANCE.removeCurrentBookmarkChangeListener(this);
+    BookmarkRoutingManager.INSTANCE.removeCurrentBookmarkChangeListener(this);
   }
 
   @Override
@@ -81,8 +83,8 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     bmInfo.updateIndex(position);
 
     // Refresh holder informations.
-//    boolean isCurrent = mCurrentBookmarkIndex == bmInfo.mIndex;
-    holder.refreshInfo(bmInfo, false);
+    boolean isCurrent = mCurrentBookmarkIndex == bmInfo.mIndex;
+    holder.refreshInfo(bmInfo, isCurrent);
   }
 
   @Override
@@ -97,16 +99,20 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     notifyDataSetChanged();
   }
 
-//  @Override
-//  public void onCurrentBookmarkChangeListerner(Bookmark currentBookmark)
-//  {
-//    mCurrentBookmarkIndex = currentBookmark.getBookmarkId();
-//    notifyDataSetChanged();
-//  }
+  @Override
+  public void onCurrentBookmarkChangeListerner(Bookmark currentBookmark)
+  {
+    mCurrentBookmarkIndex = currentBookmark.getBookmarkId();
+    notifyDataSetChanged();
+  }
 
   public void updateNativeBookmarkOrder(int fromPosition, int toPosition)
   {
     BookmarkManager.INSTANCE.changeBookmarkOrder(mCategory.getId(), fromPosition, toPosition);
+    mCurrentBookmarkIndex = BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+//    notifyDataSetChanged();
+//    if(fromPosition == mCurrentBookmarkIndex)
+//      mCurrentBookmarkIndex = toPosition;
   }
 
   public class ViewHolder extends DragItemAdapter.ViewHolder
@@ -114,6 +120,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     public View mView;
     public TextView mText;
     public ImageView mIcon;
+    public FrameLayout mBookmarkMarker;
     public Integer mBookmarkIndex;
 
     public ViewHolder(final View itemView)
@@ -122,6 +129,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
       mView = itemView;
       mText = (TextView) itemView.findViewById(R.id.tv__bookmark_name);
       mIcon = (ImageView) itemView.findViewById(R.id.iv__bookmark_color);
+      mBookmarkMarker = (FrameLayout) itemView.findViewById(R.id.bookmark_active_marker);
     }
 
     @Override
@@ -143,9 +151,9 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     public void refreshInfo(BookmarkInformation bookmarkInformation, boolean isCurrent)
     {
       if(isCurrent)
-        mView.setBackgroundColor(Color.GRAY);
-//      else
-//        mView.setBackgroundColor(Color.WHITE);
+        mBookmarkMarker.setVisibility(View.VISIBLE);
+      else
+        mBookmarkMarker.setVisibility(View.INVISIBLE);
 
       mBookmarkIndex = bookmarkInformation.mIndex;
       mText.setText(bookmarkInformation.mTitle);

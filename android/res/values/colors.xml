@@ -153,4 +153,8 @@
   <color name="text_banner_color">#28000000</color>
   <color name="text_banner_color_night">#28FFFFFF</color>
 
+  <!-- Mapotempo colors -->
+  <color name="mapotempo_green">#89C53F</color>
+  <color name="mapotempo_blue">#13B0CA</color>
+
 </resources>

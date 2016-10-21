@@ -182,7 +182,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       mMTCurrentBM.setText(currentBm.getTitle());
       mMTActionRight.setImageResource(currentBm.getIcon().getSelectedResId());
-//      BookmarkRoutingManager.INSTANCE.notifyCurrentBookmarkChange();
+      BookmarkRoutingManager.INSTANCE.notifyCurrentBookmarkChange();
     }
   }
 
