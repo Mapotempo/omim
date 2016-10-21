@@ -122,16 +122,16 @@ bool MTRoutingManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, s
   return res;
 }
 
-size_t MTRoutingManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
+int64_t MTRoutingManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
 {
   size_t res = current;
   if(oldBmIndex == res)
     res = newBmIndex;
   else if(res > oldBmIndex
-    && res < newBmIndex)
+    && res <= newBmIndex)
     res--;
   else if(res < oldBmIndex
-    && res > newBmIndex)
+    && res >= newBmIndex)
     res++;
   return res;
 }

@@ -131,4 +131,8 @@
   <color name="bg_brand_booking">#FF19457D</color>
   <color name="bg_brand_booking_pressed">#FF1B549E</color>
 
+  <!-- Mapotempo colors -->
+  <color name="mapotempo_green">#89C53F</color>
+  <color name="mapotempo_blue">#13B0CA</color>
+
 </resources>
