@@ -39,7 +39,7 @@ public:
   virtual void Clear(size_t skipCount = 0) = 0;
   virtual void Update() = 0;
   virtual void ReverseUserMarks() = 0;
-
+  virtual bool MoveUserMarkOrder(size_t oldIndex, size_t newIndex) = 0;
 };
 
 class UserMarkContainer : public df::UserMarksProvider
@@ -79,6 +79,8 @@ public:
   size_t GetUserMarkCount() const override;
   UserMark const * GetUserMark(size_t index) const override;
   UserMarkType GetType() const override final;
+
+  bool MoveUserMarkOrder(size_t oldIndex, size_t newIndex) override;
 
 protected:
   /// UserMarksController implementation

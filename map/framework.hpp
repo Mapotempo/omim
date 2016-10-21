@@ -339,6 +339,8 @@ public:
 
   bool MT_RestoreRoutingManager();
 
+  bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
+
 protected:
   // search::ViewportSearchCallback::Delegate overrides:
   void RunUITask(function<void()> fn) override { GetPlatform().RunOnGuiThread(move(fn)); }

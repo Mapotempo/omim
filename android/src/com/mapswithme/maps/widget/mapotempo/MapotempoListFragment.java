@@ -1,184 +1,130 @@
 package com.mapswithme.maps.widget.mapotempo;
 
-import android.content.Intent;
+import android.app.Fragment;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.mapswithme.maps.Framework;
-import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
-import com.mapswithme.maps.base.BaseMwmListFragment;
-import com.mapswithme.maps.widget.mapotempo.MapotempoListAdapter;
-import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
+
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
-import com.mapswithme.maps.bookmarks.data.Track;
-import com.mapswithme.maps.widget.placepage.EditBookmarkFragment;
-import com.mapswithme.maps.widget.placepage.SponsoredHotel;
-import com.mapswithme.util.BottomSheetHelper;
-import com.mapswithme.util.sharing.ShareOption;
-import com.mapswithme.util.sharing.SharingHelper;
+import com.mapswithme.maps.bookmarks.data.Icon;
+import com.mapswithme.maps.downloader.UpdateInfo;
+import com.woxthebox.draglistview.DragItem;
+import com.woxthebox.draglistview.DragListView;
 
-public class MapotempoListFragment extends BaseMwmListFragment
-                                implements AdapterView.OnItemLongClickListener,
-                                           MenuItem.OnMenuItemClickListener
+public class MapotempoListFragment extends Fragment
 {
-  public static final String TAG = MapotempoListFragment.class.getSimpleName();
+  BookmarkCategory mCurrentCategory;
+  private DragListView mDragListView;
 
-  private BookmarkCategory mCategory;
-  private int mSelectedPosition;
-  private MapotempoListAdapter mAdapter;
+  public static MapotempoListFragment newInstance() {
+    return new MapotempoListFragment();
+  }
 
   @Override
-  public void onCreate(Bundle savedInstanceState)
-  {
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    if(BookmarkRoutingManager.INSTANCE.nativeGetStatus())
-    {
-      mCategory = BookmarkManager.INSTANCE.getCategory(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId());
-    }
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+  public void onStart()
   {
-    return inflater.inflate(R.layout.simple_list, container, false);
-  }
-
-  @Override
-  public void onViewCreated(View view, Bundle savedInstanceState)
-  {
-    super.onViewCreated(view, savedInstanceState);
-    initList();
-    setHasOptionsMenu(true);
+    super.onStart();
+    setupListRecyclerView();
   }
 
   @Override
   public void onResume()
   {
     super.onResume();
+    setupListRecyclerView();
+  }
 
-    if(BookmarkRoutingManager.INSTANCE.nativeGetStatus())
-    {
-      if(mCategory == null || mCategory.getId() != BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId())
-      {
-        mCategory = BookmarkManager.INSTANCE.getCategory(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId());
-        initList();
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.dragndrop_list, container, false);
+    mDragListView = (DragListView) view.findViewById(R.id.drag_list_view);
+    mDragListView.getRecyclerView().setVerticalScrollBarEnabled(true);
+    mDragListView.setDragEnabled(true);
+    mDragListView.setDragListListener(new DragListView.DragListListener() {
+      @Override
+      public void onItemDragStarted(int position) {
       }
-      else
-      {
-        mAdapter.startTimerUpdate();
+
+      @Override
+      public void onItemDragEnded(int fromPosition, int toPosition) {
+        if (fromPosition != toPosition) {
+          MapotempoListAdapter adapter = (MapotempoListAdapter)mDragListView.getAdapter();
+          adapter.updateNativeBookmarkOrder(fromPosition, toPosition);
+        }
       }
-    }
+
+      @Override
+      public void onItemDragging(int itemPosition, float x, float y)
+      {
+      }
+    });
+
+    return view;
   }
 
   @Override
-  public void onPause()
-  {
-    super.onPause();
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+  }
 
-    if(mCategory != null)
+  private void setupListRecyclerView() {
+    MapotempoListAdapter listAdapter;
+    if(BookmarkRoutingManager.INSTANCE.getStatus())
     {
-      mAdapter.stopTimerUpdate();
+      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId());
+      listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
-  }
-
-  private void initList()
-  {
-    if(mCategory != null)
+    else
     {
-      mAdapter = new MapotempoListAdapter(getActivity(), mCategory);
-      mAdapter.startTimerUpdate();
-      setListAdapter(mAdapter);
-      getListView().setOnItemLongClickListener(this);
+      listAdapter = new MapotempoListAdapter(null, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
+
+    mDragListView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+    mDragListView.setAdapter(listAdapter, false);
+    mDragListView.setCanDragHorizontally(false);
+    mDragListView.setCustomDragItem(new MyDragItem(getActivity().getApplicationContext(), R.layout.item_mapotempo_bookmark));
   }
 
-  @Override
-  public void onListItemClick(ListView l, View v, int position, long id)
-  {
-    final Bookmark bookmark = (Bookmark) mAdapter.getItem(position);
-    BookmarkRoutingManager.INSTANCE.initRoutingManager(bookmark.getCategoryId(), bookmark.getBookmarkId());
-  }
+  private static class MyDragItem extends DragItem {
 
-  @Override
-  public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-  {
-    mSelectedPosition = position;
-    final Object item = mAdapter.getItem(mSelectedPosition);
+    public MyDragItem(Context context, int layoutId) {
+      super(context, layoutId);
+    }
 
-    BottomSheetHelper.Builder bs = BottomSheetHelper.create(getActivity(), ((Bookmark) item).getTitle())
-                                                    .sheet(R.menu.menu_bookmarks)
-                                                    .listener(this);
-    if (!ShareOption.SMS.isSupported(getActivity()))
-      bs.getMenu().removeItem(R.id.share_message);
-
-    if (!ShareOption.EMAIL.isSupported(getActivity()))
-      bs.getMenu().removeItem(R.id.share_email);
-
-    bs.tint().show();
-
-    return true;
-  }
-
-  @Override
-  public boolean onMenuItemClick(MenuItem menuItem)
-  {
-    Bookmark item = (Bookmark) mAdapter.getItem(mSelectedPosition);
-
-    switch (menuItem.getItemId())
+    @Override
+    public void onBindDragView(View clickedView, View dragView)
     {
-    case R.id.share_message:
-      ShareOption.SMS.shareMapObject(getActivity(), item, SponsoredHotel.nativeGetCurrent());
-      break;
+      dragView.setBackgroundColor(R.color.background_material_light);
+      dragView.setAlpha((float)0.7);
 
-    case R.id.share_email:
-      ShareOption.EMAIL.shareMapObject(getActivity(), item, SponsoredHotel.nativeGetCurrent());
-      break;
+      ImageView imgDrag = (ImageView) dragView.findViewById(R.id.iv__bookmark_color);
+      ImageView imgClic = (ImageView) clickedView.findViewById(R.id.iv__bookmark_color);
+      imgDrag.setImageDrawable(imgClic.getDrawable());
 
-    case R.id.share:
-      ShareOption.ANY.shareMapObject(getActivity(), item, SponsoredHotel.nativeGetCurrent());
-      break;
+      TextView txtDrag = (TextView) dragView.findViewById(R.id.tv__bookmark_name);
+      TextView txtClic = (TextView) clickedView.findViewById(R.id.tv__bookmark_name);
+      txtDrag.setTextColor(txtClic.getCurrentTextColor());
+      txtDrag.setText(txtClic.getText());
 
-    case R.id.edit:
-      EditBookmarkFragment.editBookmark(mCategory.getId(), item.getBookmarkId(), getActivity(), getChildFragmentManager());
-      break;
-
-    case R.id.delete:
-      BookmarkManager.INSTANCE.deleteBookmark(item);
-      mAdapter.notifyDataSetChanged();
-      break;
+      ImageView imageButtonDrag = (ImageView) dragView.findViewById(R.id.iv__bookmark_drag);
+      imageButtonDrag.setEnabled(true);
     }
-    return false;
-  }
-
-  @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-  {
-    inflater.inflate(R.menu.option_menu_bookmarks, menu);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item)
-  {
-    if (item.getItemId() == R.id.set_share)
-    {
-      SharingHelper.shareBookmarksCategory(getActivity(), mCategory.getId());
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
   }
 }

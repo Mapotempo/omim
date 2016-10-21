@@ -59,6 +59,8 @@ public:
   void DeleteBmCategory(CategoryIter i);
   virtual bool DeleteBmCategory(size_t index);
 
+  virtual bool ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex);
+
   typedef function<m2::AnyRectD const & (UserMarkType)> TTouchRectHolder;
 
   UserMark const * FindNearestUserMark(m2::AnyRectD const & rect) const;

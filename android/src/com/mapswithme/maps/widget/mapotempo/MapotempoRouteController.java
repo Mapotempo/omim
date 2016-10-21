@@ -12,8 +12,6 @@ import android.widget.TextView;
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity;
-import com.mapswithme.maps.bookmarks.BookmarkListActivity;
-import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
@@ -22,11 +20,12 @@ import com.mapswithme.maps.routing.RoutingController;
 import com.mapswithme.maps.widget.menu.MapotempoMenu;
 import com.mapswithme.util.statistics.AlohaHelper;
 import com.mapswithme.util.statistics.Statistics;
+import com.woxthebox.draglistview.DragListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapotempoRouteController
+public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeListener
 {
   public static final List<Icon> STATUS = new ArrayList<>();
 
@@ -47,9 +46,10 @@ public class MapotempoRouteController
   private Button mapotempoStartRoute;
   private LinearLayout mLineFrame;
   private MapotempoMenu mapotempoMenu;
+  private DragListView mDragListView;
 
-  public MapotempoRouteController(final Activity activity) {
-
+  public MapotempoRouteController(final Activity activity)
+  {
     mBottomMapotempoFrame = activity.findViewById(R.id.nav_mapotempo_bottom_frame);
 
     mLineFrame = (LinearLayout) mBottomMapotempoFrame.findViewById(R.id.line_frame);
@@ -76,7 +76,7 @@ public class MapotempoRouteController
         switch (item)
         {
           case TOGGLE:
-            mapotempoMenu.toggle(true);
+            mapotempoMenu.toggle(false);
             parent.refreshFade();
             break;
           default:
@@ -89,7 +89,7 @@ public class MapotempoRouteController
       @Override
       public void onClick(View v) {
         Bookmark bookmark = BookmarkRoutingManager.INSTANCE.stepNextBookmark();
-        BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
+        BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
         refreshUI(bookmark);
       }
     });
@@ -98,7 +98,7 @@ public class MapotempoRouteController
       @Override
       public void onClick(View v) {
         Bookmark bookmark = BookmarkRoutingManager.INSTANCE.stepPreviousBookmark();
-        BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
+        BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
         refreshUI(bookmark);
       }
     });
@@ -117,16 +117,17 @@ public class MapotempoRouteController
       public void onClick(View v) {
         ImageButton button = (ImageButton) v;
         Bookmark bookmark = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
-        switch ((Integer) button.getTag()) {
-          case R.drawable.ic_point_todo:
-            bookmark.setParams(bookmark.getTitle(), BookmarkManager.ICONS.get(1), bookmark.getBookmarkDescription());
+        switch (bookmark.getIcon().getSelectedResId())
+        {
+          case R.drawable.ic_bookmark_marker_blue_on :
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(6), bookmark.getBookmarkDescription());
             break;
-          case R.drawable.ic_point_done:
-            bookmark.setParams(bookmark.getTitle(), BookmarkManager.ICONS.get(6), bookmark.getBookmarkDescription());
+          case R.drawable.ic_bookmark_marker_green_on :
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(0), bookmark.getBookmarkDescription());
             break;
-          case R.drawable.ic_point_fail:
+          case R.drawable.ic_bookmark_marker_red_on :
           default:
-            bookmark.setParams(bookmark.getTitle(), BookmarkManager.ICONS.get(0), bookmark.getBookmarkDescription());
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(1), bookmark.getBookmarkDescription());
             break;
         }
         // Get the bookmark refresh
@@ -150,11 +151,12 @@ public class MapotempoRouteController
       }
     });
 
-
 //    if(BookmarkRoutingManager.INSTANCE.getStatus())
 //    {
 //      showMapotempoRoutePanel(true);
 //    }
+
+    Bookmark.addBookmarkParamsChangeListener(this);
   }
 
   public void showMapotempoRoutePanel(boolean visibility)
@@ -179,21 +181,21 @@ public class MapotempoRouteController
     if(BookmarkRoutingManager.INSTANCE.getStatus()) {
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       mMTCurrentBM.setText(currentBm.getTitle());
-      Icon icon = currentBm.getIcon();
-      if(icon.getType().equals("placemark-red"))
+      mMTActionRight.setImageResource(currentBm.getIcon().getSelectedResId());
+//      BookmarkRoutingManager.INSTANCE.notifyCurrentBookmarkChange();
+    }
+  }
+
+  @Override
+  public void onBookmarkParamsChangeListerner(Bookmark bookmark)
+  {
+    if(BookmarkRoutingManager.INSTANCE.getStatus())
+    {
+      Bookmark cuBookmark = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
+      if(cuBookmark != null &&
+         bookmark.getBookmarkId() == cuBookmark.getBookmarkId())
       {
-        mMTActionRight.setImageResource(R.drawable.ic_point_fail);
-        mMTActionRight.setTag(R.drawable.ic_point_todo);
-      }
-      else if(icon.getType().equals("placemark-green"))
-      {
-        mMTActionRight.setImageResource(R.drawable.ic_point_done);
-        mMTActionRight.setTag(R.drawable.ic_point_fail);
-      }
-      else
-      {
-        mMTActionRight.setImageResource(R.drawable.ic_point_todo);
-        mMTActionRight.setTag(R.drawable.ic_point_done);
+        refreshUI(bookmark);
       }
     }
   }

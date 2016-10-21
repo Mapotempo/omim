@@ -1,8 +1,13 @@
 package com.mapswithme.maps.bookmarks.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum BookmarkRoutingManager
 {
   INSTANCE;
+
+//  private List<CurrentBookmarkChangeListener> mCurrentBookmarkChangeListenerList = new ArrayList();
 
   public boolean initRoutingManager(int catIndex, int bmIndex)
   {
@@ -33,6 +38,33 @@ public enum BookmarkRoutingManager
   {
     return nativeGetStatus();
   }
+
+//  public interface CurrentBookmarkChangeListener
+//  {
+//    void onCurrentBookmarkChangeListerner(Bookmark currentBookmark);
+//  }
+//
+//  public void addCurrentBookmarkChangeListener(CurrentBookmarkChangeListener currentBookmarkChangeListener)
+//  {
+//    mCurrentBookmarkChangeListenerList.add(currentBookmarkChangeListener);
+//  }
+//
+//  public void removeCurrentBookmarkChangeListener(CurrentBookmarkChangeListener currentBookmarkChangeListener)
+//  {
+//    mCurrentBookmarkChangeListenerList.remove(currentBookmarkChangeListener);
+//  }
+//
+//  public void notifyCurrentBookmarkChange()
+//  {
+//    if(getStatus())
+//    {
+//      Bookmark currentBookmark = getCurrentBookmark();
+//      for (CurrentBookmarkChangeListener currentBookmarkChangeListener : mCurrentBookmarkChangeListenerList)
+//      {
+//        currentBookmarkChangeListener.onCurrentBookmarkChangeListerner(currentBookmark);
+//      }
+//    }
+//  }
 
   public static native boolean nativeGetStatus();
 

@@ -44,3 +44,5 @@
 # HockeyApp
 -dontwarn net.hockeyapp.android.UpdateActivity
 -dontwarn net.hockeyapp.android.UpdateFragment
+
+-keep class com.woxthebox.draglistview.** { *; }

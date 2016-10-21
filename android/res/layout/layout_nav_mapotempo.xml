@@ -87,25 +87,20 @@
   </LinearLayout>
 
 
-  <android.support.v4.widget.NestedScrollView
+  <FrameLayout
+    android:id="@+id/content_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    tools:visibility="visible">
 
-    <FrameLayout
-      android:id="@+id/content_frame"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:visibility="gone"
-      tools:visibility="visible">
-
-
-      <fragment
+    <fragment
+      class="com.mapswithme.maps.widget.mapotempo.MapotempoListFragment"
       android:id="@+id/fragment_container"
-      android:name="com.mapswithme.maps.widget.mapotempo.MapotempoListFragment"
       android:layout_width="match_parent"
       android:layout_height="250dp"/>
 
-    </FrameLayout>
-  </android.support.v4.widget.NestedScrollView>
+  </FrameLayout>
+
 
 </LinearLayout>

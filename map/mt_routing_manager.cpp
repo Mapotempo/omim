@@ -114,6 +114,28 @@ int64_t MTRoutingManager::StepPreviousBookmark()
   return GetCurrentBookmark();
 }
 
+bool MTRoutingManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
+{
+  bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
+  if(res)
+    m_indexCurrentBm = reorderCurrent(m_indexCurrentBm, curBmIndex, newBmIndex);
+  return res;
+}
+
+size_t MTRoutingManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
+{
+  size_t res = current;
+  if(oldBmIndex == res)
+    res = newBmIndex;
+  else if(res > oldBmIndex
+    && res < newBmIndex)
+    res--;
+  else if(res < oldBmIndex
+    && res > newBmIndex)
+    res++;
+  return res;
+}
+
 /**
  * Redefinition du create pour voir passer les creation de catégories
  * et pouvoir les cacher par defaut sans avoir à toucher au code du

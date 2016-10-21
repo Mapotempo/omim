@@ -230,6 +230,18 @@ void UserMarkContainer::ReverseUserMarks()
   reverse(m_userMarks.begin(), m_userMarks.end());
 }
 
+bool UserMarkContainer::MoveUserMarkOrder(size_t oldIndex, size_t newIndex)
+{
+  if(oldIndex >= m_userMarks.size() || newIndex >= m_userMarks.size()
+     || oldIndex == newIndex)
+    return false;
+
+  UserMark * data = m_userMarks[oldIndex].release();
+  m_userMarks.erase(m_userMarks.begin() + oldIndex);
+  m_userMarks.emplace(m_userMarks.begin() + newIndex, unique_ptr<UserMark>(data));
+  return true;
+}
+
 void UserMarkContainer::Update()
 {
   SetDirty();

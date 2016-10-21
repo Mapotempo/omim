@@ -810,6 +810,11 @@ bool Framework::MT_RestoreRoutingManager()
   return this->MT_InitRouteManager(category, bookmark);
 }
 
+bool Framework::MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex)
+{
+  return m_bmManager.ChangeBookmarkOrder(cat, oldIndex, newIndex);
+}
+
 namespace
 {
   class EqualCategoryName
@@ -998,7 +1003,7 @@ void Framework::MoveToBookmark(BookmarkAndCategory const & bnc)
   if (scale == -1.0)
     scale = scales::GetUpperComfortScale();
 
-  CallDrapeFunction(bind(&df::DrapeEngine::SetModelViewCenter, _1, mark->GetPivot(), scale, true));
+  CallDrapeFunction(bind(&df::DrapeEngine::SetModelViewCenter, _1, mark->GetPivot(), scale, false));
 
   place_page::Info info;
   FillBookmarkInfo(*mark, bnc, info);

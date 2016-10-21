@@ -27,8 +27,10 @@ public:
   bool DeleteBmCategory(size_t index);
   size_t CreateBmCategory(string const & name);
   void LoadBookmark(string const & filePath);
+  bool ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex);
 
 private :
+  void reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex);
   int64_t m_indexCurrentBmCat;
   int64_t m_indexCurrentBm;
   Framework &m_framework;

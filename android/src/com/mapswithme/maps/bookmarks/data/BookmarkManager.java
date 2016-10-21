@@ -84,6 +84,11 @@ public enum BookmarkManager
     return bookmark;
   }
 
+  public void changeBookmarkOrder(int catIndex, int curIndex, int newIndex)
+  {
+    nativeChangeBookmarkOrder(catIndex, curIndex, newIndex);
+  }
+
   public static native void nativeLoadBookmarks();
 
   private native void nativeDeleteTrack(int catId, int trackId);
@@ -117,4 +122,6 @@ public enum BookmarkManager
   public static native boolean nativeLoadKmzFile(String path);
 
   public static native String nativeFormatNewBookmarkName();
+
+  private native boolean nativeChangeBookmarkOrder(int categoryId, int oldBookmarkId, int newBookmarkId);
 }
