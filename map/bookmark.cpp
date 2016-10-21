@@ -740,6 +740,7 @@ void BookmarkCategory::SaveToKML(ostream & s)
        count < GetUserPointCount(); ++count, ++i)
   {
     Bookmark const * bm = static_cast<Bookmark const *>(GetUserMark(i));
+
     s << "  <Placemark>\n";
     s << "    <name>";
     SaveStringWithCDATA(s, bm->GetName());

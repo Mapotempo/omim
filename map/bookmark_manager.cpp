@@ -191,6 +191,18 @@ bool BookmarkManager::DeleteBmCategory(size_t index)
     return false;
 }
 
+bool BookmarkManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
+{
+  bool res = false;
+  BookmarkCategory * cat = GetBmCategory(catIndex);
+  if(cat)
+  {
+    res = cat->MoveUserMarkOrder(curBmIndex, newBmIndex);
+    cat->SaveToKMLFile();
+  }
+  return res;
+}
+
 namespace
 {
   class BestUserMarkFinder

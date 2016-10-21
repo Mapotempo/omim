@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import com.mapswithme.maps.Framework;
 import com.mapswithme.util.Constants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // TODO consider refactoring to remove hack with MapObject unmarshalling itself and Bookmark at the same time.
 @SuppressLint("ParcelCreator")
 public class Bookmark extends MapObject
@@ -161,6 +164,37 @@ public class Bookmark extends MapObject
   public String getHttpGe0Url(boolean addName)
   {
     return getGe0Url(addName).replaceFirst(Constants.Url.GE0_PREFIX, Constants.Url.HTTP_GE0_PREFIX);
+  }
+
+  public void setParamsAndNotify(String title, Icon icon, String description)
+  {
+    setParams(title, icon, description);
+    notifyBookmarkParamsChange(BookmarkManager.INSTANCE.getBookmark(mCategoryId, mBookmarkId));
+  }
+
+  private static List<BookmarkParamsChangeListener> mBookmarkParamsChangeListenerList = new ArrayList();
+
+  public interface BookmarkParamsChangeListener
+  {
+    void onBookmarkParamsChangeListerner(Bookmark bookmark);
+  }
+
+  public static void addBookmarkParamsChangeListener(BookmarkParamsChangeListener bookmarkParamsChangeListener)
+  {
+    mBookmarkParamsChangeListenerList.add(bookmarkParamsChangeListener);
+  }
+
+  public static void removeBookmarkParamsChangeListener(BookmarkParamsChangeListener bookmarkParamsChangeListener)
+  {
+    mBookmarkParamsChangeListenerList.remove(bookmarkParamsChangeListener);
+  }
+
+  private static void notifyBookmarkParamsChange(Bookmark bookmark)
+  {
+    for(BookmarkParamsChangeListener paramsChangeListener : mBookmarkParamsChangeListenerList)
+    {
+      paramsChangeListener.onBookmarkParamsChangeListerner(bookmark);
+    }
   }
 
   private native String nativeGetBookmarkPhoneNumber(@IntRange(from = 0) int categoryId, @IntRange(from = 0) long bookmarkId);

@@ -148,4 +148,11 @@ Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeFormatNewBookmarkN
   return ToJavaString(env, g_framework->GetPlacePageInfo().FormatNewBookmarkName());
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeChangeBookmarkOrder(
+     JNIEnv * env, jobject thiz, jint categoryId, jint oldBookmarkId, jint newBookmarkId)
+{
+  return frm()->MT_ChangeBookmarkOrder(categoryId, oldBookmarkId, newBookmarkId);
+}
+
 }  // extern "C"
