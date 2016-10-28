@@ -663,7 +663,7 @@ bool Framework::MT_GetStatus()
 
 void Framework::MT_StopRouteManager()
 {
-  m_rountingManager.StopMTRouteManager();
+  m_rountingManager.StopManager();
   if(m_deactivateMapotempoRouteFn)
   {
     m_deactivateMapotempoRouteFn();
@@ -672,7 +672,7 @@ void Framework::MT_StopRouteManager()
 
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingManager.InitMTRouteManager(indexBmCat, indexBm);
+  bool res = m_rountingManager.InitManager(indexBmCat, indexBm);
 
   if(res && m_activateMapotempoRouteFn)
   {

@@ -14,12 +14,9 @@ import android.widget.TextView;
 
 import com.mapswithme.maps.R;
 
-import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
-import com.mapswithme.maps.bookmarks.data.Icon;
-import com.mapswithme.maps.downloader.UpdateInfo;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -86,9 +83,9 @@ public class MapotempoListFragment extends Fragment
 
   private void setupListRecyclerView() {
     MapotempoListAdapter listAdapter;
-    if(BookmarkRoutingManager.INSTANCE.getStatus())
+    if(RouteListManager.INSTANCE.getStatus())
     {
-      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getCategoryId());
+      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
       listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
     else

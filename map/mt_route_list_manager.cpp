@@ -1,10 +1,10 @@
-#include "mt_route_manager.hpp"
+#include "mt_route_list_manager.hpp"
 
 #include "map/framework.hpp"
 #include "map/bookmark.hpp"
 #include "base/logging.hpp"
 
-MTRoutingManager::MTRoutingManager(Framework & f)
+MTRouteListManager::MTRouteListManager(Framework & f)
   : BookmarkManager(f)
     ,m_framework(f)
     ,m_indexCurrentBmCat(-1)
@@ -12,18 +12,18 @@ MTRoutingManager::MTRoutingManager(Framework & f)
 {
 }
 
-MTRoutingManager::~MTRoutingManager()
+MTRouteListManager::~MTRouteListManager()
 {
 }
 
-bool MTRoutingManager::GetStatus()
+bool MTRouteListManager::GetStatus()
 {
   if(m_indexCurrentBmCat < 0)
     return false;
   return true;
 }
 
-void MTRoutingManager::StopMTRouteManager()
+void MTRouteListManager::StopManager()
 {
   m_indexCurrentBmCat = -1;
   m_indexCurrentBm = -1;
@@ -42,7 +42,7 @@ void MTRoutingManager::StopMTRouteManager()
   m_framework.MT_SaveRoutingManager();
 }
 
-bool MTRoutingManager::InitMTRouteManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay)
+bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay)
 {
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
   if(bmCat == NULL || bmCat->GetUserMarkCount() <= indexFirstBmToDisplay)
@@ -71,13 +71,13 @@ bool MTRoutingManager::InitMTRouteManager(int64_t indexBmCat, int64_t indexFirst
   return true;
 }
 
-void MTRoutingManager::ResetManager(){
+void MTRouteListManager::ResetManager(){
   m_indexCurrentBmCat = -1;
   m_indexCurrentBm = -1;
   m_framework.MT_SaveRoutingManager();
 }
 
-bool MTRoutingManager::SetCurrentBookmark(int64_t indexBm)
+bool MTRouteListManager::SetCurrentBookmark(int64_t indexBm)
 {
   bool res = false;
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
@@ -90,7 +90,7 @@ bool MTRoutingManager::SetCurrentBookmark(int64_t indexBm)
   return res;
 }
 
-int64_t MTRoutingManager::StepNextBookmark()
+int64_t MTRouteListManager::StepNextBookmark()
 {
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
 
@@ -102,7 +102,7 @@ int64_t MTRoutingManager::StepNextBookmark()
   return GetCurrentBookmark();
 }
 
-int64_t MTRoutingManager::StepPreviousBookmark()
+int64_t MTRouteListManager::StepPreviousBookmark()
 {
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
 
@@ -114,7 +114,7 @@ int64_t MTRoutingManager::StepPreviousBookmark()
   return GetCurrentBookmark();
 }
 
-bool MTRoutingManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
+bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
 {
   bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
   if(res)
@@ -122,7 +122,7 @@ bool MTRoutingManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, s
   return res;
 }
 
-int64_t MTRoutingManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
+int64_t MTRouteListManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
 {
   size_t res = current;
   if(oldBmIndex == res)
@@ -141,7 +141,7 @@ int64_t MTRoutingManager::reorderCurrent(size_t current,size_t oldBmIndex, size_
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
-size_t MTRoutingManager::CreateBmCategory(string const & name)
+size_t MTRouteListManager::CreateBmCategory(string const & name)
 {
   size_t index = BookmarkManager::CreateBmCategory(name);
   BookmarkCategory * bmCat = GetBmCategory(index);
@@ -160,7 +160,7 @@ size_t MTRoutingManager::CreateBmCategory(string const & name)
  * Redefinition du delete pour voir passer les suppresions de
  * catégories sans avoir à toucher au code du boomark_manager.hpp/cpp.
  **/
-bool MTRoutingManager::DeleteBmCategory(size_t index)
+bool MTRouteListManager::DeleteBmCategory(size_t index)
 {
   bool res = BookmarkManager::DeleteBmCategory(index);
   if(res == true)
@@ -183,7 +183,7 @@ bool MTRoutingManager::DeleteBmCategory(size_t index)
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
-void MTRoutingManager::LoadBookmark(string const & filePath)
+void MTRouteListManager::LoadBookmark(string const & filePath)
 {
   BookmarkManager::LoadBookmark(filePath);
   // Hide the last bookmark load else if that the current bmCat.

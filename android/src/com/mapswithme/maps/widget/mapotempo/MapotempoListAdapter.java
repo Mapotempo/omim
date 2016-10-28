@@ -13,7 +13,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.bookmarks.data.Icon;
 import com.woxthebox.draglistview.DragItemAdapter;
 
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, MapotempoListAdapter.BookmarkInformation>, MapotempoListAdapter.ViewHolder>
     implements Bookmark.BookmarkParamsChangeListener
-    ,BookmarkRoutingManager.CurrentBookmarkChangeListener
+    ,RouteListManager.CurrentBookmarkChangeListener
 {
 
   private BookmarkCategory mCategory;
@@ -38,8 +38,8 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     setHasStableIds(true);
     mCategory = category;
 
-    if(BookmarkRoutingManager.INSTANCE.getStatus())
-      mCurrentBookmarkIndex = BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+    if(RouteListManager.INSTANCE.getStatus())
+      mCurrentBookmarkIndex = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
 
     List<Pair<Integer,BookmarkInformation>>mItemArray = new ArrayList<>();
     if(mCategory != null)
@@ -57,7 +57,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
   {
     super.onAttachedToRecyclerView(recyclerView);
     Bookmark.addBookmarkParamsChangeListener(this);
-    BookmarkRoutingManager.INSTANCE.addCurrentBookmarkChangeListener(this);
+    RouteListManager.INSTANCE.addCurrentBookmarkChangeListener(this);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
   {
     super.onDetachedFromRecyclerView(recyclerView);
     Bookmark.removeBookmarkParamsChangeListener(this);
-    BookmarkRoutingManager.INSTANCE.removeCurrentBookmarkChangeListener(this);
+    RouteListManager.INSTANCE.removeCurrentBookmarkChangeListener(this);
   }
 
   @Override
@@ -109,7 +109,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
   public void updateNativeBookmarkOrder(int fromPosition, int toPosition)
   {
     BookmarkManager.INSTANCE.changeBookmarkOrder(mCategory.getId(), fromPosition, toPosition);
-    mCurrentBookmarkIndex = BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+    mCurrentBookmarkIndex = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
 //    notifyDataSetChanged();
 //    if(fromPosition == mCurrentBookmarkIndex)
 //      mCurrentBookmarkIndex = toPosition;

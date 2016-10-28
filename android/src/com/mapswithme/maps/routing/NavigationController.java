@@ -7,8 +7,6 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,9 +17,6 @@ import java.util.concurrent.TimeUnit;
 import com.mapswithme.maps.Framework;
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
-import com.mapswithme.maps.bookmarks.data.Bookmark;
-import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.location.LocationHelper;
 import com.mapswithme.maps.settings.SettingsActivity;

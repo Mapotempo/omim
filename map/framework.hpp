@@ -9,7 +9,6 @@
 #include "map/mwm_url.hpp"
 #include "map/place_page_info.hpp"
 #include "map/track.hpp"
-#include "map/mt_route_manager.hpp"
 
 #include "drape_frontend/gui/skin.hpp"
 #include "drape_frontend/drape_engine.hpp"
@@ -55,6 +54,8 @@
 #include "std/unique_ptr.hpp"
 #include "std/vector.hpp"
 #include "std/weak_ptr.hpp"
+
+#include "mt_route_list_manager.hpp"
 
 namespace osm
 {
@@ -152,7 +153,7 @@ protected:
 
   location::TMyPositionModeChanged m_myPositionListener;
 
-  MTRoutingManager m_rountingManager;
+  MTRouteListManager m_rountingManager;
 
   BookmarkManager &m_bmManager = m_rountingManager;
 
