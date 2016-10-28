@@ -39,7 +39,7 @@ import com.mapswithme.maps.bookmarks.data.Banner;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.downloader.DownloaderActivity;
 import com.mapswithme.maps.downloader.DownloaderFragment;
@@ -447,7 +447,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     //});
     //getWindow().getDecorView().addOnLayoutChangeListener(mVisibleRectMeasurer);
 
-    BookmarkRoutingManager.INSTANCE.nativeRestoreRoutingManager();
+    RouteListManager.INSTANCE.nativeRestoreRoutingManager();
   }
 
   private void initViews()
@@ -1063,7 +1063,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     else if (MapObject.isOfType(MapObject.BOOKMARK, object))
     {
       Bookmark bm = (Bookmark) object;
-      if(BookmarkRoutingManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
+      if(RouteListManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
       {
         mMapotempoRouteController.refreshUI((Bookmark) object);
       }
@@ -1100,10 +1100,10 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @Override
   public void onMtRouteActivated()
   {
-    Bookmark bm = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
+    Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
     BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bm.getCategoryId());
 
-    if(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
+    if(RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
        && bmCat.getTracksCount() > 0)
     {
       Framework.nativeShowTrackRect(bmCat.getId(), 0);

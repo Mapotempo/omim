@@ -3,7 +3,7 @@ package com.mapswithme.maps.bookmarks.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum BookmarkRoutingManager
+public enum RouteListManager
 {
   INSTANCE;
 

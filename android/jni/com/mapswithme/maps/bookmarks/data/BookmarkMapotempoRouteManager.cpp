@@ -19,27 +19,27 @@ extern "C"
 using namespace jni;
 
   JNIEXPORT jboolean JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeGetStatus(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeGetStatus(
       JNIEnv * env, jobject thiz)
   {
     return frm()->MT_GetStatus();
   }
 
   JNIEXPORT void JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeStopRoutingManager()
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeStopRoutingManager()
   {
     frm()->MT_StopRouteManager();
   }
 
   JNIEXPORT jboolean JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeInitRoutingManager(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeInitRoutingManager(
       JNIEnv * env, jobject thiz, jint bmCatIndex, jint bmIndex)
   {
     return frm()->MT_InitRouteManager(bmCatIndex, bmIndex);
   }
 
   JNIEXPORT jobject JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeGetCurrentBookmark(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeGetCurrentBookmark(
       JNIEnv * env, jobject thiz)
   {
     place_page::Info info;
@@ -53,7 +53,7 @@ using namespace jni;
   }
 
   JNIEXPORT jobject JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeStepNextBookmark(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeStepNextBookmark(
       JNIEnv * env, jobject thiz)
   {
     place_page::Info info;
@@ -72,7 +72,7 @@ using namespace jni;
   }
 
   JNIEXPORT jobject JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeStepPreviousBookmark(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeStepPreviousBookmark(
       JNIEnv * env, jobject thiz)
   {
     place_page::Info info;
@@ -90,21 +90,21 @@ using namespace jni;
   }
 
   JNIEXPORT jboolean JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeSetCurrentBookmark(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeSetCurrentBookmark(
         JNIEnv * env, jobject thiz, int bmIndex)
   {
    return frm()->MT_SetCurrentBookmark(bmIndex);
   }
 
   JNIEXPORT jboolean JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeRestoreRoutingManager(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeRestoreRoutingManager(
         JNIEnv * env, jobject thiz)
   {
     return frm()->MT_RestoreRoutingManager();
   }
 
   JNIEXPORT jobject JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_BookmarkRoutingManager_nativeAddBookmarkToCurrentCategory(
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeAddBookmarkToCurrentCategory(
       JNIEnv * env, jobject thiz, jstring name, double lat, double lon)
   {
     if(frm()->MT_GetStatus())

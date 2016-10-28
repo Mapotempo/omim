@@ -14,7 +14,7 @@ import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.ThemeUtils;
@@ -96,9 +96,9 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
         boolean visibility = !set.isVisible();
 
         if (set.getBookmark(0) != null && !visibility)
-          BookmarkRoutingManager.INSTANCE.initRoutingManager(set.getId(), 0);
+          RouteListManager.INSTANCE.initRoutingManager(set.getId(), 0);
         else
-          BookmarkRoutingManager.INSTANCE.nativeStopRoutingManager();
+          RouteListManager.INSTANCE.nativeStopRoutingManager();
 
         holder.setVisibilityState(set.isVisible());
         notifyDataSetChanged();
