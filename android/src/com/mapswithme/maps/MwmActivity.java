@@ -17,14 +17,17 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mapswithme.maps.Framework.MapObjectListener;
 import com.mapswithme.maps.Framework.MTRouteListener;
+import com.mapswithme.maps.Framework.MTGoalIsNearListener;
 import com.mapswithme.maps.activity.CustomNavigateUpListener;
 import com.mapswithme.maps.ads.LikesManager;
 import com.mapswithme.maps.api.ParsedMwmRequest;
@@ -101,6 +104,7 @@ import java.util.Stack;
 public class MwmActivity extends BaseMwmFragmentActivity
                       implements MapObjectListener,
                                  MTRouteListener,
+                                 MTGoalIsNearListener,
                                  View.OnTouchListener,
                                  BasePlacePageAnimationController.OnVisibilityChangedListener,
                                  BasePlacePageAnimationController.OnAnimationListener,
@@ -432,6 +436,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
 
     Framework.nativeSetMapObjectListener(this);
     Framework.nativeSetMTRouteListener(this);
+    Framework.nativeSetMTGoalIsNearListener(this);
 
     mSearchController = new FloatingSearchToolbarController(this);
     mSearchController.setVisibilityListener(this);
@@ -1120,6 +1125,23 @@ public class MwmActivity extends BaseMwmFragmentActivity
   public void onMtRouteDeactivated()
   {
     mMapotempoRouteController.showMapotempoRoutePanel(false);
+  }
+
+  @Override
+  public void onMtGoalIsNear()
+  {
+    Context context = getApplicationContext();
+    CharSequence text = "You are arrived!";
+    int duration = Toast.LENGTH_LONG;
+
+    Toast toast = Toast.makeText(context, text, duration);
+    toast.show();
+
+    RoutingController.get().cancel();
+
+    Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
+    mPlacePage.setMapObject(bm, true);
+    mPlacePage.setState(State.DETAILS);
   }
 
   private BaseMenu getCurrentMenu()

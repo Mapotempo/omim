@@ -1264,4 +1264,17 @@ Java_com_mapswithme_maps_Framework_nativeSetMTRouteListener(JNIEnv * env, jclass
     JNIEnv * env = jni::GetEnv();
     env->CallVoidMethod(g_mapObjectListener, dismissId );
   });
-}  // extern "C"
+}
+
+JNIEXPORT void JNICALL
+Java_com_mapswithme_maps_Framework_nativeSetMTGoalIsNearListener(JNIEnv * env, jclass clazz, jobject jListener)
+{
+  g_mapObjectListener = env->NewGlobalRef(jListener);
+  jmethodID const goalIsNear = jni::GetMethodID(env, g_mapObjectListener, "onMtGoalIsNear", "()V");
+  frm()->MT_SetMapotempoGoalIsNearListeners([goalIsNear]()
+  {
+    JNIEnv * env = jni::GetEnv();
+    env->CallVoidMethod(g_mapObjectListener, goalIsNear);
+  });
+}
+} // extern "C"

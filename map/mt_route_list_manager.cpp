@@ -2,10 +2,15 @@
 
 #include "map/framework.hpp"
 #include "map/bookmark.hpp"
+#include "map/user_mark.hpp"
+#include "base/logging.hpp"
+#include "geometry/distance_on_sphere.hpp"
 #include "base/logging.hpp"
 
+//MTRouteListManager::MT_DISTANCE_BOOKMARK_DONE;
+
 MTRouteListManager::MTRouteListManager(Framework & f)
-  : BookmarkManager(f)
+  : BookmarkManager(f)  
     ,m_framework(f)
     ,m_indexCurrentBmCat(-1)
     ,m_indexCurrentBm(-1)
@@ -113,6 +118,26 @@ int64_t MTRouteListManager::StepPreviousBookmark()
   m_framework.MT_SaveRoutingManager();
   return GetCurrentBookmark();
 }
+
+bool MTRouteListManager::checkCurrentBookmarkStatus(const double & curLat, const double & curLon)
+{
+  if(GetStatus())
+  {
+    BookmarkCategory * cat = GetBmCategory(m_indexCurrentBmCat);
+    const UserMark * bm = cat->GetUserMark(m_indexCurrentBm);
+    ms::LatLon bmPosition = bm->GetLatLon();
+    if(cat)
+    {
+      double const d = ms::DistanceOnEarth(curLat, curLon, bmPosition.lat, bmPosition.lon);
+      if(d < MTRouteListManager::MT_DISTANCE_BOOKMARK_DONE)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 
 bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
 {

@@ -9,12 +9,15 @@
 class MTRouteListManager : public BookmarkManager
 {
 private :
+  static const size_t MT_DISTANCE_BOOKMARK_DONE = 20;
+
+private :
   int64_t reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex);
   int64_t m_indexCurrentBmCat;
   int64_t m_indexCurrentBm;
   Framework &m_framework;
 
-public:
+public :
   MTRouteListManager(Framework & f);
   ~MTRouteListManager();
 
@@ -28,7 +31,9 @@ public:
   int64_t StepPreviousBookmark();
   int64_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
   int64_t GetCurrentBookmark(){return m_indexCurrentBm;}
+  bool checkCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
+public :
   // Override BookmarkManager virtual method
   bool DeleteBmCategory(size_t index);
   size_t CreateBmCategory(string const & name);

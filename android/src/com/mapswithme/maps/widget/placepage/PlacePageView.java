@@ -49,6 +49,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.data.Metadata;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.downloader.CountryItem;
 import com.mapswithme.maps.downloader.DownloaderStatusIcon;
 import com.mapswithme.maps.downloader.MapManager;
@@ -415,22 +416,37 @@ public class PlacePageView extends RelativeLayout
             hide();
           break;
 
-          case ROUTE_TO:
-            if (RoutingController.get().isPlanning())
-            {
-              if (RoutingController.get().setEndPoint(mMapObject))
-                hide();
-            }
-            else
-            {
-              getActivity().startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, getMapObject());
-            }
-            break;
+        case ROUTE_TO:
+          if (RoutingController.get().isPlanning())
+          {
+            if (RoutingController.get().setEndPoint(mMapObject))
+              hide();
+          }
+          else
+          {
+            getActivity().startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, getMapObject());
+          }
+          break;
 
-          case BOOKING:
-          case OPENTABLE:
-            onSponsoredClick(true /* book */);
-            break;
+        case BOOKING:
+        case OPENTABLE:
+          onSponsoredClick(true /* book */);
+          break;
+
+        case NEXT_ROUTE:
+          Bookmark bookmark = RouteListManager.INSTANCE.stepNextBookmark();
+          BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
+          //refreshUI(bookmark);
+          if (RoutingController.get().isPlanning())
+          {
+            if (RoutingController.get().setEndPoint(bookmark))
+              hide();
+          }
+          else
+          {
+            getActivity().startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, getMapObject());
+          }
+          break;
         }
       }
     });
@@ -884,7 +900,8 @@ public class PlacePageView extends RelativeLayout
         refreshDistanceToObject(loc);
         showBookmarkDetails();
         updateBookmarkButton();
-        unsetButtons();
+        bookmarkSetButtons();
+        //unsetButtons();
         break;
       case MapObject.POI:
       case MapObject.SEARCH:
@@ -1169,6 +1186,14 @@ public class PlacePageView extends RelativeLayout
   private void unsetButtons()
   {
     mButtons.setItems(new ArrayList<PlacePageButtons.Item>());
+  }
+
+  private void bookmarkSetButtons()
+  {
+    List<PlacePageButtons.Item> buttons = new ArrayList<>();
+    buttons.add(PlacePageButtons.Item.ROUTE_TO);
+    buttons.add(PlacePageButtons.Item.NEXT_ROUTE);
+    mButtons.setItems(buttons);
   }
 
   public void refreshLocation(Location l)

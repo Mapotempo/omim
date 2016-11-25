@@ -32,6 +32,20 @@ final class PlacePageButtons
 
   enum Item
   {
+    NEXT_ROUTE
+    {
+      @Override
+      int getTitle()
+      {
+        return R.string.p2p_next_route;
+      }
+
+      @Override
+      int getIcon()
+      {
+        return R.drawable.ic_route_from;
+      }
+    },
     BOOKING
     {
       @Override
