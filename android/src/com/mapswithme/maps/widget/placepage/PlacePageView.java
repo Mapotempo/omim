@@ -51,6 +51,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.data.Metadata;
+import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.downloader.CountryItem;
 import com.mapswithme.maps.downloader.DownloaderStatusIcon;
 import com.mapswithme.maps.downloader.MapManager;
@@ -353,6 +354,20 @@ public class PlacePageView extends RelativeLayout
         case BOOKING:
           onBookingClick(true /* book */);
           break;
+        case NEXT_ROUTE:
+          Bookmark bookmark = RouteListManager.INSTANCE.stepNextBookmark();
+          BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
+          //refreshUI(bookmark);
+          if (RoutingController.get().isPlanning())
+          {
+            if (RoutingController.get().setEndPoint(bookmark))
+              hide();
+          }
+          else
+          {
+            getActivity().startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, getMapObject());
+          }
+          break;
         }
       }
     });
@@ -584,7 +599,8 @@ public class PlacePageView extends RelativeLayout
     case MapObject.BOOKMARK:
       refreshDistanceToObject(loc);
       showBookmarkDetails();
-      unsetButtons();
+      bookmarkSetButtons();
+      //unsetButtons();
       break;
     case MapObject.POI:
     case MapObject.SEARCH:
@@ -810,6 +826,14 @@ public class PlacePageView extends RelativeLayout
   private void unsetButtons()
   {
     mButtons.setItems(new ArrayList<PlacePageButtons.Item>());
+  }
+
+  private void bookmarkSetButtons()
+  {
+    List<PlacePageButtons.Item> buttons = new ArrayList<>();
+    buttons.add(PlacePageButtons.Item.ROUTE_TO);
+    buttons.add(PlacePageButtons.Item.NEXT_ROUTE);
+    mButtons.setItems(buttons);
   }
 
   public void refreshLocation(Location l)

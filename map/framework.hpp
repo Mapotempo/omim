@@ -294,25 +294,17 @@ public:
   m2::PointD GetSearchMarkSize(SearchMarkType searchMarkType);
 
   bool MT_GetStatus();
-
   void MT_StopRouteManager();
-
   bool MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm = 0);
 
   int64_t MT_GetCurrentBookmarkCategory();
-
   int64_t MT_GetCurrentBookmark();
-
   bool MT_SetCurrentBookmark(int64_t indexBm);
-
   int64_t MT_StepNextBookmark();
-
   int64_t MT_StepPreviousBookmark();
 
   void MT_SaveRoutingManager();
-
   bool MT_RestoreRoutingManager();
-
   bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
 
 protected:
@@ -363,6 +355,10 @@ public:
   using TDeactivateMapotempoFn = function<void ()>;
   void MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
                                 TDeactivateMapotempoFn const & deactivator);
+  
+  /// Called when routing is finish and current bookmark is near.
+  using TGoalIsNearMapotempoRouteFn = function<void ()>;
+  void MT_SetMapotempoGoalIsNearListeners(TGoalIsNearMapotempoRouteFn const & goalIsNear);
 
   void ResetLastTapEvent();
 
@@ -410,6 +406,7 @@ private:
 
   TActivateMapotempoRouteFn m_activateMapotempoRouteFn;
   TDeactivateMapotempoFn m_deactivateMapotempoRouteFn;
+  TGoalIsNearMapotempoRouteFn m_goalIsNearFn;
 
   /// Here we store last selected feature to get its polygons in case of adding organization.
   mutable FeatureID m_selectedFeature;

@@ -708,6 +708,11 @@ void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn co
   m_deactivateMapotempoRouteFn = deactivator;
 }
 
+void Framework::MT_SetMapotempoGoalIsNearListeners(const TGoalIsNearMapotempoRouteFn& goalIsNear)
+{
+  m_goalIsNearFn = goalIsNear;
+}
+
 void Framework::MT_SaveRoutingManager()
 {
   int64_t category = MT_GetCurrentBookmarkCategory();
@@ -2497,6 +2502,17 @@ void Framework::CheckLocationForRouting(GpsInfo const & info)
     m_routingSession.RebuildRoute(MercatorBounds::FromLatLon(info.m_latitude, info.m_longitude),
                                   readyCallback, m_progressCallback, 0 /* timeoutSec */,
                                   routing::RoutingSession::State::RouteRebuilding);
+  }
+
+  if(state == routing::RoutingSession::State::RouteFinished)
+  {
+    double lat, lon;
+    GetCurrentPosition(lat, lon);
+    if(m_rountingManager.checkCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
+    {
+        m_goalIsNearFn();
+        CloseRouting();
+    }
   }
 }
 

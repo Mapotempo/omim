@@ -64,6 +64,12 @@ public class Framework
     void onMtRouteDeactivated();
   }
 
+  @SuppressWarnings("unused")
+  public interface MTGoalIsNearListener
+  {
+    void onMtGoalIsNear();
+  }
+
   public static class Params3dMode
   {
     public boolean enabled;
@@ -265,5 +271,7 @@ public class Framework
   public static native boolean nativeIsInChoosePositionMode();
   public static native boolean nativeIsDownloadedMapAtScreenCenter();
   public static native String nativeGetActiveObjectFormattedCuisine();
+
   public static native void nativeSetMTRouteListener(MTRouteListener listener);
+  public static native void nativeSetMTGoalIsNearListener(MTRouteListener listener);
 }
