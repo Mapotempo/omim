@@ -7,3 +7,6 @@
 [submodule "3party/Alohalytics"]
 	path = 3party/Alohalytics
 	url = git://github.com/mapsme/Alohalytics.git
+[submodule "3party/vroom"]
+	path = 3party/vroom
+	url = git@github.com:Mapotempo/vroom.git
