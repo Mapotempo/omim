@@ -57,7 +57,7 @@ Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeGetIcon(
 JNIEXPORT void JNICALL
 Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeSetBookmarkParams(
        JNIEnv * env, jobject thiz, jint cat, jlong bmk,
-       jstring name, jstring type, jstring descr)
+       jstring name, jstring type, jstring descr, jstring phoneNumber)
 {
   Bookmark const * p = getBookmark(cat, bmk);
 
@@ -65,7 +65,8 @@ Java_com_mapswithme_maps_bookmarks_data_Bookmark_nativeSetBookmarkParams(
   BookmarkData bm(jni::ToNativeString(env, name), jni::ToNativeString(env, type));
   bm.SetDescription(descr ? jni::ToNativeString(env, descr)
                           : p->GetDescription());
-
+  bm.SetPhoneNumber(descr ? jni::ToNativeString(env, phoneNumber)
+                                              : p->GetBookmarkPhoneNumber());
   g_framework->ReplaceBookmark(BookmarkAndCategory(bmk, cat), bm);
 }
 

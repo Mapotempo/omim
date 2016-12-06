@@ -109,7 +109,7 @@ public class EditBookmarkFragment extends BaseMwmDialogFragment implements View.
 
   private void saveBookmark()
   {
-    mBookmark.setParams(mEtName.getText().toString(), null, mEtDescription.getText().toString());
+    mBookmark.setParams(mEtName.getText().toString(), null, mEtDescription.getText().toString(), mBookmark.getPhoneNumber());
     dismiss();
   }
 
@@ -155,7 +155,7 @@ public class EditBookmarkFragment extends BaseMwmDialogFragment implements View.
           return;
 
         Statistics.INSTANCE.trackColorChanged(from, to);
-        mBookmark.setParams(mBookmark.getTitle(), newIcon, mBookmark.getBookmarkDescription());
+        mBookmark.setParams(mBookmark.getTitle(), newIcon, mBookmark.getBookmarkDescription(), mBookmark.getPhoneNumber());
         mBookmark = BookmarkManager.INSTANCE.getBookmark(mBookmark.getCategoryId(), mBookmark.getBookmarkId());
         refreshColorMarker();
       }

@@ -167,14 +167,14 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
           switch (bm.getIcon().getSelectedResId())
           {
             case R.drawable.ic_bookmark_marker_blue_on :
-              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(6), bm.getBookmarkDescription());
+              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(6), bm.getBookmarkDescription(), bm.getPhoneNumber());
               break;
             case R.drawable.ic_bookmark_marker_green_on :
-              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(0), bm.getBookmarkDescription());
+              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(0), bm.getBookmarkDescription(), bm.getPhoneNumber());
               break;
             case R.drawable.ic_bookmark_marker_red_on :
             default:
-              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(1), bm.getBookmarkDescription());
+              bm.setParamsAndNotify(bm.getTitle(), BookmarkManager.ICONS.get(1), bm.getBookmarkDescription(), bm.getPhoneNumber());
               break;
           }
         }

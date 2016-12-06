@@ -120,14 +120,14 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
         switch (bookmark.getIcon().getSelectedResId())
         {
           case R.drawable.ic_bookmark_marker_blue_on :
-            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(6), bookmark.getBookmarkDescription());
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(6), bookmark.getBookmarkDescription(), bookmark.getPhoneNumber());
             break;
           case R.drawable.ic_bookmark_marker_green_on :
-            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(0), bookmark.getBookmarkDescription());
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(0), bookmark.getBookmarkDescription(), bookmark.getPhoneNumber());
             break;
           case R.drawable.ic_bookmark_marker_red_on :
           default:
-            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(1), bookmark.getBookmarkDescription());
+            bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(1), bookmark.getBookmarkDescription(), bookmark.getPhoneNumber());
             break;
         }
         // Get the bookmark refresh
