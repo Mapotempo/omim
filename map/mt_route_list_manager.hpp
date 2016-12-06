@@ -33,6 +33,8 @@ public :
   int64_t GetCurrentBookmark(){return m_indexCurrentBm;}
   bool checkCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
+  bool optimiseCurrentCategory();
+
 public :
   // Override BookmarkManager virtual method
   bool DeleteBmCategory(size_t index);

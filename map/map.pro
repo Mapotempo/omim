@@ -8,6 +8,8 @@ ROOT_DIR = ..
 
 INCLUDEPATH *= $$ROOT_DIR/3party/protobuf/src $$ROOT_DIR/3party/freetype/include $$ROOT_DIR/3party/jansson/src
 
+DEFINES *= BOOST_LOG_NO_THREADS
+
 include($$ROOT_DIR/common.pri)
 
 HEADERS += \

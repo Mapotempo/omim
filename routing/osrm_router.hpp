@@ -34,6 +34,8 @@ public:
                             m2::PointD const & finalPoint, RouterDelegate const & delegate,
                             Route & route) override;
 
+  void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result) override;
+
   virtual void ClearState() override;
 
   /*! Find single shortest path in a single MWM between 2 sets of edges

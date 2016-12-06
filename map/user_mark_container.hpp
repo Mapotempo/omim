@@ -40,6 +40,7 @@ public:
   virtual void Update() = 0;
   virtual void ReverseUserMarks() = 0;
   virtual bool MoveUserMarkOrder(size_t oldIndex, size_t newIndex) = 0;
+  virtual bool UserMarksOrders(std::list<size_t> list) = 0;
 };
 
 class UserMarkContainer : public df::UserMarksProvider
@@ -81,6 +82,7 @@ public:
   UserMarkType GetType() const override final;
 
   bool MoveUserMarkOrder(size_t oldIndex, size_t newIndex) override;
+  bool UserMarksOrders(std::list<size_t> list) override;
 
 protected:
   /// UserMarksController implementation

@@ -51,6 +51,9 @@ public:
                       RouterDelegate::TProgressCallback const & progressCallback,
                       uint32_t timeoutSec);
 
+  void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
+
+
   /// Interrupt routing and clear buffers
   void ClearState();
 

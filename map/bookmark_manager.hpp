@@ -60,6 +60,7 @@ public:
   virtual bool DeleteBmCategory(size_t index);
 
   virtual bool ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex);
+  virtual bool SortUserMarks(size_t catIndex, std::list<size_t> list);
 
   typedef function<m2::AnyRectD const & (UserMarkType)> TTouchRectHolder;
 
