@@ -154,5 +154,4 @@ Java_com_mapswithme_maps_bookmarks_data_BookmarkManager_nativeChangeBookmarkOrde
 {
   return frm()->MT_ChangeBookmarkOrder(categoryId, oldBookmarkId, newBookmarkId);
 }
-
 }  // extern "C"

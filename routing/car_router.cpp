@@ -41,6 +41,14 @@
 #include "3party/osrm/osrm-backend/data_structures/query_edge.hpp"
 #include "3party/osrm/osrm-backend/descriptors/description_factory.hpp"
 
+#include "routing/osrm_engine.hpp"
+#include "3party/vroom/src/structures/typedefs.h"
+#include "3party/vroom/src/structures/matrix.h"
+#include "3party/vroom/src/utils/version.h"
+#include "3party/vroom/src/heuristics/tsp_strategy.h"
+#include "3party/vroom/src/loaders/tsplib_loader.h"
+#include "3party/vroom/src/utils/logger.h"
+
 #define INTERRUPT_WHEN_CANCELLED(DELEGATE) \
   do                                       \
   {                                        \
@@ -532,6 +540,105 @@ CarRouter::ResultCode CarRouter::CalculateRoute(m2::PointD const & startPoint,
     }
     return CarRouter::RouteNotFound;
   }
+}
+
+void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+{
+  //FIXME CHECK();
+  LOG(LDEBUG, (" Optim step 1 - Get nodes"));
+  TRoutingNodes nodesGraphsList(points.size());
+  {
+    // For all route point
+    int counter=0;
+    for(m2::PointD point : points)
+    {
+      TFeatureGraphNodeVec startPointsFound;
+
+      // Test the node
+      TRoutingMappingPtr lStartMapping = m_indexManager.GetMappingByPoint(point);
+      MappingGuard startMappingGuard(lStartMapping);
+      UNUSED_VALUE(startMappingGuard);
+      if (!lStartMapping->IsValid())
+      {
+        LOG(LWARNING, ("Invalide mapping ", counter));
+        return;
+      }
+      ResultCode const code = FindPhantomNodes(point, m2::PointD::Zero(),
+                                              startPointsFound, 1, lStartMapping);
+
+      LOG(LDEBUG, ("Phantom nodes ", startPointsFound.size(), " found"));
+
+      if (code != NoError)
+      {
+        LOG(LWARNING, ("Invalide phantom nodes : ", code));
+        return;
+      }
+
+      // Finding start node.
+      double distance = 10000000;
+      for (FeatureGraphNode & start : startPointsFound)
+      {
+        ASSERT(start.mwmId.IsAlive(), ());
+        nodesGraphsList[counter] = start;
+        break;
+      }
+
+      counter++;
+    }
+  }
+
+  LOG(LDEBUG, (" Optim step 2 - Calcul Matrix"));
+  TRoutingMappingPtr startMapping = m_indexManager.GetMappingByPoint(points.at(1));
+  MappingGuard startMappingGuard(startMapping);
+  UNUSED_VALUE(startMappingGuard);
+
+  if (!startMapping->IsValid())
+    return;
+
+  vector<EdgeWeight> weights;
+  FindWeightsMatrix(nodesGraphsList, nodesGraphsList, startMapping->m_dataFacade, weights);
+
+  LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
+  pbl_context_t ctx {true, 0, false, 1};
+  matrix<distance_t> pbl_mtx {nodesGraphsList.size()};
+  int counter = 0;
+  for(int i = 0; i < nodesGraphsList.size(); i++)
+  {
+    for(int j = 0; j < nodesGraphsList.size(); j++)
+    {
+      pbl_mtx[i][j] = weights[counter];
+      if(INT_MAX == weights[counter])
+      {
+        LOG(LWARNING, ("incorect value in matrix at : ", i , " ", j ));
+        return;
+      }
+      counter++;
+    }
+  }
+
+  LOG(LDEBUG, (" Optim step 4 - Solve Problem"));
+  LOG(LDEBUG, (" Solver version : ", get_version()));
+  tsp asymmetric_tsp {ctx, pbl_mtx};
+  timing_t computing_times;
+  // TODO: adapt return type.
+
+  std::pair<std::list<index_t>, distance_t> solution
+    = solve_atsp(asymmetric_tsp, 1, computing_times);
+    // Display result
+  LOG(LDEBUG, ("   - Vroom solution"));
+  LOG(LDEBUG, ("   -  distance", solution.second));
+  LOG(LDEBUG, ("   -  Index sorted : "));
+  std::list<size_t> result_list(0);
+  while(!solution.first.empty())
+  {
+    index_t v = solution.first.front();
+    solution.first.pop_front();
+    result_list.push_back(v);
+    LOG(LDEBUG, ("         index : ", v));
+  }
+  //result_list.pop_front();
+  result.first.swap(result_list);
+  result.second = solution.second;
 }
 
 IRouter::ResultCode CarRouter::FindPhantomNodes(m2::PointD const & point,

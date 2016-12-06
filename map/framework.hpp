@@ -333,6 +333,7 @@ public:
   void MT_SaveRoutingManager();
   bool MT_RestoreRoutingManager();
   bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
+  bool MT_ChangeOptimiseCurrentBookmarks();
 
 protected:
   // search::ViewportSearchCallback::Delegate overrides:
@@ -758,6 +759,9 @@ public:
 
   void BuildRoute(m2::PointD const & finish, uint32_t timeoutSec);
   void BuildRoute(m2::PointD const & start, m2::PointD const & finish, bool isP2P, uint32_t timeoutSec);
+
+  void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
+
   // FollowRoute has a bug where the router follows the route even if the method hads't been called.
   // This method was added because we do not want to break the behaviour that is familiar to our users.
   bool DisableFollowMode();

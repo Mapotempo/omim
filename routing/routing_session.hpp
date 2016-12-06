@@ -91,6 +91,8 @@ public:
   void RebuildRoute(m2::PointD const & startPoint, TReadyCallback const & readyCallback,
                     uint32_t timeoutSec, State routeRebuildingState);
 
+  void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
+
   m2::PointD GetEndPoint() const { return m_endPoint; }
   bool IsActive() const { return (m_state != RoutingNotActive); }
   bool IsNavigable() const { return (m_state == RouteNotStarted || m_state == OnRoute || m_state == RouteFinished); }

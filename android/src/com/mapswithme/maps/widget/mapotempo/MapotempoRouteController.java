@@ -41,6 +41,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   private ImageButton mMTNextBM;
   private ImageButton mMTPrevBM;
   private ImageButton mMTActionLeft;
+  private ImageButton mMTActionLeftSecond;
   private ImageButton mMTActionRight;
   private TextView mMTCurrentBM;
   private Button mapotempoStartRoute;
@@ -56,6 +57,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTNextBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
     mMTPrevBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
     mMTActionLeft = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
+    mMTActionLeftSecond = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left_second);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
     mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
@@ -151,6 +153,14 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       }
     });
 
+    mMTActionLeftSecond.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        RouteListManager.nativeOptimiseCurrentBookmarks();
+      }
+    });
 //    if(RouteListManager.INSTANCE.getStatus())
 //    {
 //      showMapotempoRoutePanel(true);

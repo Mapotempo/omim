@@ -75,6 +75,11 @@ public:
                                     m2::PointD const & startDirection,
                                     m2::PointD const & finalPoint, RouterDelegate const & delegate,
                                     Route & route) = 0;
+
+  virtual void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+  {
+   return;    
+  };
 };
 
 }  // namespace routing

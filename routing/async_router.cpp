@@ -165,6 +165,12 @@ void AsyncRouter::CalculateRoute(m2::PointD const & startPoint, m2::PointD const
   m_threadCondVar.notify_one();
 }
 
+void AsyncRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+{
+  m_router->OptimizeRoute(points, result);
+  return;
+}
+
 void AsyncRouter::ClearState()
 {
   unique_lock<mutex> ul(m_guard);

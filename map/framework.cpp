@@ -820,6 +820,12 @@ bool Framework::MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIn
   return m_bmManager.ChangeBookmarkOrder(cat, oldIndex, newIndex);
 }
 
+bool Framework::MT_ChangeOptimiseCurrentBookmarks()
+{
+  bool res = m_rountingManager.optimiseCurrentCategory();
+  return res;
+}
+
 namespace
 {
   class EqualCategoryName
@@ -2669,6 +2675,11 @@ void Framework::CheckLocationForRouting(GpsInfo const & info)
         CloseRouting();
     }
   }
+}
+
+void Framework::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+{
+  m_routingSession.OptimizeRoute(points, result);
 }
 
 void Framework::MatchLocationToRoute(location::GpsInfo & location, location::RouteMatchingInfo & routeMatchingInfo) const

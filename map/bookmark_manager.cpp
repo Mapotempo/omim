@@ -203,6 +203,23 @@ bool BookmarkManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, si
   return res;
 }
 
+bool BookmarkManager::SortUserMarks(size_t catIndex, std::list<size_t> list)
+{
+  bool res = false;
+  LOG(LDEBUG, ("ici"));
+  BookmarkCategory * cat = GetBmCategory(catIndex);
+  BookmarkCategory::Guard guard(*cat);
+
+  if(cat)
+  {
+    res = cat->UserMarksOrders(list);
+    LOG(LDEBUG, ("ici"));
+    cat->SaveToKMLFile();
+    LOG(LDEBUG, ("ici"));
+  }
+  return res;
+}
+
 namespace
 {
   class BestUserMarkFinder
