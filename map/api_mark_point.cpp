@@ -25,7 +25,7 @@ string GetSupportedStyle(string const & s, string const & context, string const 
   return fallback;
 }
 
-string GetDefaultStyle() { return kSupportedColors[0]; }
+string GetDefaultStyle() { return kSupportedColors[1]; }
 
 } // style
 
