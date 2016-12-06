@@ -129,14 +129,14 @@ public class Bookmark extends MapObject
     mCategoryId = catId;
   }
 
-  public void setParams(String title, Icon icon, String description)
+  public void setParams(String title, Icon icon, String description, String phoneNumber)
   {
     if (icon == null)
       icon = mIcon;
 
     if (!title.equals(getTitle()) || icon != mIcon || !description.equals(getBookmarkDescription()))
     {
-      nativeSetBookmarkParams(mCategoryId, mBookmarkId, title, icon.getType(), description);
+      nativeSetBookmarkParams(mCategoryId, mBookmarkId, title, icon.getType(), description, phoneNumber);
       mTitle = title;
     }
   }
@@ -166,9 +166,9 @@ public class Bookmark extends MapObject
     return getGe0Url(addName).replaceFirst(Constants.Url.GE0_PREFIX, Constants.Url.HTTP_GE0_PREFIX);
   }
 
-  public void setParamsAndNotify(String title, Icon icon, String description)
+  public void setParamsAndNotify(String title, Icon icon, String description, String phoneNumber)
   {
-    setParams(title, icon, description);
+    setParams(title, icon, description, phoneNumber);
     notifyBookmarkParamsChange(BookmarkManager.INSTANCE.getBookmark(mCategoryId, mBookmarkId));
   }
 
@@ -213,7 +213,7 @@ public class Bookmark extends MapObject
 
   private native String nativeEncode2Ge0Url(@IntRange(from = 0) int catId, @IntRange(from = 0) long bookmarkId, boolean addName);
 
-  private native void nativeSetBookmarkParams(@IntRange(from = 0) int catId, @IntRange(from = 0) long bookmarkId, String name, String type, String descr);
+  private native void nativeSetBookmarkParams(@IntRange(from = 0) int catId, @IntRange(from = 0) long bookmarkId, String name, String type, String descr, String phoneNumber);
 
   private native int nativeChangeCategory(@IntRange(from = 0) int oldCatId, @IntRange(from = 0) int newCatId, @IntRange(from = 0) long bookmarkId);
 }
