@@ -60,6 +60,7 @@ SOURCES += \
     turns_sound_settings.cpp \
     turns_tts_text.cpp \
     vehicle_model.cpp \
+    cross_mwm_matrix.cpp \
 
 
 HEADERS += \
@@ -120,3 +121,4 @@ HEADERS += \
     turns_tts_text.hpp \
     vehicle_mask.hpp \
     vehicle_model.hpp \
+    cross_mwm_matrix.hpp \

@@ -9,6 +9,7 @@
 #include "routing/road_graph_router.hpp"
 #include "routing/road_point.hpp"
 #include "routing/turns_generator.hpp"
+#include "routing/cross_mwm_matrix.hpp"
 
 #include "traffic/traffic_info.hpp"
 
@@ -544,6 +545,8 @@ CarRouter::ResultCode CarRouter::CalculateRoute(m2::PointD const & startPoint,
 
 void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
 {
+  // 1. Get nodes
+
   //FIXME CHECK();
   LOG(LDEBUG, (" Optim step 1 - Get nodes"));
   TRoutingNodes nodesGraphsList(points.size());
@@ -587,17 +590,17 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
     }
   }
 
+  // 2. Cross Matrix calculation
   LOG(LDEBUG, (" Optim step 2 - Calcul Matrix"));
-  TRoutingMappingPtr startMapping = m_indexManager.GetMappingByPoint(points.at(1));
-  MappingGuard startMappingGuard(startMapping);
-  UNUSED_VALUE(startMappingGuard);
-
-  if (!startMapping->IsValid())
+  CrossMatrix crossMatrix(m_indexManager);
+  crossMatrix.setStartNodes(nodesGraphsList);
+  crossMatrix.setFinalNodes(nodesGraphsList);
+  vector<EdgeWeight> weights;
+  ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights);
+  if(code != ResultCode::NoError)
     return;
 
-  vector<EdgeWeight> weights;
-  FindWeightsMatrix(nodesGraphsList, nodesGraphsList, startMapping->m_dataFacade, weights);
-
+  // 3. Convert matrix for Vroom and check matrix
   LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
   pbl_context_t ctx {true, 0, false, 1};
   matrix<distance_t> pbl_mtx {nodesGraphsList.size()};
@@ -616,6 +619,7 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
     }
   }
 
+  // 4. Vroom solver
   LOG(LDEBUG, (" Optim step 4 - Solve Problem"));
   LOG(LDEBUG, (" Solver version : ", get_version()));
   tsp asymmetric_tsp {ctx, pbl_mtx};
