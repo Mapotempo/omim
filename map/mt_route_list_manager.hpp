@@ -6,21 +6,50 @@
 #include "std/function.hpp"
 #include "std/unique_ptr.hpp"
 
+#include "routing/async_optimizer.hpp"
+
+#include "base/mutex.hpp"
+
 class MTRouteListManager : public BookmarkManager
 {
+  using TOptimisationFinishFn = function<void (bool)>;
+  /// Called to notify UI that mapotempo routing is deactivate;
+  using TOptimisationProgessFn = function<void (float)>;
+
 private :
   static const size_t MT_DISTANCE_BOOKMARK_DONE = 20;
 
 private :
+  Framework &m_framework;
+
   int64_t reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex);
   int64_t m_indexCurrentBmCat;
   int64_t m_indexCurrentBm;
-  Framework &m_framework;
+
+  unique_ptr<routing::AsyncOptimizer> m_optimizer;
+  TOptimisationFinishFn m_optimisationFinishFn;
+  TOptimisationProgessFn m_optimisationProgressFn;
+
+  // Guard mutex categoryManager and category
+  // This is a guard on the current bookmark category to prevent another thread from deleting during optimization.
+  mutable threads::Mutex m_routeListManagerMutex;
+  unique_ptr<BookmarkCategory::Guard> optimizerBookmarkCategoryGuard;
 
 public :
-  MTRouteListManager(Framework & f);
-  ~MTRouteListManager();
+  MTRouteListManager(Framework & f) : BookmarkManager(f),
+  m_framework(f),
+  m_indexCurrentBmCat(-1),
+  m_indexCurrentBm(-1),
+  m_optimizer(nullptr),
+  m_optimisationFinishFn(nullptr),
+  m_optimisationProgressFn(nullptr),
+  optimizerBookmarkCategoryGuard(nullptr){};
 
+  ~MTRouteListManager() {};
+
+  void SetRouter(unique_ptr<routing::IRouter> && router);
+
+  // Route status manager
   bool GetStatus();
   void StopManager();
   bool InitManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay);
@@ -33,7 +62,10 @@ public :
   int64_t GetCurrentBookmark(){return m_indexCurrentBm;}
   bool checkCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
-  bool optimiseCurrentCategory();
+  // Optimisation
+  bool optimiseCurrentRoute();
+  void SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
+                                TOptimisationProgessFn const & progressListener);
 
 public :
   // Override BookmarkManager virtual method

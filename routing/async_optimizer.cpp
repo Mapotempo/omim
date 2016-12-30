@@ -1,4 +1,4 @@
-#include "routing/async_router.hpp"
+#include "routing/async_optimizer.hpp"
 
 #include "platform/platform.hpp"
 
@@ -57,7 +57,7 @@ map<string, string> PrepareStatisticsData(string const & routerName,
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
-AsyncRouter::RouterDelegateProxy::RouterDelegateProxy(TReadyCallback const & onReady,
+AsyncOptimizer::RouterDelegateProxy::RouterDelegateProxy(TOptimReadyCallback const & onReady,
                                                       RouterDelegate::TPointCheckCallback const & onPointCheck,
                                                       RouterDelegate::TProgressCallback const & onProgress,
                                                       uint32_t timeoutSec)
@@ -69,7 +69,7 @@ AsyncRouter::RouterDelegateProxy::RouterDelegateProxy(TReadyCallback const & onR
   m_delegate.SetTimeout(timeoutSec);
 }
 
-void AsyncRouter::RouterDelegateProxy::OnReady(Route & route, IRouter::ResultCode resultCode)
+void AsyncOptimizer::RouterDelegateProxy::OnReady(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode resultCode)
 {
   if (!m_onReady)
     return;
@@ -78,16 +78,16 @@ void AsyncRouter::RouterDelegateProxy::OnReady(Route & route, IRouter::ResultCod
     if (m_delegate.IsCancelled())
       return;
   }
-  m_onReady(route, resultCode);
+  m_onReady(result, resultCode);
 }
 
-void AsyncRouter::RouterDelegateProxy::Cancel()
+void AsyncOptimizer::RouterDelegateProxy::Cancel()
 {
   lock_guard<mutex> l(m_guard);
   m_delegate.Cancel();
 }
 
-void AsyncRouter::RouterDelegateProxy::OnProgress(float progress)
+void AsyncOptimizer::RouterDelegateProxy::OnProgress(float progress)
 {
   if (!m_onProgress)
     return;
@@ -99,7 +99,7 @@ void AsyncRouter::RouterDelegateProxy::OnProgress(float progress)
   m_onProgress(progress);
 }
 
-void AsyncRouter::RouterDelegateProxy::OnPointCheck(m2::PointD const & pt)
+void AsyncOptimizer::RouterDelegateProxy::OnPointCheck(m2::PointD const & pt)
 {
   if (!m_onPointCheck)
     return;
@@ -113,16 +113,13 @@ void AsyncRouter::RouterDelegateProxy::OnPointCheck(m2::PointD const & pt)
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
-AsyncRouter::AsyncRouter(TRoutingStatisticsCallback const & routingStatisticsCallback,
-                         RouterDelegate::TPointCheckCallback const & pointCheckCallback)
-    : m_threadExit(false), m_hasRequest(false), m_clearState(false),
-      m_routingStatisticsCallback(routingStatisticsCallback),
-      m_pointCheckCallback(pointCheckCallback)
+AsyncOptimizer::AsyncOptimizer()
+    : m_threadExit(false), m_hasRequest(false), m_clearState(false)
 {
-  m_thread = threads::SimpleThread(&AsyncRouter::ThreadFunc, this);
+  m_thread = threads::SimpleThread(&AsyncOptimizer::ThreadFunc, this);
 }
 
-AsyncRouter::~AsyncRouter()
+AsyncOptimizer::~AsyncOptimizer()
 {
   {
     unique_lock<mutex> ul(m_guard);
@@ -136,36 +133,25 @@ AsyncRouter::~AsyncRouter()
   m_thread.join();
 }
 
-void AsyncRouter::SetRouter(unique_ptr<IRouter> && router, unique_ptr<IOnlineFetcher> && fetcher)
+void AsyncOptimizer::SetRouter(unique_ptr<IRouter> && router)//, unique_ptr<IOnlineFetcher> && fetcher)
 {
   unique_lock<mutex> ul(m_guard);
-
   ResetDelegate();
-
   m_router = move(router);
-  m_absentFetcher = move(fetcher);
 }
 
-void AsyncRouter::CalculateRoute(m2::PointD const & startPoint, m2::PointD const & direction,
-                                 m2::PointD const & finalPoint, TReadyCallback const & readyCallback,
-                                 RouterDelegate::TProgressCallback const & progressCallback,
-                                 uint32_t timeoutSec)
+void AsyncOptimizer::OptimizeRoute(vector<m2::PointD> &points, TOptimReadyCallback const & readyCallback,
+                      RouterDelegate::TProgressCallback const & progressCallback,
+                      uint32_t timeoutSec)
 {
-  unique_lock<mutex> ul(m_guard);
-
-  m_startPoint = startPoint;
-  m_startDirection = direction;
-  m_finalPoint = finalPoint;
-
-  ResetDelegate();
-
-  m_delegate = make_shared<RouterDelegateProxy>(readyCallback, m_pointCheckCallback, progressCallback, timeoutSec);
-
+  m_points = points;
+  m_delegate = make_shared<RouterDelegateProxy>(readyCallback, nullptr, progressCallback, timeoutSec);
   m_hasRequest = true;
   m_threadCondVar.notify_one();
+  return;
 }
 
-void AsyncRouter::ClearState()
+void AsyncOptimizer::ClearState()
 {
   unique_lock<mutex> ul(m_guard);
 
@@ -175,7 +161,7 @@ void AsyncRouter::ClearState()
   ResetDelegate();
 }
 
-void AsyncRouter::LogCode(IRouter::ResultCode code, double const elapsedSec)
+void AsyncOptimizer::LogCode(IRouter::ResultCode code, double const elapsedSec)
 {
   switch (code)
   {
@@ -219,16 +205,16 @@ void AsyncRouter::LogCode(IRouter::ResultCode code, double const elapsedSec)
   }
 }
 
-void AsyncRouter::ResetDelegate()
+void AsyncOptimizer::ResetDelegate()
 {
-  if (m_delegate)
+  /*if (m_delegate)
   {
     m_delegate->Cancel();
     m_delegate.reset();
-  }
+  }*/
 }
 
-void AsyncRouter::ThreadFunc()
+void AsyncOptimizer::ThreadFunc()
 {
   while (true)
   {
@@ -248,11 +234,23 @@ void AsyncRouter::ThreadFunc()
       if (!m_hasRequest)
         continue;
     }
-
-    CalculateRoute();
+    OptimizeRoute();
   }
 }
 
+void AsyncOptimizer::OptimizeRoute()
+{
+  {
+    unique_lock<mutex> ul(m_guard);
+
+    std::pair<std::list<size_t>, size_t> result;
+    IRouter::ResultCode   code = m_router->OptimizeRoute(m_points, m_delegate->GetDelegate(), result);
+    m_delegate->OnReady(result, code);
+    m_hasRequest = false;
+  }
+}
+
+/*
 void AsyncRouter::CalculateRoute()
 {
   shared_ptr<RouterDelegateProxy> delegate;
@@ -367,5 +365,5 @@ void AsyncRouter::SendStatistics(m2::PointD const & startPoint, m2::PointD const
 
   m_routingStatisticsCallback(statistics);
 }
-
+*/
 }  // namespace routing

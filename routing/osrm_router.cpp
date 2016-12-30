@@ -559,7 +559,7 @@ OsrmRouter::ResultCode OsrmRouter::CalculateRoute(m2::PointD const & startPoint,
   }
 }
 
-void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result)
 {
   // 1. Get nodes
 
@@ -580,7 +580,7 @@ void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<s
       if (!lStartMapping->IsValid())
       {
         LOG(LWARNING, ("Invalide mapping ", counter));
-        return;
+        return OsrmRouter::StartPointNotFound;
       }
       ResultCode const code = FindPhantomNodes(point, m2::PointD::Zero(),
                                               startPointsFound, 1, lStartMapping);
@@ -590,7 +590,7 @@ void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<s
       if (code != NoError)
       {
         LOG(LWARNING, ("Invalide phantom nodes : ", code));
-        return;
+        return OsrmRouter::StartPointNotFound;
       }
 
       // Finding start node.
@@ -612,9 +612,9 @@ void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<s
   crossMatrix.setStartNodes(nodesGraphsList);
   crossMatrix.setFinalNodes(nodesGraphsList);
   vector<EdgeWeight> weights;
-  ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights);
+  ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights, delegate);
   if(code != ResultCode::NoError)
-    return;
+    return code;
 
   // 3. Convert matrix for Vroom and check matrix
   LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
@@ -629,7 +629,7 @@ void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<s
       if(INT_MAX == weights[counter])
       {
         LOG(LWARNING, ("incorect value in matrix at : ", i , " ", j ));
-        return;
+        return ResultCode::RouteNotFound;
       }
       counter++;
     }
@@ -659,6 +659,7 @@ void OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<s
   //result_list.pop_front();
   result.first.swap(result_list);
   result.second = solution.second;
+  return ResultCode::NoError;
 }
 
 IRouter::ResultCode OsrmRouter::FindPhantomNodes(m2::PointD const & point,

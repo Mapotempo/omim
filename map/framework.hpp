@@ -153,9 +153,9 @@ protected:
 
   location::TMyPositionModeChanged m_myPositionListener;
 
-  MTRouteListManager m_rountingManager;
+  MTRouteListManager m_rountingListManager;
 
-  BookmarkManager &m_bmManager = m_rountingManager;
+  BookmarkManager &m_bmManager = m_rountingListManager;
 
   BookingApi m_bookingApi;
 
@@ -306,7 +306,9 @@ public:
   void MT_SaveRoutingManager();
   bool MT_RestoreRoutingManager();
   bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
-  bool MT_ChangeOptimiseCurrentBookmarks();
+  bool MT_OptimizeCurrentBookmarks();
+//  void MT_OptimizeRoutes(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
+
 
 protected:
   // search::ViewportSearchCallback::Delegate overrides:
@@ -724,7 +726,6 @@ public:
 
   void BuildRoute(m2::PointD const & finish, uint32_t timeoutSec);
   void BuildRoute(m2::PointD const & start, m2::PointD const & finish, uint32_t timeoutSec);
-  void OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
 
   // FollowRoute has a bug where the router follows the route even if the method hads't been called.
   // This method was added because we do not want to break the behaviour that is familiar to our users.
