@@ -2,6 +2,14 @@
 
 namespace routing
 {
+
+namespace
+{
+  double constexpr kOptimPointsFoundProgress = 25.0f;
+  double constexpr kOptimMatrixFoundProgress = 90.0f;
+} //  namespace
+
+
   void CrossMatrix::setStartNodes(TRoutingNodes &startGraphNodes)
   {
     mStartGraphNodes = startGraphNodes;
@@ -105,7 +113,9 @@ namespace routing
     {
       for(size_t j = 0; j < mFinalGraphNodes.size(); j++)
       {
-        delegate.OnProgress(counter * 100 / (mFinalGraphNodes.size() * mStartGraphNodes.size()));
+        delegate.OnProgress(kOptimPointsFoundProgress +
+                            counter * kOptimMatrixFoundProgress / (mFinalGraphNodes.size() * mStartGraphNodes.size()));
+
         if(mWeights[counter] == INT_MAX)
         {
           TRoutingNodes start, final;
@@ -113,10 +123,10 @@ namespace routing
           final.push_back(mFinalGraphNodes[j]);
           double crossCost = 0;
           TCheckedPath finalPath;
-          RouterDelegate delegate;
+          RouterDelegate localDelegate;
 
           IRouter::ResultCode status = CalculateCrossMwmPath(start, final, m_indexManager, crossCost,
-                                                       delegate, finalPath);
+                                                       localDelegate, finalPath);
 
           // Pour ne pas être bloquant pour le moment si on ne trouve pas le cross mwm path on prend la distance en directe (vol d'oiseau).
           if(status == IRouter::ResultCode::NoError)

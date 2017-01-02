@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.mapswithme.maps.Framework.MapObjectListener;
 import com.mapswithme.maps.Framework.MTRouteListener;
 import com.mapswithme.maps.Framework.MTGoalIsNearListener;
+import com.mapswithme.maps.Framework.MTRouteOptimize;
 import com.mapswithme.maps.activity.CustomNavigateUpListener;
 import com.mapswithme.maps.ads.LikesManager;
 import com.mapswithme.maps.api.ParsedMwmRequest;
@@ -105,6 +106,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
                       implements MapObjectListener,
                                  MTRouteListener,
                                  MTGoalIsNearListener,
+                                 MTRouteOptimize,
                                  View.OnTouchListener,
                                  BasePlacePageAnimationController.OnVisibilityChangedListener,
                                  BasePlacePageAnimationController.OnAnimationListener,
@@ -437,6 +439,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     Framework.nativeSetMapObjectListener(this);
     Framework.nativeSetMTRouteListener(this);
     Framework.nativeSetMTGoalIsNearListener(this);
+    Framework.nativeSetMTOptimRouteListener(this);
 
     mSearchController = new FloatingSearchToolbarController(this);
     mSearchController.setVisibilityListener(this);
@@ -1142,6 +1145,18 @@ public class MwmActivity extends BaseMwmFragmentActivity
     Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
     mPlacePage.setMapObject(bm, true);
     mPlacePage.setState(State.DETAILS);
+  }
+
+  @Override
+  public void onMtRouteOptimizeFinish(boolean status)
+  {
+    mMapotempoRouteController.optimProgressBarVisibility(false);
+  }
+
+  @Override
+  public void onMtRouteOptimizeProgress(int progress)
+  {
+    mMapotempoRouteController.setOptimProgress(progress);
   }
 
   private BaseMenu getCurrentMenu()

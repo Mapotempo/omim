@@ -837,6 +837,11 @@ bool Framework::MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIn
   return m_bmManager.ChangeBookmarkOrder(cat, oldIndex, newIndex);
 }
 
+void Framework::MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener)
+{
+  m_rountingListManager.SetOptimisationListeners(finishListener, progressListener);
+}
+
 bool Framework::MT_OptimizeCurrentBookmarks()
 {
   bool res = m_rountingListManager.optimiseCurrentRoute();
