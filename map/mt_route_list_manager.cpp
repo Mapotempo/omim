@@ -173,6 +173,13 @@ int64_t MTRouteListManager::reorderCurrent(size_t current,size_t oldBmIndex, siz
   return res;
 }
 
+void MTRouteListManager::SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
+                                TOptimisationProgessFn const & progressListener)
+{
+  m_optimisationFinishFn = finishListener;
+  m_optimisationProgressFn = progressListener;
+}
+
 bool MTRouteListManager::optimiseCurrentRoute()
 {
   if(!GetStatus())
@@ -246,6 +253,9 @@ bool MTRouteListManager::optimiseCurrentRoute()
 
       // Free the route list manager mutex
       m_routeListManagerMutex.Unlock();
+
+      if(m_optimisationFinishFn)
+        m_optimisationFinishFn(true);
     };
     
     auto progressCallback = [this](float percent)
@@ -256,7 +266,6 @@ bool MTRouteListManager::optimiseCurrentRoute()
 
     m_optimizer->OptimizeRoute(problemePoints, readyCallback, progressCallback, 0);
   }
-
   return true;
 }
 

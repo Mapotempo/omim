@@ -3,10 +3,12 @@ package com.mapswithme.maps.widget.mapotempo;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mapswithme.maps.MwmActivity;
@@ -37,6 +39,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
 
   private final View mBottomMapotempoFrame;
 
+  private Activity mActivity;
+
   // MAPOTEMPO UI ROUTING
   private ImageButton mMTNextBM;
   private ImageButton mMTPrevBM;
@@ -47,10 +51,12 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   private Button mapotempoStartRoute;
   private LinearLayout mLineFrame;
   private MapotempoMenu mapotempoMenu;
-  private DragListView mDragListView;
+  private ProgressBar mOptimProgressBar;
 
   public MapotempoRouteController(final Activity activity)
   {
+    mActivity = activity;
+
     mBottomMapotempoFrame = activity.findViewById(R.id.nav_mapotempo_bottom_frame);
 
     mLineFrame = (LinearLayout) mBottomMapotempoFrame.findViewById(R.id.line_frame);
@@ -61,6 +67,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
     mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
+    mOptimProgressBar = (ProgressBar) mBottomMapotempoFrame.findViewById(R.id.mt_optim_progress_bar);
+    mOptimProgressBar.setMax(100);
 
     mapotempoStartRoute.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -158,13 +166,11 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       @Override
       public void onClick(View v)
       {
+        mOptimProgressBar.setProgress(0);
+        mOptimProgressBar.setVisibility(View.VISIBLE);
         RouteListManager.nativeOptimiseCurrentBookmarks();
       }
     });
-//    if(RouteListManager.INSTANCE.getStatus())
-//    {
-//      showMapotempoRoutePanel(true);
-//    }
 
     Bookmark.addBookmarkParamsChangeListener(this);
   }
@@ -208,6 +214,36 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
         refreshUI(bookmark);
       }
     }
+  }
+
+  // Attention ses méthodes appelles du code thread on le racroche ton au thread ui !!!!
+  // FIXME A l'arrache !!!!! A refaire
+  boolean v;
+  public void optimProgressBarVisibility(boolean visibility)
+  {
+    v = visibility;
+    mActivity.runOnUiThread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        mOptimProgressBar.setVisibility(v ? View.VISIBLE : View.GONE);
+      }
+    });
+  }
+
+  int p;
+  public void setOptimProgress(int value)
+  {
+    p = value;
+    mActivity.runOnUiThread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        mOptimProgressBar.setProgress(p);
+      }
+    });
   }
 }
 

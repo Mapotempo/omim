@@ -70,6 +70,14 @@ public class Framework
     void onMtGoalIsNear();
   }
 
+  @SuppressWarnings("unused")
+  public interface MTRouteOptimize
+  {
+    void onMtRouteOptimizeFinish(boolean status);
+
+    void onMtRouteOptimizeProgress(int progress);
+  }
+
   public static class Params3dMode
   {
     public boolean enabled;
@@ -273,5 +281,6 @@ public class Framework
   public static native String nativeGetActiveObjectFormattedCuisine();
 
   public static native void nativeSetMTRouteListener(MTRouteListener listener);
-  public static native void nativeSetMTGoalIsNearListener(MTRouteListener listener);
+  public static native void nativeSetMTGoalIsNearListener(MTGoalIsNearListener listener);
+  public static native void nativeSetMTOptimRouteListener(MTRouteOptimize listener);
 }

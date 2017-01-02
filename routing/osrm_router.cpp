@@ -63,6 +63,12 @@ double constexpr kCrossPathFoundProgress = 50.0f;
 double constexpr kPathFoundProgress = 70.0f;
 } //  namespace
 
+namespace
+{
+  double constexpr kOptimPointsFoundProgress = 25.0f;
+  double constexpr kOptimMatrixFoundProgress = 90.0f;
+} //  namespace
+
 using RawRouteData = InternalRouteResult;
 
 class OSRMRoutingResult : public turns::IRoutingResult
@@ -602,6 +608,8 @@ OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, Rou
         break;
       }
 
+      delegate.OnProgress(counter * kOptimPointsFoundProgress / points.size());
+
       counter++;
     }
   }
@@ -634,7 +642,8 @@ OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, Rou
       counter++;
     }
   }
-
+  delegate.OnProgress(kOptimPointsFoundProgress + kOptimMatrixFoundProgress);
+  
   // 4. Vroom solver
   LOG(LDEBUG, (" Optim step 4 - Solve Problem"));
   LOG(LDEBUG, (" Solver version : ", get_version()));
@@ -659,6 +668,8 @@ OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, Rou
   //result_list.pop_front();
   result.first.swap(result_list);
   result.second = solution.second;
+
+  delegate.OnProgress(100.);
   return ResultCode::NoError;
 }
 

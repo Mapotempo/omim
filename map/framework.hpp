@@ -306,6 +306,11 @@ public:
   void MT_SaveRoutingManager();
   bool MT_RestoreRoutingManager();
   bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
+
+  using TOptimisationFinishFn = function<void (bool)>;
+  /// Called to notify UI that mapotempo routing is deactivate;
+  using TOptimisationProgessFn = function<void (float)>;
+  void MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener);
   bool MT_OptimizeCurrentBookmarks();
 //  void MT_OptimizeRoutes(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
 
