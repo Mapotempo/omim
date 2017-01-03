@@ -6,7 +6,7 @@ namespace routing
 namespace
 {
   double constexpr kOptimPointsFoundProgress = 25.0f;
-  double constexpr kOptimMatrixFoundProgress = 90.0f;
+  double constexpr kOptimMatrixFoundProgress = 60.0f;
 } //  namespace
 
 

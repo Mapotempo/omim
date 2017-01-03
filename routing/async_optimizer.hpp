@@ -22,7 +22,7 @@ class AsyncOptimizer final
 {
 public:
   /// Callback takes ownership of passed route.
-  using TOptimReadyCallback = function<void(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode)>;
+  using TOptimReadyCallback = function<void(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode, m2::PolylineD polyline)>;
 
   /// AsyncOptimizer is a wrapper class to run routing routines in the different thread
   AsyncOptimizer();
@@ -68,7 +68,7 @@ private:
                         RouterDelegate::TProgressCallback const & onProgress,
                         uint32_t timeoutSec);
 
-    void OnReady(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode resultCode);
+    void OnReady(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode resultCode, m2::PolylineD polyline);
     void Cancel();
 
     RouterDelegate const & GetDelegate() const { return m_delegate; }
