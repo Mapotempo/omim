@@ -3,6 +3,7 @@
 #include "router_delegate.hpp"
 
 #include "geometry/point2d.hpp"
+#include "geometry/polyline2d.hpp"
 
 #include "base/cancellable.hpp"
 
@@ -74,7 +75,7 @@ public:
                                     m2::PointD const & finalPoint, RouterDelegate const & delegate,
                                     Route & route) = 0;
 
-  virtual ResultCode OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result)
+  virtual ResultCode OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result, m2::PolylineD &polyline)
   {
    return ResultCode::Cancelled;    
   };

@@ -69,7 +69,7 @@ AsyncOptimizer::RouterDelegateProxy::RouterDelegateProxy(TOptimReadyCallback con
   m_delegate.SetTimeout(timeoutSec);
 }
 
-void AsyncOptimizer::RouterDelegateProxy::OnReady(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode resultCode)
+void AsyncOptimizer::RouterDelegateProxy::OnReady(std::pair<std::list<size_t>, size_t> &result, IRouter::ResultCode resultCode, m2::PolylineD polyline)
 {
   if (!m_onReady)
     return;
@@ -78,7 +78,7 @@ void AsyncOptimizer::RouterDelegateProxy::OnReady(std::pair<std::list<size_t>, s
     if (m_delegate.IsCancelled())
       return;
   }
-  m_onReady(result, resultCode);
+  m_onReady(result, resultCode, polyline);
 }
 
 void AsyncOptimizer::RouterDelegateProxy::Cancel()
@@ -244,8 +244,9 @@ void AsyncOptimizer::OptimizeRoute()
     unique_lock<mutex> ul(m_guard);
 
     std::pair<std::list<size_t>, size_t> result;
-    IRouter::ResultCode   code = m_router->OptimizeRoute(m_points, m_delegate->GetDelegate(), result);
-    m_delegate->OnReady(result, code);
+    m2::PolylineD polyline;
+    IRouter::ResultCode   code = m_router->OptimizeRoute(m_points, m_delegate->GetDelegate(), result, polyline);
+    m_delegate->OnReady(result, code, polyline);
     m_hasRequest = false;
   }
 }

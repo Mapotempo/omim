@@ -66,7 +66,7 @@ double constexpr kPathFoundProgress = 70.0f;
 namespace
 {
   double constexpr kOptimPointsFoundProgress = 25.0f;
-  double constexpr kOptimMatrixFoundProgress = 90.0f;
+  double constexpr kOptimMatrixFoundProgress = 60.0f;
 } //  namespace
 
 using RawRouteData = InternalRouteResult;
@@ -565,11 +565,12 @@ OsrmRouter::ResultCode OsrmRouter::CalculateRoute(m2::PointD const & startPoint,
   }
 }
 
-OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result)
+OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result, m2::PolylineD &polyline)
 {
-  // 1. Get nodes
+  if(points.size() < 1)
+    return ResultCode::NoCurrentPosition;
 
-  //FIXME CHECK();
+  // 1. Get nodes
   LOG(LDEBUG, (" Optim step 1 - Get nodes"));
   TRoutingNodes nodesGraphsList(points.size());
   {
@@ -665,11 +666,40 @@ OsrmRouter::ResultCode OsrmRouter::OptimizeRoute(vector<m2::PointD> &points, Rou
     result_list.push_back(v);
     LOG(LDEBUG, ("         index : ", v));
   }
+
+  // 5. Calcul multi-route polyline
+  m2::PointD previous = m2::PointD::Zero();
+  for(size_t idx : result_list)
+  {
+    m2::PointD point = points[idx];
+
+    /*
+    // Calcul full route
+    if(previous != m2::PointD::Zero())
+    {
+      RouterDelegate delegate;
+      routing::Route route("otimizer");
+      if(ResultCode::NoError != CalculateRoute(previous, m2::PointD::Zero(), point, delegate, route))
+        break;
+
+      int percent =  idx * (100 - (kOptimPointsFoundProgress + kOptimMatrixFoundProgress)) / result_list.size();
+      delegate.OnProgress(percent + kOptimPointsFoundProgress + kOptimMatrixFoundProgress);
+
+      for(m2::PointD polyPoint : route.GetPoly().GetPoints())
+      {
+        polyline.Add(polyPoint);
+      }
+    }
+    previous = point;
+    */
+    polyline.Add(point);
+  }
+
   //result_list.pop_front();
   result.first.swap(result_list);
   result.second = solution.second;
-
   delegate.OnProgress(100.);
+
   return ResultCode::NoError;
 }
 

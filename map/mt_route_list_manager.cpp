@@ -203,7 +203,7 @@ bool MTRouteListManager::optimiseCurrentRoute()
       problemePoints[i + 1] = MercatorBounds::FromLatLon(user_mark->GetLatLon().lat, user_mark->GetLatLon().lon);
     }
 
-    auto readyCallback = [this] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code)
+    auto readyCallback = [this] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
       //Free the bookmark guard here
       // FIXME JMF : not really optimal code (-_-) ...
@@ -227,23 +227,13 @@ bool MTRouteListManager::optimiseCurrentRoute()
         SortUserMarks(m_indexCurrentBmCat, result.first);
         m_indexCurrentBm = 0;
 
-        m2::PolylineD points;
-        double lat, lon;
-        m_framework.GetCurrentPosition(lat, lon);
-        points.Add(MercatorBounds::FromLatLon(lat, lon));
-        for(int i = 0; i < curBmCat->GetUserMarkCount(); i++)
-        {
-          const UserMark * user_mark = curBmCat->GetUserMark(i);
-          points.Add(user_mark->GetPivot());
-        }
-
         Track::Params params;
         params.m_name = "new_track";
         params.m_colors.push_back({ 15.0f, dp::Color::Black()});
 
         //Track const track(points, params);
         curBmCat->ClearTracks();
-        curBmCat->AddTrack(make_unique<Track>(points, params));
+        curBmCat->AddTrack(make_unique<Track>(polyline, params));
         BookmarkCategory::Guard guard(*curBmCat);
         guard.m_controller.SetIsVisible(false);
         guard.m_controller.SetIsVisible(true);
