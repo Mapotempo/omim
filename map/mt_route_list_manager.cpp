@@ -149,30 +149,6 @@ bool MTRouteListManager::checkCurrentBookmarkStatus(const double & curLat, const
   return false;
 }
 
-
-bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
-{
-  threads::MutexGuard guard(m_routeListManagerMutex);
-  bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
-  if(res)
-    m_indexCurrentBm = reorderCurrent(m_indexCurrentBm, curBmIndex, newBmIndex);
-  return res;
-}
-
-int64_t MTRouteListManager::reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex)
-{
-  size_t res = current;
-  if(oldBmIndex == res)
-    res = newBmIndex;
-  else if(res > oldBmIndex
-    && res <= newBmIndex)
-    res--;
-  else if(res < oldBmIndex
-    && res >= newBmIndex)
-    res++;
-  return res;
-}
-
 void MTRouteListManager::SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener)
 {
@@ -247,7 +223,7 @@ bool MTRouteListManager::optimiseCurrentRoute()
       if(m_optimisationFinishFn)
         m_optimisationFinishFn(true);
     };
-    
+
     auto progressCallback = [this](float percent)
     {
       if(m_optimisationProgressFn)
@@ -260,7 +236,8 @@ bool MTRouteListManager::optimiseCurrentRoute()
 }
 
 /**
- * Redefinition du create pour voir passer les creation de catégories
+ * Surcharge de la fonction "CreateBmCategory" du BookmarkManager.
+ * Ceci pour voir passer les creation de catégories
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
@@ -281,7 +258,8 @@ size_t MTRouteListManager::CreateBmCategory(string const & name)
 }
 
 /**
- * Redefinition du delete pour voir passer les suppresions de
+ * Surcharge de la fonction "DeleteBmCategory" du BookmarkManager.
+ * Ceci pour voir passer les suppresions de
  * catégories sans avoir à toucher au code du boomark_manager.hpp/cpp.
  **/
 bool MTRouteListManager::DeleteBmCategory(size_t index)
@@ -304,7 +282,8 @@ bool MTRouteListManager::DeleteBmCategory(size_t index)
 }
 
 /**
- * Redefinition du load pour voir passer les chargements de catégories
+ * Surcharge de la fonction "LoadBookmark" du BookmarkManager.
+ * Ceci pour voir passer les chargements de catégories
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
@@ -326,3 +305,26 @@ void MTRouteListManager::LoadBookmark(string const & filePath)
   }
 }
 
+/**
+ * Surcharge de la fonction "ChangeBookmarkOrder" du BookmarkManager.
+ * Ceci pour voir passer les chargements de
+ * d'ordre et changer ainsi l'ordre du bookmark courant.
+ **/
+bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
+{
+  threads::MutexGuard guard(m_routeListManagerMutex);
+  bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
+
+  if(res && catIndex == m_indexCurrentBmCat)
+  {
+    if(curBmIndex == m_indexCurrentBm)
+      m_indexCurrentBm = newBmIndex;
+    else if(m_indexCurrentBm > curBmIndex
+      && m_indexCurrentBm <= newBmIndex)
+      m_indexCurrentBm--;
+    else if(m_indexCurrentBm < curBmIndex
+      && m_indexCurrentBm >= newBmIndex)
+      m_indexCurrentBm++;
+  }
+  return res;
+}

@@ -280,6 +280,10 @@ public:
   /// @return true if category was deleted
   bool DeleteBmCategory(size_t index);
 
+  /// Change the bookmark order (Mapotempo).
+  /// @return true if bookmark order change.
+  bool ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex);
+
   void ShowBookmark(BookmarkAndCategory const & bnc);
   void MoveToBookmark(BookmarkAndCategory const & bnc);
   void ShowTrack(Track const & track);
@@ -305,7 +309,6 @@ public:
 
   void MT_SaveRoutingManager();
   bool MT_RestoreRoutingManager();
-  bool MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex);
 
   using TOptimisationFinishFn = function<void (bool)>;
   /// Called to notify UI that mapotempo routing is deactivate;

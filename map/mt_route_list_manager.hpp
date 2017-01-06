@@ -22,7 +22,6 @@ private :
 private :
   Framework &m_framework;
 
-  int64_t reorderCurrent(size_t current,size_t oldBmIndex, size_t newBmIndex);
   int64_t m_indexCurrentBmCat;
   int64_t m_indexCurrentBm;
 
