@@ -832,11 +832,6 @@ bool Framework::MT_RestoreRoutingManager()
   return this->MT_InitRouteManager(category, bookmark);
 }
 
-bool Framework::MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIndex)
-{
-  return m_bmManager.ChangeBookmarkOrder(cat, oldIndex, newIndex);
-}
-
 void Framework::MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener)
 {
   m_rountingListManager.SetOptimisationListeners(finishListener, progressListener);
@@ -870,6 +865,11 @@ BookmarkCategory * Framework::GetBmCategory(size_t index) const
 bool Framework::DeleteBmCategory(size_t index)
 {
   return m_bmManager.DeleteBmCategory(index);
+}
+
+bool Framework::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
+{
+  return m_bmManager.ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
 }
 
 void Framework::FillBookmarkInfo(Bookmark const & bmk, BookmarkAndCategory const & bac, place_page::Info & info) const
