@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageButton
+      android:id="@+id/mt_action_left_second"
+      style="@style/MwmWidget.MTRouteButton"
+      android:src="@drawable/ic_font_awesome_4_7_0_cogs_256_0_ffffff_none"
+      android:background="@android:color/transparent"
+      android:layout_gravity="left|center_vertical"/>
+
+    <ImageButton
+      android:layout_weight="1"
+      android:id="@+id/mt_prv_bm"
+      style="@style/MwmWidget.MTRouteButton"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_font_awesome_4_7_0_cloud_upload_256_0_ffffff_none"
+      android:layout_gravity="center|center_vertical"/>
+
+
+    <ImageButton
+      android:id="@+id/mt_action_left"
+      style="@style/MwmWidget.MTRouteButton"
+      android:src="@drawable/ic_font_awesome_4_7_0_play_circle_o_256_0_ffffff_none"
+      android:background="@android:color/transparent"
+      android:layout_gravity="right|center_vertical"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/mt_layout_fragment_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+
+</LinearLayout>

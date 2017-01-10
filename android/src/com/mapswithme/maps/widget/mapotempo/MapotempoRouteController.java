@@ -168,7 +168,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       {
         mOptimProgressBar.setProgress(0);
         mOptimProgressBar.setVisibility(View.VISIBLE);
-        RouteListManager.nativeOptimiseCurrentBookmarks();
+        RouteListManager.nativeOptimiseBookmarkCategory(RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
       }
     });
 

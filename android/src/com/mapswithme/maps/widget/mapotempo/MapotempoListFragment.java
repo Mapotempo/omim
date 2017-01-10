@@ -1,11 +1,12 @@
 package com.mapswithme.maps.widget.mapotempo;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.mapswithme.maps.R;
 
+import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.RouteListManager;
@@ -22,6 +24,7 @@ import com.woxthebox.draglistview.DragListView;
 
 public class MapotempoListFragment extends Fragment
 {
+  private int mCategoryIndex = -1;
   BookmarkCategory mCurrentCategory;
   private DragListView mDragListView;
 
@@ -32,6 +35,8 @@ public class MapotempoListFragment extends Fragment
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if(getArguments() != null)
+      mCategoryIndex = getArguments().getInt(ChooseBookmarkCategoryFragment.CATEGORY_ID, -1);
   }
 
   @Override
@@ -62,8 +67,7 @@ public class MapotempoListFragment extends Fragment
       @Override
       public void onItemDragEnded(int fromPosition, int toPosition) {
         if (fromPosition != toPosition) {
-          MapotempoListAdapter adapter = (MapotempoListAdapter)mDragListView.getAdapter();
-          adapter.updateNativeBookmarkOrder(fromPosition, toPosition);
+          BookmarkManager.INSTANCE.changeBookmarkOrder(mCurrentCategory.getId(), fromPosition, toPosition);
         }
       }
 
@@ -72,7 +76,6 @@ public class MapotempoListFragment extends Fragment
       {
       }
     });
-
     return view;
   }
 
@@ -83,18 +86,24 @@ public class MapotempoListFragment extends Fragment
 
   private void setupListRecyclerView() {
     MapotempoListAdapter listAdapter;
-    if(RouteListManager.INSTANCE.getStatus())
+    if(mCategoryIndex >= 0)
+    {
+      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(mCategoryIndex);
+      listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+    }
+    else if(RouteListManager.INSTANCE.getStatus())
     {
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
       listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
     else
     {
-      listAdapter = new MapotempoListAdapter(null, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
 
-    mDragListView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
     mDragListView.setAdapter(listAdapter, false);
+
+    mDragListView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
     mDragListView.setCanDragHorizontally(false);
     mDragListView.setCustomDragItem(new MyDragItem(getActivity().getApplicationContext(), R.layout.item_mapotempo_bookmark));
   }

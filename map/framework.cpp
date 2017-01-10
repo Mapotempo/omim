@@ -837,9 +837,9 @@ void Framework::MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const
   m_rountingListManager.SetOptimisationListeners(finishListener, progressListener);
 }
 
-bool Framework::MT_OptimizeCurrentBookmarks()
+bool Framework::MT_OptimiseBookmarkCategory(int64_t indexBmCat)
 {
-  bool res = m_rountingListManager.optimiseCurrentRoute();
+  bool res = m_rountingListManager.optimiseBookmarkCategory(indexBmCat);
   return res;
 }
 
