@@ -32,7 +32,6 @@ private :
   // Guard mutex categoryManager and category
   // This is a guard on the current bookmark category to prevent another thread from deleting during optimization.
   mutable threads::Mutex m_routeListManagerMutex;
-  unique_ptr<BookmarkCategory::Guard> optimizerBookmarkCategoryGuard;
 
 public :
   MTRouteListManager(Framework & f) : BookmarkManager(f),
@@ -41,8 +40,7 @@ public :
   m_indexCurrentBm(-1),
   m_optimizer(nullptr),
   m_optimisationFinishFn(nullptr),
-  m_optimisationProgressFn(nullptr),
-  optimizerBookmarkCategoryGuard(nullptr){};
+  m_optimisationProgressFn(nullptr){};
 
   ~MTRouteListManager() {};
 
@@ -62,7 +60,7 @@ public :
   bool checkCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
   // Optimisation
-  bool optimiseCurrentRoute();
+  bool optimiseBookmarkCategory(int64_t indexBmCat);
   void SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener);
 

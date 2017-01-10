@@ -156,15 +156,16 @@ void MTRouteListManager::SetOptimisationListeners(TOptimisationFinishFn const & 
   m_optimisationProgressFn = progressListener;
 }
 
-bool MTRouteListManager::optimiseCurrentRoute()
+bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 {
   if(!GetStatus())
     return false;
 
-  BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
-  m_routeListManagerMutex.Lock();
-  optimizerBookmarkCategoryGuard.reset(new BookmarkCategory::Guard(*bmCat));
+  BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
+  if(bmCat == nullptr)
+    return false;
 
+  m_routeListManagerMutex.Lock();
   {
     double lat, lon;
     m_framework.GetCurrentPosition(lat, lon);
@@ -182,8 +183,7 @@ bool MTRouteListManager::optimiseCurrentRoute()
     auto readyCallback = [this] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
       //Free the bookmark guard here
-      // FIXME JMF : not really optimal code (-_-) ...
-      optimizerBookmarkCategoryGuard.reset(nullptr);
+      // FIXME JMF : not really optimal (-_-) ...
 
       BookmarkCategory * curBmCat = GetBmCategory(m_indexCurrentBmCat);
 

@@ -93,7 +93,7 @@ using namespace jni;
   Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeSetCurrentBookmark(
         JNIEnv * env, jobject thiz, int bmIndex)
   {
-   return frm()->MT_SetCurrentBookmark(bmIndex);
+    return frm()->MT_SetCurrentBookmark(bmIndex);
   }
 
   JNIEXPORT jboolean JNICALL
@@ -123,9 +123,9 @@ using namespace jni;
   }
 
   JNIEXPORT jboolean JNICALL
-  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeOptimiseCurrentBookmarks(
-       JNIEnv * env, jobject thiz)
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeOptimiseBookmarkCategory(
+       JNIEnv * env, jobject thiz, int catIndex)
   {
-    return frm()->MT_OptimizeCurrentBookmarks();;
+    return frm()->MT_OptimiseBookmarkCategory(catIndex);;
   }
 }  // extern "C"

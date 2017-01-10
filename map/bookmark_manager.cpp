@@ -195,6 +195,8 @@ bool BookmarkManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, si
 {
   bool res = false;
   BookmarkCategory * cat = GetBmCategory(catIndex);
+  BookmarkCategory::Guard guard(*cat);
+
   if(cat)
   {
     res = cat->MoveUserMarkOrder(curBmIndex, newBmIndex);
