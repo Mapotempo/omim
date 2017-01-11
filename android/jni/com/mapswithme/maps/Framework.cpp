@@ -51,6 +51,7 @@ namespace
 }
 
 jobject g_mapObjectListener;
+jobject g_listObjectListener;
 }  // namespace
 
 namespace android
@@ -1200,18 +1201,18 @@ Java_com_mapswithme_maps_Framework_nativeSetMTGoalIsNearListener(JNIEnv * env, j
 JNIEXPORT void JNICALL
 Java_com_mapswithme_maps_Framework_nativeSetMTOptimRouteListener(JNIEnv * env, jclass clazz, jobject jListener)
 {
-  g_mapObjectListener = env->NewGlobalRef(jListener);
-  jmethodID const optimFinishId = jni::GetMethodID(env, g_mapObjectListener, "onMtRouteOptimizeFinish", "(Z)V");
-  jmethodID const optimProgressId = jni::GetMethodID(env, g_mapObjectListener, "onMtRouteOptimizeProgress", "(I)V");
+  g_listObjectListener = env->NewGlobalRef(jListener);
+  jmethodID const optimFinishId = jni::GetMethodID(env, g_listObjectListener, "onMtRouteOptimizeFinish", "(Z)V");
+  jmethodID const optimProgressId = jni::GetMethodID(env, g_listObjectListener, "onMtRouteOptimizeProgress", "(I)V");
   frm()->MT_SetMapotempoOptimisationListeners([optimFinishId](bool status)
   {
     JNIEnv * env = jni::GetEnv();
-    env->CallVoidMethod(g_mapObjectListener, optimFinishId, status);
+    env->CallVoidMethod(g_listObjectListener, optimFinishId, status);
   }, [optimProgressId](float progress)
   {
     JNIEnv * env = jni::GetEnv();
     size_t intProgress = progress;
-    env->CallVoidMethod(g_mapObjectListener, optimProgressId, intProgress);
+    env->CallVoidMethod(g_listObjectListener, optimProgressId, intProgress);
   });
 }
 

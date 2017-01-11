@@ -685,11 +685,14 @@ void Framework::MT_StopRouteManager()
 
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
+  LOG(LWARNING, ("la"));
   bool res = m_rountingListManager.InitManager(indexBmCat, indexBm);
-
+  LOG(LWARNING, ("la"));
   if(res && m_activateMapotempoRouteFn)
   {
+    LOG(LWARNING, ("la"));
     m_activateMapotempoRouteFn();
+    LOG(LWARNING, ("la"));
   }
   return res;
 }
