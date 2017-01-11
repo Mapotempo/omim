@@ -1,7 +1,6 @@
 package com.mapswithme.maps.widget.mapotempo;
 
 import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,21 +14,23 @@ import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.RouteListManager;
-import com.mapswithme.maps.bookmarks.data.Icon;
 import com.woxthebox.draglistview.DragItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, MapotempoListAdapter.BookmarkInformation>, MapotempoListAdapter.ViewHolder>
+public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoListAdapter.ViewHolder>
     implements Bookmark.BookmarkParamsChangeListener
     ,RouteListManager.CurrentBookmarkChangeListener
 {
   private BookmarkCategory mCategory;
-  private int mCurrentBookmarkIndex = -1;
   private int mLayoutId;
   private int mGrabHandleId;
   private boolean mDragOnLongPress;
+
+  // Information current open category and bookmark status.
+  private int mCurrentOpenBookmarkIdx = -1;
+  private int mCurrentOpenCategoryIdx = -1;
 
   private void init(int layoutId, int grabHandleId, boolean dragOnLongPress)
   {
@@ -37,7 +38,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     mGrabHandleId = grabHandleId;
     mDragOnLongPress = dragOnLongPress;
     setHasStableIds(true);
-    List<Pair<Integer,BookmarkInformation>>mItemArray = new ArrayList<>();
+    List<Integer>mItemArray = new ArrayList<>();
     setItemList(mItemArray);
   }
 
@@ -54,12 +55,15 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     mCategory = category;
 
     if(RouteListManager.INSTANCE.getStatus() && (mCategory.getId() == RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
-      mCurrentBookmarkIndex = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+    {
+      mCurrentOpenBookmarkIdx = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+      mCurrentOpenCategoryIdx = RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId();
+    }
 
-    List<Pair<Integer,BookmarkInformation>>mItemArray = new ArrayList<Pair<Integer,BookmarkInformation>>(mCategory.getBookmarksCount());
+    List<Integer>mItemArray = new ArrayList<>(mCategory.getBookmarksCount());
     for (int i = 0; i < mCategory.getBookmarksCount(); i++)
     {
-      mItemArray.add(new Pair(i, new BookmarkInformation(mCategory.getBookmark(i))));
+      mItemArray.add(i);
     }
 
     setItemList(mItemArray);
@@ -97,21 +101,19 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
       return;
 
     super.onBindViewHolder(holder, position);
-    final BookmarkInformation bmInfo = mItemList.get(position).second;
 
-    if(RouteListManager.INSTANCE.getStatus() && (mCategory.getId() == RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
-      mCurrentBookmarkIndex = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+    final Bookmark bookmark = mCategory.getBookmark(position);
+    if(mCurrentOpenCategoryIdx == mCategory.getId())
+    {
+      mCurrentOpenBookmarkIdx = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
+    }
 
-    // Here position corresponding to bookmark index, we need to update
-    bmInfo.updateIndex(position);
-
-    // Refresh holder informations.
-    holder.refreshInfo(bmInfo, (mCurrentBookmarkIndex == bmInfo.mIndex ? true : false));
+    holder.refreshInfo(bookmark, (mCurrentOpenBookmarkIdx == bookmark.getBookmarkId()? true : false));
   }
 
   @Override
   public long getItemId(int position) {
-    return mItemList.get(position).first;
+    return mItemList.get(position);
   }
 
   //###############################################################################################
@@ -124,11 +126,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     if(mCategory == null)
       return;
 
-    if(bookmark.getCategoryId() == mCategory.getId())
-    {
-      mItemList.get(bookmark.getBookmarkId()).second.updateInfo(bookmark);
-      notifyDataSetChanged();
-    }
+    notifyDataSetChanged();
   }
 
   //###############################################################################################
@@ -141,11 +139,18 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
     if(mCategory == null)
       return;
 
-    if(currentBookmark.getCategoryId() == mCategory.getId())
+    mCurrentOpenCategoryIdx = RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId();
+
+    if(mCurrentOpenCategoryIdx == mCategory.getId())
     {
-      mCurrentBookmarkIndex = currentBookmark.getBookmarkId();
-      notifyDataSetChanged();
+      mCurrentOpenBookmarkIdx = currentBookmark.getBookmarkId();
     }
+    else
+    {
+      mCurrentOpenBookmarkIdx = -1;
+    }
+
+    notifyDataSetChanged();
   }
 
   //###############################################################################################
@@ -201,16 +206,16 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
       return true;
     }
 
-    public void refreshInfo(BookmarkInformation bookmarkInformation, boolean isCurrent)
+    public void refreshInfo(Bookmark bookmark, boolean isCurrent)
     {
       if(isCurrent)
         mBookmarkMarker.setVisibility(View.VISIBLE);
       else
         mBookmarkMarker.setVisibility(View.INVISIBLE);
 
-      mBookmarkIndex = bookmarkInformation.mIndex;
-      mText.setText(bookmarkInformation.mTitle);
-      mIcon.setImageResource(bookmarkInformation.mIcon.getSelectedResId());
+      mBookmarkIndex = bookmark.getBookmarkId();
+      mText.setText(bookmark.getTitle());
+      mIcon.setImageResource(bookmark.getIcon().getSelectedResId());
       mIcon.setOnClickListener(new View.OnClickListener()
       {
         @Override
@@ -235,31 +240,6 @@ public class MapotempoListAdapter extends DragItemAdapter<Pair<Integer, Mapotemp
           }
         }
       });
-    }
-  }
-
-  // Class interne enregistrant les informations des bookmarks.
-  public static class BookmarkInformation
-  {
-    public int mIndex;
-    public Icon mIcon;
-    public String mTitle;
-
-    public BookmarkInformation(Bookmark bookmark)
-    {
-      updateInfo(bookmark);
-    }
-
-    public void updateInfo(Bookmark bookmark)
-    {
-      this.mIndex = bookmark.getBookmarkId();
-      this.mIcon = bookmark.getIcon();
-      this.mTitle = bookmark.getTitle();
-    }
-
-    public void updateIndex(int index)
-    {
-      mIndex = index;
     }
   }
 }
