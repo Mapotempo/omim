@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,10 +43,10 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   private Activity mActivity;
 
   // MAPOTEMPO UI ROUTING
-  private ImageButton mMTNextBM;
-  private ImageButton mMTPrevBM;
-  private ImageButton mMTActionLeft;
-  private ImageButton mMTActionLeftSecond;
+  private ImageView mMTNextBM;
+  private ImageView mMTPrevBM;
+  private ImageView mMTActionLeft;
+  private ImageView mMTActionLeftSecond;
   private ImageButton mMTActionRight;
   private TextView mMTCurrentBM;
   private Button mapotempoStartRoute;
@@ -60,10 +61,10 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mBottomMapotempoFrame = activity.findViewById(R.id.nav_mapotempo_bottom_frame);
 
     mLineFrame = (LinearLayout) mBottomMapotempoFrame.findViewById(R.id.line_frame);
-    mMTNextBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
-    mMTPrevBM = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
-    mMTActionLeft = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
-    mMTActionLeftSecond = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_left_second);
+    mMTNextBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
+    mMTPrevBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
+    mMTActionLeft = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
+    mMTActionLeftSecond = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left_second);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
     mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);

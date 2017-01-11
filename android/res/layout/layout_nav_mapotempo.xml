@@ -2,7 +2,6 @@
 
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/nav_mapotempo_bottom_frame"
   android:layout_width="match_parent"
@@ -12,7 +11,8 @@
   android:clickable="true"
   android:background="?menuBackgroundOpen"
   android:gravity="bottom"
-  tools:visibility="visible">
+  tools:visibility="visible"
+  tools:background="#40FF0000">
 
   <ProgressBar
     android:id="@+id/mt_optim_progress_bar"
@@ -40,29 +40,34 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <ImageButton
-      android:layout_weight="0"
+    <ImageView
       android:id="@+id/mt_prv_bm"
-      style="@style/MwmWidget.MTRouteButton"
-      android:background="@android:color/transparent"
+      style="@style/MwmTheme.Menu.Line.Button"
       android:src="@drawable/ic_menu_prev"
+      android:tag="@string/tag_menu_collapse"
+      android:layout_height="64dp"
+      android:layout_weight="0"
       android:layout_gravity="left|center_vertical" />
 
-    <ImageButton
+    <ImageView
       android:id="@+id/mt_action_left"
-      style="@style/MwmWidget.MTRouteButton"
+      style="@style/MwmTheme.Menu.Line.Button"
       android:src="@drawable/ic_route_to"
-      android:background="@android:color/transparent"/>
+      android:tag="@string/tag_menu_collapse"
+      android:layout_height="64dp"
+      android:layout_gravity="left|center_vertical"/>
 
-    <ImageButton
+    <ImageView
       android:id="@+id/mt_action_left_second"
-      style="@style/MwmWidget.MTRouteButton"
+      style="@style/MwmTheme.Menu.Line.Button"
       android:src="@drawable/ic_downloader_update"
-      android:background="@android:color/transparent"/>
+      android:tag="@string/tag_menu_collapse"
+      android:layout_height="64dp"
+      android:layout_gravity="left|center_vertical" />
 
     <LinearLayout
       android:layout_width="wrap_content"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_weight="1"
       android:orientation="vertical">
 
@@ -86,21 +91,22 @@
         android:textSize="18sp"/>
     </LinearLayout>
 
-
     <ImageButton
       android:id="@+id/mt_action_right"
       android:layout_weight="0"
       style="@style/MwmWidget.MTButton"
       android:background="@android:color/transparent"
       android:src="@drawable/ic_point_done"
+      android:layout_height="64dp"
       android:layout_gravity="right|center_vertical" />
 
-    <ImageButton
-      android:layout_weight="0"
+    <ImageView
       android:id="@+id/mt_nxt_bm"
-      style="@style/MwmWidget.MTRouteButton"
-      android:background="@android:color/transparent"
+      style="@style/MwmTheme.Menu.Line.Button"
       android:src="@drawable/ic_menu_next"
+      android:tag="@string/tag_menu_collapse"
+      android:layout_height="64dp"
+      android:layout_weight="0"
       android:layout_gravity="right|center_vertical" />
   </LinearLayout>
 
