@@ -14,6 +14,11 @@ public enum BookmarkRoutingManager
     return nativeGetCurrentBookmark();
   }
 
+  public boolean setCurrentBookmark(int bmIndex)
+  {
+    return nativeSetCurrentBookmark(bmIndex);
+  }
+
   public Bookmark stepNextBookmark()
   {
     return nativeStepNextBookmark();
@@ -34,6 +39,8 @@ public enum BookmarkRoutingManager
   public static native boolean nativeInitRoutingManager(int catIndex, int bmIndex);
 
   public static native Bookmark nativeGetCurrentBookmark();
+
+  public static native boolean nativeSetCurrentBookmark(int bmIndex);
 
   public static native Bookmark nativeStepNextBookmark();
 

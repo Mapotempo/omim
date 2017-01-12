@@ -11,6 +11,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.downloader.MapManager;
 import com.mapswithme.maps.downloader.UpdateInfo;
 import com.mapswithme.maps.routing.RoutingController;
+import com.mapswithme.maps.routing.RoutingPlanController;
 import com.mapswithme.util.Graphics;
 import com.mapswithme.util.UiUtils;
 import ru.mail.android.mytarget.core.models.Stat;
@@ -267,7 +268,8 @@ public class MainMenu extends BaseMenu
       {
 
         UiUtils.showIf(state == State.MENU, mButtonsFrame);
-        UiUtils.showIf(isRouting, mRoutePlanFrame);
+        //UiUtils.showIf(isRouting, mRoutePlanFrame);
+        UiUtils.hide(mRoutePlanFrame);
         if (isRouting)
           mToggle.hide();
         expandContent = isRouting;

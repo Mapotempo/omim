@@ -1148,7 +1148,7 @@ public class PlacePageView extends RelativeLayout
       }
     }
 
-    buttons.add(PlacePageButtons.Item.BOOKMARK);
+    // buttons.add(PlacePageButtons.Item.BOOKMARK);
 
     if (RoutingController.get().isPlanning())
     {
@@ -1161,7 +1161,7 @@ public class PlacePageView extends RelativeLayout
         buttons.add(PlacePageButtons.Item.ROUTE_TO);
     }
 
-    buttons.add(PlacePageButtons.Item.SHARE);
+    // buttons.add(PlacePageButtons.Item.SHARE);
 
     mButtons.setItems(buttons);
   }

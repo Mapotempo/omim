@@ -36,7 +36,10 @@ import com.mapswithme.maps.base.OnBackPressListener;
 import com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.Banner;
+import com.mapswithme.maps.bookmarks.data.Bookmark;
+import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
+import com.mapswithme.maps.bookmarks.data.BookmarkRoutingManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.downloader.DownloaderActivity;
 import com.mapswithme.maps.downloader.DownloaderFragment;
@@ -608,7 +611,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
       public void run()
       {
         RoutingController.get().prepare(endPoint);
-
         if (mPlacePage.isDocked() || !mPlacePage.isFloating())
           closePlacePage();
       }
@@ -1056,6 +1058,14 @@ public class MwmActivity extends BaseMwmFragmentActivity
       request.setPointData(object.getLat(), object.getLon(), object.getTitle(), object.getApiId());
       object.setSubtitle(request.getCallerName(MwmApplication.get()).toString());
     }
+    else if (MapObject.isOfType(MapObject.BOOKMARK, object))
+    {
+      Bookmark bm = (Bookmark) object;
+      if(BookmarkRoutingManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
+      {
+        mMapotempoRouteController.refreshUI((Bookmark) object);
+      }
+    }
 
     setFullscreen(false);
 
@@ -1088,13 +1098,26 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @Override
   public void onMtRouteActivated()
   {
-    mMapotempoRouteController.showMapotempoRouteInfo(true);
+    Bookmark bm = BookmarkRoutingManager.INSTANCE.getCurrentBookmark();
+    BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bm.getCategoryId());
+
+    if(BookmarkRoutingManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
+       && bmCat.getTracksCount() > 0)
+    {
+      Framework.nativeShowTrackRect(bmCat.getId(), 0);
+    }
+    else
+    {
+      BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bm.getCategoryId(), bm.getBookmarkId());
+    }
+
+    mMapotempoRouteController.showMapotempoRoutePanel(true);
   }
 
   @Override
   public void onMtRouteDeactivated()
   {
-    mMapotempoRouteController.showMapotempoRouteInfo(false);
+    mMapotempoRouteController.showMapotempoRoutePanel(false);
   }
 
   private BaseMenu getCurrentMenu()
