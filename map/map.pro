@@ -32,6 +32,7 @@ HEADERS += \
     traffic_manager.hpp \
     user_mark.hpp \
     user_mark_container.hpp \
+    mt_routing_manager.hpp
 
 SOURCES += \
     ../api/src/c/api-client.c \
@@ -57,6 +58,7 @@ SOURCES += \
     traffic_manager.cpp \
     user_mark.cpp \
     user_mark_container.cpp \
+    mt_routing_manager.cpp
 
 !iphone*:!tizen*:!android* {
   QT += opengl

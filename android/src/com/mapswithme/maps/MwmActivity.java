@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import com.mapswithme.maps.Framework.MapObjectListener;
+import com.mapswithme.maps.Framework.MTRouteListener;
 import com.mapswithme.maps.activity.CustomNavigateUpListener;
 import com.mapswithme.maps.ads.LikesManager;
 import com.mapswithme.maps.api.ParsedMwmRequest;
@@ -51,6 +52,7 @@ import com.mapswithme.maps.editor.ReportFragment;
 import com.mapswithme.maps.editor.ViralFragment;
 import com.mapswithme.maps.location.CompassData;
 import com.mapswithme.maps.location.LocationHelper;
+import com.mapswithme.maps.mapotempo.MapotempoRouteController;
 import com.mapswithme.maps.news.FirstStartFragment;
 import com.mapswithme.maps.news.NewsFragment;
 import com.mapswithme.maps.routing.NavigationController;
@@ -95,6 +97,7 @@ import java.util.Stack;
 
 public class MwmActivity extends BaseMwmFragmentActivity
                       implements MapObjectListener,
+                                 MTRouteListener,
                                  View.OnTouchListener,
                                  BasePlacePageAnimationController.OnVisibilityChangedListener,
                                  BasePlacePageAnimationController.OnAnimationListener,
@@ -131,6 +134,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
   private RoutingPlanInplaceController mRoutingPlanInplaceController;
   @Nullable
   private NavigationController mNavigationController;
+
+  private MapotempoRouteController mMapotempoRouteController;
 
   private MainMenu mMainMenu;
 
@@ -423,6 +428,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     Statistics.INSTANCE.trackConnectionState();
 
     Framework.nativeSetMapObjectListener(this);
+    Framework.nativeSetMTRouteListener(this);
 
     mSearchController = new FloatingSearchToolbarController(this);
     mSearchController.setVisibilityListener(this);
@@ -456,6 +462,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
     }
 
     mNavigationController = new NavigationController(this);
+    mMapotempoRouteController = new MapotempoRouteController(this);
+
     initMainMenu();
     initOnmapDownloader();
     initPositionChooser();
@@ -1075,6 +1083,18 @@ public class MwmActivity extends BaseMwmFragmentActivity
     {
       mPlacePage.hide();
     }
+  }
+
+  @Override
+  public void onMtRouteActivated()
+  {
+    mMapotempoRouteController.showMapotempoRouteInfo(true);
+  }
+
+  @Override
+  public void onMtRouteDeactivated()
+  {
+    mMapotempoRouteController.showMapotempoRouteInfo(false);
   }
 
   private BaseMenu getCurrentMenu()

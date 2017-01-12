@@ -9,6 +9,7 @@ import android.support.annotation.UiThread;
 
 import com.mapswithme.maps.api.ParsedRoutingData;
 import com.mapswithme.maps.api.ParsedUrlMwmRequest;
+import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.routing.RoutingInfo;
@@ -55,6 +56,14 @@ public class Framework
   public interface RoutingProgressListener
   {
     void onRouteBuildingProgress(float progress);
+  }
+
+  @SuppressWarnings("unused")
+  public interface MTRouteListener
+  {
+    void onMtRouteActivated();
+
+    void onMtRouteDeactivated();
   }
 
   public static class Params3dMode
@@ -260,4 +269,6 @@ public class Framework
   public static native String nativeGetActiveObjectFormattedCuisine();
 
   public static native void nativeSetVisibleRect(int left, int top, int right, int bottom);
+
+  public static native void nativeSetMTRouteListener(MTRouteListener listener);
 }
