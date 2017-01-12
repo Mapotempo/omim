@@ -46,13 +46,11 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   private ImageView mMTNextBM;
   private ImageView mMTPrevBM;
   private ImageView mMTActionLeft;
-  private ImageView mMTActionLeftSecond;
   private ImageButton mMTActionRight;
   private TextView mMTCurrentBM;
   private Button mapotempoStartRoute;
   private LinearLayout mLineFrame;
   private MapotempoMenu mapotempoMenu;
-  private ProgressBar mOptimProgressBar;
 
   public MapotempoRouteController(final Activity activity)
   {
@@ -64,12 +62,9 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTNextBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
     mMTPrevBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
     mMTActionLeft = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
-    mMTActionLeftSecond = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left_second);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
     mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
-    mOptimProgressBar = (ProgressBar) mBottomMapotempoFrame.findViewById(R.id.mt_optim_progress_bar);
-    mOptimProgressBar.setMax(100);
 
     mapotempoStartRoute.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -162,17 +157,6 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       }
     });
 
-    mMTActionLeftSecond.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        mOptimProgressBar.setProgress(0);
-        mOptimProgressBar.setVisibility(View.VISIBLE);
-        RouteListManager.nativeOptimiseBookmarkCategory(RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
-      }
-    });
-
     Bookmark.addBookmarkParamsChangeListener(this);
   }
 
@@ -215,36 +199,6 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
         refreshUI(bookmark);
       }
     }
-  }
-
-  // Attention ses méthodes appelles du code thread on le racroche ton au thread ui !!!!
-  // FIXME A l'arrache !!!!! A refaire
-  boolean v;
-  public void optimProgressBarVisibility(boolean visibility)
-  {
-    v = visibility;
-    mActivity.runOnUiThread(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        mOptimProgressBar.setVisibility(v ? View.VISIBLE : View.GONE);
-      }
-    });
-  }
-
-  int p;
-  public void setOptimProgress(int value)
-  {
-    p = value;
-    mActivity.runOnUiThread(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        mOptimProgressBar.setProgress(p);
-      }
-    });
   }
 }
 

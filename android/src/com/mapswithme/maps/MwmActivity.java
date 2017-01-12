@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -94,6 +95,7 @@ import com.mapswithme.util.ThemeUtils;
 import com.mapswithme.util.UiUtils;
 import com.mapswithme.util.Utils;
 import com.mapswithme.util.concurrency.UiThread;
+import com.mapswithme.util.log.Logger;
 import com.mapswithme.util.sharing.ShareOption;
 import com.mapswithme.util.sharing.SharingHelper;
 import com.mapswithme.util.statistics.AlohaHelper;
@@ -106,7 +108,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
                       implements MapObjectListener,
                                  MTRouteListener,
                                  MTGoalIsNearListener,
-                                 MTRouteOptimize,
                                  View.OnTouchListener,
                                  BasePlacePageAnimationController.OnVisibilityChangedListener,
                                  BasePlacePageAnimationController.OnAnimationListener,
@@ -439,7 +440,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
     Framework.nativeSetMapObjectListener(this);
     Framework.nativeSetMTRouteListener(this);
     Framework.nativeSetMTGoalIsNearListener(this);
-    Framework.nativeSetMTOptimRouteListener(this);
 
     mSearchController = new FloatingSearchToolbarController(this);
     mSearchController.setVisibilityListener(this);
@@ -1110,7 +1110,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
   {
     Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
     BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bm.getCategoryId());
-
     if(RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
        && bmCat.getTracksCount() > 0)
     {
@@ -1120,7 +1119,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
     {
       BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bm.getCategoryId(), bm.getBookmarkId());
     }
-
     mMapotempoRouteController.showMapotempoRoutePanel(true);
   }
 
@@ -1145,18 +1143,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
     Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
     mPlacePage.setMapObject(bm, true);
     mPlacePage.setState(State.DETAILS);
-  }
-
-  @Override
-  public void onMtRouteOptimizeFinish(boolean status)
-  {
-    mMapotempoRouteController.optimProgressBarVisibility(false);
-  }
-
-  @Override
-  public void onMtRouteOptimizeProgress(int progress)
-  {
-    mMapotempoRouteController.setOptimProgress(progress);
   }
 
   private BaseMenu getCurrentMenu()

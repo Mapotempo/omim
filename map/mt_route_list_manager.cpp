@@ -64,22 +64,20 @@ bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToD
   {
     return false;
   }
-
   // Hide all other category
   for(int i = 0; i < GetBmCategoriesCount(); i++)
   {
-      bool visibily = false;
-      if(i == indexBmCat)
-        visibily = true;
+    bool visibily = false;
+    if(i == indexBmCat)
+      visibily = true;
 
-      BookmarkCategory * otherCat = GetBmCategory(i);
-      {
-        BookmarkCategory::Guard guard(*otherCat);
-        guard.m_controller.SetIsVisible(visibily);
-      }
-      otherCat->SaveToKMLFile();
+    BookmarkCategory * otherCat = GetBmCategory(i);
+    {
+      BookmarkCategory::Guard guard(*otherCat);
+      guard.m_controller.SetIsVisible(visibily);
+    }
+    otherCat->SaveToKMLFile();
   }
-
   m_indexCurrentBmCat = indexBmCat;
   m_indexCurrentBm = indexFirstBmToDisplay;
   m_framework.MT_SaveRoutingManager();
@@ -180,12 +178,12 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
       problemePoints[i + 1] = MercatorBounds::FromLatLon(user_mark->GetLatLon().lat, user_mark->GetLatLon().lon);
     }
 
-    auto readyCallback = [this] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
+    auto readyCallback = [this, indexBmCat] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
       //Free the bookmark guard here
-      // FIXME JMF : not really optimal (-_-) ...
+      // FIXME JMF : review this ....
 
-      BookmarkCategory * curBmCat = GetBmCategory(m_indexCurrentBmCat);
+      BookmarkCategory * curBmCat = GetBmCategory(indexBmCat);
 
       if (code == routing::IRouter::ResultCode::NoError)
       {
@@ -200,7 +198,7 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
         // pop the first current position point
         result.first.pop_front();
-        SortUserMarks(m_indexCurrentBmCat, result.first);
+        SortUserMarks(indexBmCat, result.first);
         m_indexCurrentBm = 0;
 
         Track::Params params;
@@ -210,9 +208,13 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         //Track const track(points, params);
         curBmCat->ClearTracks();
         curBmCat->AddTrack(make_unique<Track>(polyline, params));
-        BookmarkCategory::Guard guard(*curBmCat);
-        guard.m_controller.SetIsVisible(false);
-        guard.m_controller.SetIsVisible(true);
+
+        if(indexBmCat == m_indexCurrentBmCat)
+        {
+          BookmarkCategory::Guard guard(*curBmCat);
+          guard.m_controller.SetIsVisible(false);
+          guard.m_controller.SetIsVisible(true);
+        }
       }
       else
         LOG(LWARNING, ("Problem occured during route optimization, abort"));
@@ -307,8 +309,8 @@ void MTRouteListManager::LoadBookmark(string const & filePath)
 
 /**
  * Surcharge de la fonction "ChangeBookmarkOrder" du BookmarkManager.
- * Ceci pour voir passer les chargements de
- * d'ordre et changer ainsi l'ordre du bookmark courant.
+ * Ceci pour voir passer les changement d'ordre et changer ainsi
+ * l'ordre du bookmark courant.
  **/
 bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
 {

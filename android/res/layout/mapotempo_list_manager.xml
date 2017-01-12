@@ -45,6 +45,19 @@
       android:layout_gravity="right|center_vertical"/>
   </LinearLayout>
 
+
+  <ProgressBar
+    android:id="@+id/mt_optim_progress_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/nav_button_height"
+    android:indeterminate="false"
+    android:indeterminateOnly="false"
+    android:progressDrawable="@android:drawable/progress_horizontal"
+    android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal"
+    android:minHeight="20dip"
+    android:maxHeight="20dip"
+    android:visibility="gone"/>
+
   <LinearLayout
     android:id="@+id/mt_layout_fragment_container"
     android:orientation="vertical"
