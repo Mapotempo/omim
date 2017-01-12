@@ -126,6 +126,6 @@ using namespace jni;
   Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeOptimiseCurrentBookmarks(
        JNIEnv * env, jobject thiz)
   {
-    return frm()->MT_ChangeOptimiseCurrentBookmarks();;
+    return frm()->MT_OptimizeCurrentBookmarks();;
   }
 }  // extern "C"

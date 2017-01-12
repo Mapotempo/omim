@@ -40,7 +40,7 @@ public :
   * \brief CalculateCrossMwmPath function for calculating path through several maps.
   * \return NoError if the path exists, error code otherwise.
   */
-  IRouter::ResultCode CalculateCrossMwmMatrix(vector<EdgeWeight> &res);
+  IRouter::ResultCode CalculateCrossMwmMatrix(vector<EdgeWeight> &res, RouterDelegate const & delegate);
 private :
 
   bool validity;

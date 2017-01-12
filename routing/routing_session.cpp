@@ -100,11 +100,6 @@ void RoutingSession::RebuildRoute(m2::PointD const & startPoint,
                            m_progressCallback, timeoutSec);
 }
 
-void RoutingSession::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
-{
-  m_router->OptimizeRoute(points, result);
-}
-
 void RoutingSession::DoReadyCallback::operator()(Route & route, IRouter::ResultCode e)
 {
   threads::MutexGuard guard(m_routeSessionMutexInner);

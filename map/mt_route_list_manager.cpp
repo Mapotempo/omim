@@ -16,22 +16,16 @@
 #include "3party/vroom/src/heuristics/tsp_strategy.h"
 #include "3party/vroom/src/loaders/tsplib_loader.h"
 #include "3party/vroom/src/utils/logger.h"
-#include <boost/log/utility/setup/console.hpp>
 
 #include "routing/osrm_engine.hpp"
 #include "geometry/point2d.hpp"
 #include "drape/color.hpp"
 
-MTRouteListManager::MTRouteListManager(Framework & f)
-  : BookmarkManager(f)  
-    ,m_framework(f)
-    ,m_indexCurrentBmCat(-1)
-    ,m_indexCurrentBm(-1)
+void MTRouteListManager::SetRouter(unique_ptr<routing::IRouter> && router)
 {
-}
-
-MTRouteListManager::~MTRouteListManager()
-{
+  threads::MutexGuard guard(m_routeListManagerMutex);
+  m_optimizer.reset(new routing::AsyncOptimizer());
+  m_optimizer->SetRouter(move(router));
 }
 
 bool MTRouteListManager::GetStatus()
@@ -43,6 +37,7 @@ bool MTRouteListManager::GetStatus()
 
 void MTRouteListManager::StopManager()
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   m_indexCurrentBmCat = -1;
   m_indexCurrentBm = -1;
 
@@ -62,9 +57,7 @@ void MTRouteListManager::StopManager()
 
 bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay)
 {
-  boost::log::add_console_log(std::cout,
-                              boost::log::keywords::format = "%Message%");
-
+  threads::MutexGuard guard(m_routeListManagerMutex);
   static bool init = false;
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
   if(bmCat == NULL || bmCat->GetUserMarkCount() <= indexFirstBmToDisplay)
@@ -94,6 +87,7 @@ bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToD
 }
 
 void MTRouteListManager::ResetManager(){
+  threads::MutexGuard guard(m_routeListManagerMutex);
   m_indexCurrentBmCat = -1;
   m_indexCurrentBm = -1;
   m_framework.MT_SaveRoutingManager();
@@ -158,6 +152,7 @@ bool MTRouteListManager::checkCurrentBookmarkStatus(const double & curLat, const
 
 bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
   if(res)
     m_indexCurrentBm = reorderCurrent(m_indexCurrentBm, curBmIndex, newBmIndex);
@@ -178,14 +173,14 @@ int64_t MTRouteListManager::reorderCurrent(size_t current,size_t oldBmIndex, siz
   return res;
 }
 
-bool MTRouteListManager::optimiseCurrentCategory()
+bool MTRouteListManager::optimiseCurrentRoute()
 {
-  if(m_indexCurrentBmCat < 0)
-  {
+  if(!GetStatus())
     return false;
-  }
 
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
+  m_routeListManagerMutex.Lock();
+  optimizerBookmarkCategoryGuard.reset(new BookmarkCategory::Guard(*bmCat));
 
   {
     double lat, lon;
@@ -193,7 +188,7 @@ bool MTRouteListManager::optimiseCurrentCategory()
     vector<m2::PointD> problemePoints(bmCat->GetUserMarkCount() + 1);
     LOG(LDEBUG, (bmCat->GetUserMarkCount() , "user_mark founds"));
 
-    problemePoints[0] = MercatorBounds::FromLatLon(lat, lon); 
+    problemePoints[0] = MercatorBounds::FromLatLon(lat, lon);
 
     for(int i = 0; i < bmCat->GetUserMarkCount(); i++)
     {
@@ -201,39 +196,68 @@ bool MTRouteListManager::optimiseCurrentCategory()
       problemePoints[i + 1] = MercatorBounds::FromLatLon(user_mark->GetLatLon().lat, user_mark->GetLatLon().lon);
     }
 
-    std::pair<std::list<size_t>, size_t> result;
-    m_framework.OptimizeRoute(problemePoints, result);
-
-    if(result.first.size() < 1)
-      return false;
-
-    // pop the first current position point
-    result.first.pop_front();
-    SortUserMarks(m_indexCurrentBmCat, result.first);
-    m_indexCurrentBm = 0;
-
-    m2::PolylineD points;
-    points.Add(problemePoints[0]);
-    for(int i = 0; i < bmCat->GetUserMarkCount(); i++)
+    auto readyCallback = [this] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code)
     {
-      const UserMark * user_mark = bmCat->GetUserMark(i);
-      points.Add(user_mark->GetPivot());
-    }
+      //Free the bookmark guard here
+      // FIXME JMF : not really optimal code (-_-) ...
+      optimizerBookmarkCategoryGuard.reset(nullptr);
 
-    Track::Params params;
-    params.m_name = "new_track";
-    params.m_colors.push_back({ 15.0f, dp::Color::Black()});
+      BookmarkCategory * curBmCat = GetBmCategory(m_indexCurrentBmCat);
+
+      if (code == routing::IRouter::ResultCode::NoError)
+      {
+        LOG(LINFO, ("Route optimize"));
+
+        if(result.first.size() < 1)
+        {
+          if(m_optimisationFinishFn)
+            m_optimisationFinishFn(false);
+          return;
+        }
+
+        // pop the first current position point
+        result.first.pop_front();
+        SortUserMarks(m_indexCurrentBmCat, result.first);
+        m_indexCurrentBm = 0;
+
+        m2::PolylineD points;
+        double lat, lon;
+        m_framework.GetCurrentPosition(lat, lon);
+        points.Add(MercatorBounds::FromLatLon(lat, lon));
+        for(int i = 0; i < curBmCat->GetUserMarkCount(); i++)
+        {
+          const UserMark * user_mark = curBmCat->GetUserMark(i);
+          points.Add(user_mark->GetPivot());
+        }
+
+        Track::Params params;
+        params.m_name = "new_track";
+        params.m_colors.push_back({ 15.0f, dp::Color::Black()});
+
+        //Track const track(points, params);
+        curBmCat->ClearTracks();
+        curBmCat->AddTrack(make_unique<Track>(points, params));
+        BookmarkCategory::Guard guard(*curBmCat);
+        guard.m_controller.SetIsVisible(false);
+        guard.m_controller.SetIsVisible(true);
+      }
+      else
+        LOG(LWARNING, ("Problem occured during route optimization, abort"));
+
+      // Free the route list manager mutex
+      m_routeListManagerMutex.Unlock();
+    };
     
-    //Track const track(points, params);
-    bmCat->ClearTracks();
-    bmCat->AddTrack(make_unique<Track>(points, params));
-    BookmarkCategory::Guard guard(*bmCat);
-    guard.m_controller.SetIsVisible(false);
-    guard.m_controller.SetIsVisible(true);
+    auto progressCallback = [this](float percent)
+    {
+      if(m_optimisationProgressFn)
+        m_optimisationProgressFn(percent);
+    };
+
+    m_optimizer->OptimizeRoute(problemePoints, readyCallback, progressCallback, 0);
   }
-  
+
   return true;
-  
 }
 
 /**
@@ -243,6 +267,7 @@ bool MTRouteListManager::optimiseCurrentCategory()
  **/
 size_t MTRouteListManager::CreateBmCategory(string const & name)
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   size_t index = BookmarkManager::CreateBmCategory(name);
   BookmarkCategory * bmCat = GetBmCategory(index);
   if(bmCat)
@@ -262,6 +287,7 @@ size_t MTRouteListManager::CreateBmCategory(string const & name)
  **/
 bool MTRouteListManager::DeleteBmCategory(size_t index)
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   bool res = BookmarkManager::DeleteBmCategory(index);
   if(res == true)
   {
@@ -285,6 +311,7 @@ bool MTRouteListManager::DeleteBmCategory(size_t index)
  **/
 void MTRouteListManager::LoadBookmark(string const & filePath)
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   BookmarkManager::LoadBookmark(filePath);
   // Hide the last bookmark load else if that the current bmCat.
   if((GetBmCategoriesCount() - 1) != m_indexCurrentBmCat)

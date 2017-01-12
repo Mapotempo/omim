@@ -352,7 +352,7 @@ void Framework::Migrate(bool keepDownloaded)
 Framework::Framework()
   : m_startForegroundTime(0.0)
   , m_storage(platform::migrate::NeedMigrate() ? COUNTRIES_OBSOLETE_FILE : COUNTRIES_FILE)
-  , m_rountingManager(*this)
+  , m_rountingListManager(*this)
   , m_isRenderingEnabled(true)
   , m_trackingReporter(platform::CreateSocket(), TRACKING_REALTIME_HOST, TRACKING_REALTIME_PORT,
                        tracking::Reporter::kPushDelayMs)
@@ -459,6 +459,23 @@ Framework::Framework()
   LOG(LINFO, ("Editor initialized"));
 
   m_trafficManager.SetCurrentDataVersion(m_storage.GetCurrentDataVersion());
+
+  m_routingSession.SetRoutingSettings(routing::GetCarRoutingSettings());
+
+  unique_ptr<IRouter> router;
+
+  // Set router for optimsation manager.
+  auto countryFileGetter = [this](m2::PointD const & p) -> string
+  {
+    // TODO (@gorshenin): fix CountryInfoGetter to return CountryFile
+    // instances instead of plain strings.
+    return m_infoGetter->GetRegionCountryId(p);
+  };
+
+  router.reset(new CarRouter(m_model.GetIndex(), countryFileGetter,
+                             SingleMwmRouter::CreateCarRouter(m_model.GetIndex(), m_routingSession)));
+
+  m_rountingListManager.SetRouter(move(router));
 }
 
 Framework::~Framework()
@@ -737,12 +754,12 @@ size_t Framework::AddCategory(string const & categoryName)
 
 bool Framework::MT_GetStatus()
 {
-  return m_rountingManager.GetStatus();
+  return m_rountingListManager.GetStatus();
 }
 
 void Framework::MT_StopRouteManager()
 {
-  m_rountingManager.StopManager();
+  m_rountingListManager.StopManager();
   if(m_deactivateMapotempoRouteFn)
   {
     m_deactivateMapotempoRouteFn();
@@ -751,7 +768,7 @@ void Framework::MT_StopRouteManager()
 
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingManager.InitManager(indexBmCat, indexBm);
+  bool res = m_rountingListManager.InitManager(indexBmCat, indexBm);
 
   if(res && m_activateMapotempoRouteFn)
   {
@@ -761,23 +778,23 @@ bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 }
 
 int64_t Framework::MT_GetCurrentBookmarkCategory(){
-  return m_rountingManager.GetCurrentBookmarkCategory();
+  return m_rountingListManager.GetCurrentBookmarkCategory();
 }
 
 int64_t Framework::MT_GetCurrentBookmark(){
-  return m_rountingManager.GetCurrentBookmark();
+  return m_rountingListManager.GetCurrentBookmark();
 }
 
 bool Framework::MT_SetCurrentBookmark(int64_t indexBm){
-  return m_rountingManager.SetCurrentBookmark(indexBm);
+  return m_rountingListManager.SetCurrentBookmark(indexBm);
 }
 
 int64_t Framework::MT_StepNextBookmark(){
-  return m_rountingManager.StepNextBookmark();
+  return m_rountingListManager.StepNextBookmark();
 }
 
 int64_t Framework::MT_StepPreviousBookmark(){
-  return m_rountingManager.StepPreviousBookmark();
+  return m_rountingListManager.StepPreviousBookmark();
 }
 
 void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
@@ -820,9 +837,9 @@ bool Framework::MT_ChangeBookmarkOrder(size_t cat, size_t oldIndex, size_t newIn
   return m_bmManager.ChangeBookmarkOrder(cat, oldIndex, newIndex);
 }
 
-bool Framework::MT_ChangeOptimiseCurrentBookmarks()
+bool Framework::MT_OptimizeCurrentBookmarks()
 {
-  bool res = m_rountingManager.optimiseCurrentCategory();
+  bool res = m_rountingListManager.optimiseCurrentRoute();
   return res;
 }
 
@@ -2669,17 +2686,12 @@ void Framework::CheckLocationForRouting(GpsInfo const & info)
   {
     double lat, lon;
     GetCurrentPosition(lat, lon);
-    if(m_rountingManager.checkCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
+    if(m_rountingListManager.checkCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
     {
         m_goalIsNearFn();
         CloseRouting();
     }
   }
-}
-
-void Framework::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
-{
-  m_routingSession.OptimizeRoute(points, result);
 }
 
 void Framework::MatchLocationToRoute(location::GpsInfo & location, location::RouteMatchingInfo & routeMatchingInfo) const

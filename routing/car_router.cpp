@@ -543,7 +543,7 @@ CarRouter::ResultCode CarRouter::CalculateRoute(m2::PointD const & startPoint,
   }
 }
 
-void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result)
+CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result)
 {
   // 1. Get nodes
 
@@ -564,7 +564,7 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
       if (!lStartMapping->IsValid())
       {
         LOG(LWARNING, ("Invalide mapping ", counter));
-        return;
+        return CarRouter::StartPointNotFound;
       }
       ResultCode const code = FindPhantomNodes(point, m2::PointD::Zero(),
                                               startPointsFound, 1, lStartMapping);
@@ -574,7 +574,7 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
       if (code != NoError)
       {
         LOG(LWARNING, ("Invalide phantom nodes : ", code));
-        return;
+        return CarRouter::StartPointNotFound;
       }
 
       // Finding start node.
@@ -596,9 +596,9 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
   crossMatrix.setStartNodes(nodesGraphsList);
   crossMatrix.setFinalNodes(nodesGraphsList);
   vector<EdgeWeight> weights;
-  ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights);
+  ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights, delegate);
   if(code != ResultCode::NoError)
-    return;
+    return code;
 
   // 3. Convert matrix for Vroom and check matrix
   LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
@@ -613,7 +613,7 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
       if(INT_MAX == weights[counter])
       {
         LOG(LWARNING, ("incorect value in matrix at : ", i , " ", j ));
-        return;
+        return ResultCode::RouteNotFound;
       }
       counter++;
     }
@@ -643,6 +643,7 @@ void CarRouter::OptimizeRoute(vector<m2::PointD> &points, std::pair<std::list<si
   //result_list.pop_front();
   result.first.swap(result_list);
   result.second = solution.second;
+  return ResultCode::NoError;
 }
 
 IRouter::ResultCode CarRouter::FindPhantomNodes(m2::PointD const & point,

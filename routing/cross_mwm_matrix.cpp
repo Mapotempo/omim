@@ -46,7 +46,7 @@ namespace routing
     validity = false;
   }
 
-  IRouter::ResultCode CrossMatrix::CalculateCrossMwmMatrix(vector<EdgeWeight> &res)
+  IRouter::ResultCode CrossMatrix::CalculateCrossMwmMatrix(vector<EdgeWeight> &res, RouterDelegate const & delegate)
   {
     if(!(mStartGraphNodes.size() > 0))
       return IRouter::ResultCode::StartPointNotFound;
@@ -105,6 +105,7 @@ namespace routing
     {
       for(size_t j = 0; j < mFinalGraphNodes.size(); j++)
       {
+        delegate.OnProgress(counter * 100 / (mFinalGraphNodes.size() * mStartGraphNodes.size()));
         if(mWeights[counter] == INT_MAX)
         {
           TRoutingNodes start, final;

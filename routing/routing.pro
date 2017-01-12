@@ -61,6 +61,7 @@ SOURCES += \
     turns_tts_text.cpp \
     vehicle_model.cpp \
     cross_mwm_matrix.cpp \
+    async_optimizer.cpp \
 
 
 HEADERS += \
@@ -122,3 +123,4 @@ HEADERS += \
     vehicle_mask.hpp \
     vehicle_model.hpp \
     cross_mwm_matrix.hpp \
+    async_optimizer.hpp \
