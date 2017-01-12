@@ -221,7 +221,17 @@ public class RoutingPlanController extends ToolbarController
     }
 
     if (!isTaxiRouterType())
-      setStartButton();
+    {
+      //setStartButton();
+      ((MwmActivity)mActivity).closeMenu(Statistics.EventName.ROUTING_START, AlohaHelper.ROUTING_START, new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          RoutingController.get().start();
+        }
+      });
+    }
     showAltitudeChartAndRoutingDetails();
   }
 
