@@ -101,7 +101,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
       if(RouteListManager.INSTANCE.getStatus()
          && RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
       {
-        RouteListManager.nativeStopRoutingManager();
+        RouteListManager.INSTANCE.stopRoutingManager();
       }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
       getAdapter().notifyDataSetChanged();

@@ -18,14 +18,10 @@ import com.mapswithme.util.UiUtils;
 public class MapotempoMenu extends BaseMenu
 {
   private final RotateDrawable mToggleImage;
-  private final ImageView mTts;
 
   public enum Item implements BaseMenu.Item
   {
-    TOGGLE(R.id.toggle),
-    TTS_VOLUME(R.id.tts_volume),
-    STOP(R.id.stop),
-    SETTINGS(R.id.settings);
+    TOGGLE(R.id.toggle);
 
     private final int mViewId;
 
@@ -55,24 +51,12 @@ public class MapotempoMenu extends BaseMenu
     setToggleState(false, false);
 
     mapItem(Item.TOGGLE, mLineFrame);
-
-    mapItem(Item.SETTINGS, mFrame);
-
-    mTts = (ImageView) mapItem(Item.TTS_VOLUME, mFrame);
   }
 
   @Override
   public void onResume(@Nullable Runnable procAfterMeasurement)
   {
     super.onResume(procAfterMeasurement);
-    refreshTts();
-  }
-
-  public void refreshTts()
-  {
-    mTts.setImageDrawable(TtsPlayer.isEnabled() ? Graphics.tint(mFrame.getContext(), R.drawable.ic_voice_on,
-                                                                R.attr.colorAccent)
-                                                : Graphics.tint(mFrame.getContext(), R.drawable.ic_voice_off));
   }
 
   @Override
@@ -114,7 +98,5 @@ public class MapotempoMenu extends BaseMenu
   {
     super.show(show);
     measureContent(null);
-
-    UiUtils.showIf(show && Framework.nativeGetRouter() != Framework.ROUTER_TYPE_PEDESTRIAN, mTts);
   }
 }

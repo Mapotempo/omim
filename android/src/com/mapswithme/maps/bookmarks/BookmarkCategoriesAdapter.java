@@ -98,7 +98,7 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
         if (set.getBookmark(0) != null && !visibility)
           RouteListManager.INSTANCE.initRoutingManager(set.getId(), 0);
         else
-          RouteListManager.INSTANCE.nativeStopRoutingManager();
+          RouteListManager.INSTANCE.stopRoutingManager();
 
         holder.setVisibilityState(set.isVisible());
         notifyDataSetChanged();

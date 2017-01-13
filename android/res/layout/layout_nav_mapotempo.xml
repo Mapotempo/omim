@@ -38,38 +38,26 @@
       android:layout_gravity="left|center_vertical" />
 
     <ImageView
-      android:id="@+id/mt_action_left"
-      style="@style/MwmTheme.Menu.Line.Button"
-      android:src="@drawable/ic_route_to"
-      android:tag="@string/tag_menu_collapse"
-      android:layout_height="64dp"
-      android:layout_gravity="left|center_vertical"/>
+      android:id="@+id/toggle"
+      android:layout_width="@dimen/nav_button_height"
+      android:layout_height="@dimen/nav_button_height"
+      android:layout_gravity="center_horizontal|center_vertical"
+      android:background="?clickableBackground"
+      android:scaleType="center"
+      android:tint="?iconTint"
+      tools:src="@drawable/ic_menu_close"/>
 
-    <LinearLayout
+    <TextView
+      android:id="@+id/mt_current_bm"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_height="64dp"
+      android:text="9. Client206 ddddd"
+      android:gravity="center"
+      android:textSize="18sp"
       android:layout_weight="1"
-      android:orientation="vertical">
-
-      <ImageView
-        android:id="@+id/toggle"
-        android:layout_width="@dimen/nav_button_height"
-        android:layout_height="@dimen/nav_button_height"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:background="?clickableBackground"
-        android:scaleType="center"
-        android:tint="?iconTint"
-        tools:src="@drawable/ic_menu_close"/>
-
-      <TextView
-        android:id="@+id/mt_current_bm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="9. Client206 ddddd"
-        android:gravity="center_horizontal"
-        android:layout_gravity="center|center_vertical"
-        android:textSize="18sp"/>
-    </LinearLayout>
+      android:layout_gravity="center|center_vertical"
+      style="@style/MwmTheme.Menu.Line.Button"
+      android:tag="@string/tag_menu_collapse"/>
 
     <ImageButton
       android:id="@+id/mt_action_right"

@@ -14,7 +14,7 @@
       android:id="@+id/mt_list_manager_optim"
       style="@style/MwmTheme.Menu.Line.Button"
       android:src="@drawable/ic_font_awesome_4_7_0_cogs_256_0_ffffff_none"
-      android:tag="@string/tag_menu_collapse"
+      android:background="?clickableBackground"
       android:layout_height="64dp"
       android:layout_gravity="left|center_vertical" />
 
@@ -38,11 +38,12 @@
 
     <ImageView
       android:id="@+id/mt_list_manager_activate"
-      style="@style/MwmTheme.Menu.Line.Button"
-      android:src="@drawable/ic_font_awesome_4_7_0_play_circle_o_256_0_ffffff_none"
+      style="@style/MwmWidget.MTButton"
+      android:background="?clickableBackground"
+      android:src="@drawable/ic_bookmark_hide"
+      android:padding="20dp"
       android:layout_height="64dp"
-      android:tag="@string/tag_menu_collapse"
-      android:layout_gravity="right|center_vertical"/>
+      android:layout_gravity="right|center_vertical" />
   </LinearLayout>
 
 

@@ -29,8 +29,8 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
   private boolean mDragOnLongPress;
 
   // Information current open category and bookmark status.
+  private boolean isCurrentOpenCategory = false;
   private int mCurrentOpenBookmarkIdx = -1;
-  private int mCurrentOpenCategoryIdx = -1;
 
   private void init(int layoutId, int grabHandleId, boolean dragOnLongPress)
   {
@@ -56,8 +56,8 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
 
     if(RouteListManager.INSTANCE.getStatus() && (mCategory.getId() == RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
     {
+      isCurrentOpenCategory = true;
       mCurrentOpenBookmarkIdx = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
-      mCurrentOpenCategoryIdx = RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId();
     }
 
     List<Integer>mItemArray = new ArrayList<>(mCategory.getBookmarksCount());
@@ -103,7 +103,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
     super.onBindViewHolder(holder, position);
 
     final Bookmark bookmark = mCategory.getBookmark(position);
-    if(mCurrentOpenCategoryIdx == mCategory.getId())
+    if(RouteListManager.INSTANCE.getStatus() && isCurrentOpenCategory)
     {
       mCurrentOpenBookmarkIdx = RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId();
     }
@@ -139,14 +139,16 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
     if(mCategory == null)
       return;
 
-    mCurrentOpenCategoryIdx = RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId();
-
-    if(mCurrentOpenCategoryIdx == mCategory.getId())
+    if(currentBookmark != null
+       && RouteListManager.INSTANCE.getStatus()
+       && currentBookmark.getCategoryId() == mCategory.getId())
     {
+      isCurrentOpenCategory = true;
       mCurrentOpenBookmarkIdx = currentBookmark.getBookmarkId();
     }
     else
     {
+      isCurrentOpenCategory = false;
       mCurrentOpenBookmarkIdx = -1;
     }
 

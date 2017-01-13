@@ -1,5 +1,7 @@
 package com.mapswithme.maps.bookmarks.data;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +11,18 @@ public enum RouteListManager
 
   private static List<CurrentBookmarkChangeListener> mCurrentBookmarkChangeListenerList = new ArrayList();
 
+  public void stopRoutingManager()
+  {
+    nativeStopRoutingManager();
+    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+  }
+
   public boolean initRoutingManager(int catIndex, int bmIndex)
   {
-    return nativeInitRoutingManager(catIndex, bmIndex);
+    boolean res = nativeInitRoutingManager(catIndex, bmIndex);
+    if(res)
+      RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    return res;
   }
 
   public Bookmark getCurrentBookmark()
@@ -21,17 +32,24 @@ public enum RouteListManager
 
   public boolean setCurrentBookmark(int bmIndex)
   {
-    return nativeSetCurrentBookmark(bmIndex);
+    boolean res = nativeSetCurrentBookmark(bmIndex);
+    if(res)
+      RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    return res;
   }
 
   public Bookmark stepNextBookmark()
   {
-    return nativeStepNextBookmark();
+    Bookmark bm = nativeStepNextBookmark();
+    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    return bm;
   }
 
   public Bookmark stepPreviousBookmark()
   {
-    return nativeStepPreviousBookmark();
+    Bookmark bm = nativeStepPreviousBookmark();
+    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    return bm;
   }
 
   public boolean getStatus()
@@ -41,7 +59,7 @@ public enum RouteListManager
 
   public interface CurrentBookmarkChangeListener
   {
-    void onCurrentBookmarkChangeListerner(Bookmark currentBookmark);
+    void onCurrentBookmarkChangeListerner(@Nullable Bookmark currentBookmark);
   }
 
   public static void addCurrentBookmarkChangeListener(CurrentBookmarkChangeListener currentBookmarkChangeListener)
@@ -56,29 +74,31 @@ public enum RouteListManager
 
   public static void notifyCurrentBookmarkChange()
   {
+    Bookmark currentBookmark = null;
     if(INSTANCE.getStatus())
     {
-      Bookmark currentBookmark = INSTANCE.getCurrentBookmark();
-      for (CurrentBookmarkChangeListener currentBookmarkChangeListener : mCurrentBookmarkChangeListenerList)
-      {
-        currentBookmarkChangeListener.onCurrentBookmarkChangeListerner(currentBookmark);
-      }
+      currentBookmark = INSTANCE.getCurrentBookmark();
+    }
+
+    for (CurrentBookmarkChangeListener currentBookmarkChangeListener : mCurrentBookmarkChangeListenerList)
+    {
+      currentBookmarkChangeListener.onCurrentBookmarkChangeListerner(currentBookmark);
     }
   }
 
   public static native boolean nativeGetStatus();
 
-  public static native void nativeStopRoutingManager();
+  private static native void nativeStopRoutingManager();
 
-  public static native boolean nativeInitRoutingManager(int catIndex, int bmIndex);
+  private static native boolean nativeInitRoutingManager(int catIndex, int bmIndex);
 
   public static native Bookmark nativeGetCurrentBookmark();
 
-  public static native boolean nativeSetCurrentBookmark(int bmIndex);
+  private static native boolean nativeSetCurrentBookmark(int bmIndex);
 
-  public static native Bookmark nativeStepNextBookmark();
+  private static native Bookmark nativeStepNextBookmark();
 
-  public static native Bookmark nativeStepPreviousBookmark();
+  private static native Bookmark nativeStepPreviousBookmark();
 
   public static native boolean nativeRestoreRoutingManager();
 

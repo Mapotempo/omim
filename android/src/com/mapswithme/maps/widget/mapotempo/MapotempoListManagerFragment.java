@@ -15,11 +15,15 @@ import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.RouteListManager;
+import com.mapswithme.util.ThemeUtils;
+import com.mapswithme.util.concurrency.UiThread;
 
 public class MapotempoListManagerFragment extends Fragment implements Framework.MTRouteOptimize
 {
   private BookmarkCategory mCategory;
+  private boolean isActivate = false;
 
+  private ImageView mListManagerActivate;
   private ProgressBar mOptimProgressBar;
 
   public static MapotempoListManagerFragment newInstance() {
@@ -40,6 +44,10 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     if(categoryIndex >= 0)
     {
       mCategory = BookmarkManager.INSTANCE.getCategory(categoryIndex);
+      if(RouteListManager.INSTANCE.getStatus() && (mCategory.getId() == RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
+      {
+        isActivate = true;
+      }
     }
   }
 
@@ -71,8 +79,8 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     mOptimProgressBar = (ProgressBar) view.findViewById(R.id.mt_optim_progress_bar);
     mOptimProgressBar.setMax(100);
 
-    ImageView optim_launcher = (ImageView) view.findViewById(R.id.mt_list_manager_optim);
-    optim_launcher.setOnClickListener(new View.OnClickListener()
+    ImageView listManagerOptim = (ImageView) view.findViewById(R.id.mt_list_manager_optim);
+    listManagerOptim.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
@@ -80,6 +88,31 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
         mOptimProgressBar.setProgress(0);
         mOptimProgressBar.setVisibility(View.VISIBLE);
         RouteListManager.nativeOptimiseBookmarkCategory(mCategory.getId());
+      }
+    });
+
+    mListManagerActivate = (ImageView) view.findViewById(R.id.mt_list_manager_activate);
+    mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? isActivate ? R.drawable.ic_bookmark_show_night
+                                                                                 : R.drawable.ic_bookmark_hide_night
+                                                                    : isActivate ? R.drawable.ic_bookmark_show
+                                                                                 : R.drawable.ic_bookmark_hide);
+    mListManagerActivate.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        boolean status = false;
+
+        if (mCategory.getBookmark(0) != null && !isActivate)
+          status = RouteListManager.INSTANCE.initRoutingManager(mCategory.getId(), 0);
+        else
+          RouteListManager.INSTANCE.stopRoutingManager();
+
+        mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? status ? R.drawable.ic_bookmark_show_night
+                                                                                 : R.drawable.ic_bookmark_hide_night
+                                                                        : status ? R.drawable.ic_bookmark_show
+                                                                                 : R.drawable.ic_bookmark_hide);
+        isActivate = status;
       }
     });
 
@@ -94,7 +127,7 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
   public void onMtRouteOptimizeFinish(boolean status)
   {
     v = status;
-    getActivity().runOnUiThread(new Runnable()
+    UiThread.run(new Runnable()
     {
       @Override
       public void run()
@@ -117,7 +150,7 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
   public void onMtRouteOptimizeProgress(int progress)
   {
     p = progress;
-    getActivity().runOnUiThread(new Runnable()
+    UiThread.run(new Runnable()
     {
       @Override
       public void run()

@@ -45,7 +45,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   // MAPOTEMPO UI ROUTING
   private ImageView mMTNextBM;
   private ImageView mMTPrevBM;
-  private ImageView mMTActionLeft;
+  //private ImageView mMTActionLeft;
   private ImageButton mMTActionRight;
   private TextView mMTCurrentBM;
   private Button mapotempoStartRoute;
@@ -61,7 +61,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mLineFrame = (LinearLayout) mBottomMapotempoFrame.findViewById(R.id.line_frame);
     mMTNextBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_nxt_bm);
     mMTPrevBM = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_prv_bm);
-    mMTActionLeft = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
+    //mMTActionLeft = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
     mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
@@ -78,12 +78,12 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       public void onItemClick(MapotempoMenu.Item item)
       {
         final MwmActivity parent = ((MwmActivity) mBottomMapotempoFrame.getContext());
-
         switch (item)
         {
           case TOGGLE:
             mapotempoMenu.toggle(false);
             parent.refreshFade();
+            parent.closePlacePage();
             break;
           default:
             break;
@@ -142,20 +142,20 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       }
     });
 
-    mMTActionLeft.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Bookmark bookmark = RouteListManager.INSTANCE.getCurrentBookmark();
-        if (RoutingController.get().isPlanning() && bookmark != null)
-        {
-          RoutingController.get().setEndPoint(bookmark);
-        }
-        else
-        {
-          ((MwmActivity)activity).startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, bookmark);
-        }
-      }
-    });
+//    mMTActionLeft.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View v) {
+//        Bookmark bookmark = RouteListManager.INSTANCE.getCurrentBookmark();
+//        if (RoutingController.get().isPlanning() && bookmark != null)
+//        {
+//          RoutingController.get().setEndPoint(bookmark);
+//        }
+//        else
+//        {
+//          ((MwmActivity)activity).startLocationToPoint(Statistics.EventName.PP_ROUTE, AlohaHelper.PP_ROUTE, bookmark);
+//        }
+//      }
+//    });
 
     Bookmark.addBookmarkParamsChangeListener(this);
   }
@@ -183,7 +183,6 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       mMTCurrentBM.setText(currentBm.getTitle());
       mMTActionRight.setImageResource(currentBm.getIcon().getSelectedResId());
-      RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
     }
   }
 
