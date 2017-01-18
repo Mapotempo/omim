@@ -15,6 +15,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.RouteListManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
+import com.mapswithme.maps.widget.mapotempo.MapotempoListActivity;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.BottomSheetHelper;
@@ -137,7 +138,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   @Override
   public void onItemClick(View v, int position)
   {
-    startActivity(new Intent(getActivity(), BookmarkListActivity.class)
+    startActivity(new Intent(getActivity(), MapotempoListActivity.class)
                       .putExtra(ChooseBookmarkCategoryFragment.CATEGORY_ID, position));
   }
 }

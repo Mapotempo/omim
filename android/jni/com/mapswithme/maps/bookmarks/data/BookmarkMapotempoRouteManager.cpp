@@ -126,6 +126,13 @@ using namespace jni;
   Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeOptimiseBookmarkCategory(
        JNIEnv * env, jobject thiz, int catIndex)
   {
-    return frm()->MT_OptimiseBookmarkCategory(catIndex);;
+    return frm()->MT_OptimiseBookmarkCategory(catIndex);
+  }
+
+  JNIEXPORT void JNICALL
+  Java_com_mapswithme_maps_bookmarks_data_RouteListManager_nativeStopCurrentOptimisation(
+       JNIEnv * env)
+  {
+    frm()->MT_StopCurrentOptimisation();
   }
 }  // extern "C"

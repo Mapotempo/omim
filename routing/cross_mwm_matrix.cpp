@@ -74,6 +74,9 @@ namespace
 
     for(auto startNodesByMapping : mStartNodesByMappingContainer)
     {
+      if (delegate.IsCancelled())
+        return IRouter::Cancelled;
+
       TRoutingNodesByMappingContainer::iterator finalNodesByMapping = mFinalNodesByMappingContainer.find(startNodesByMapping.first);
       if(finalNodesByMapping != mFinalNodesByMappingContainer.end())
       {
@@ -113,6 +116,9 @@ namespace
     {
       for(size_t j = 0; j < mFinalGraphNodes.size(); j++)
       {
+        if (delegate.IsCancelled())
+          return IRouter::Cancelled;
+
         delegate.OnProgress(kOptimPointsFoundProgress +
                             counter * kOptimMatrixFoundProgress / (mFinalGraphNodes.size() * mStartGraphNodes.size()));
 

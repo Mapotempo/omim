@@ -61,6 +61,7 @@ public :
 
   // Optimisation
   bool optimiseBookmarkCategory(int64_t indexBmCat);
+  void stopCurrentOptimisation();
   void SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener);
 

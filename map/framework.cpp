@@ -843,6 +843,11 @@ bool Framework::MT_OptimiseBookmarkCategory(int64_t indexBmCat)
   return res;
 }
 
+void Framework::MT_StopCurrentOptimisation()
+{
+  m_rountingListManager.stopCurrentOptimisation();
+}
+
 namespace
 {
   class EqualCategoryName

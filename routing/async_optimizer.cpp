@@ -207,11 +207,11 @@ void AsyncOptimizer::LogCode(IRouter::ResultCode code, double const elapsedSec)
 
 void AsyncOptimizer::ResetDelegate()
 {
-  /*if (m_delegate)
+  if (m_delegate)
   {
     m_delegate->Cancel();
     m_delegate.reset();
-  }*/
+  }
 }
 
 void AsyncOptimizer::ThreadFunc()
@@ -224,7 +224,6 @@ void AsyncOptimizer::ThreadFunc()
 
       if (m_clearState && m_router)
       {
-        m_router->ClearState();
         m_clearState = false;
       }
 
@@ -240,15 +239,18 @@ void AsyncOptimizer::ThreadFunc()
 
 void AsyncOptimizer::OptimizeRoute()
 {
+  shared_ptr<RouterDelegateProxy> delegate;
   {
     unique_lock<mutex> ul(m_guard);
-
-    std::pair<std::list<size_t>, size_t> result;
-    m2::PolylineD polyline;
-    IRouter::ResultCode   code = m_router->OptimizeRoute(m_points, m_delegate->GetDelegate(), result, polyline);
-    m_delegate->OnReady(result, code, polyline);
+    delegate = m_delegate;
     m_hasRequest = false;
   }
+  std::pair<std::list<size_t>, size_t> result;
+  m2::PolylineD polyline;
+
+  IRouter::ResultCode  code = m_router->OptimizeRoute(m_points, delegate->GetDelegate(), result, polyline);
+
+  delegate->OnReady(result, code, polyline);
 }
 
 /*

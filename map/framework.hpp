@@ -342,6 +342,8 @@ public:
   using TOptimisationProgessFn = function<void (float)>;
   void MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener);
   bool MT_OptimiseBookmarkCategory(int64_t indexBmCat);
+  void MT_StopCurrentOptimisation();
+
 //  void MT_OptimizeRoutes(vector<m2::PointD> &points, std::pair<std::list<size_t>, size_t> &result);
 
 

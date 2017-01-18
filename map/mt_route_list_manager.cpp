@@ -180,9 +180,6 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
     auto readyCallback = [this, indexBmCat] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
-      //Free the bookmark guard here
-      // FIXME JMF : review this ....
-
       BookmarkCategory * curBmCat = GetBmCategory(indexBmCat);
 
       if (code == routing::IRouter::ResultCode::NoError)
@@ -219,9 +216,6 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
       else
         LOG(LWARNING, ("Problem occured during route optimization, abort"));
 
-      // Free the route list manager mutex
-      m_routeListManagerMutex.Unlock();
-
       if(m_optimisationFinishFn)
         m_optimisationFinishFn(true);
     };
@@ -234,7 +228,15 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
     m_optimizer->OptimizeRoute(problemePoints, readyCallback, progressCallback, 0);
   }
+
+  // Free the route list manager mutex
+  m_routeListManagerMutex.Unlock();
   return true;
+}
+
+void MTRouteListManager::stopCurrentOptimisation()
+{
+  m_optimizer->ClearState();
 }
 
 /**

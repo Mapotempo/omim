@@ -105,4 +105,6 @@ public enum RouteListManager
   public static native Bookmark nativeAddBookmarkToCurrentCategory(String name, double lat, double lon);
 
   public static native boolean nativeOptimiseBookmarkCategory(int catIndex);
+
+  public static native void nativeStopCurrentOptimisation();
 }

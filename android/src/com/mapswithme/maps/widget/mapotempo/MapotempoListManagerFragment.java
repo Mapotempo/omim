@@ -22,9 +22,12 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
 {
   private BookmarkCategory mCategory;
   private boolean isActivate = false;
-
   private ImageView mListManagerActivate;
+
   private ProgressBar mOptimProgressBar;
+  private boolean mOptimInProgress = false;
+  private int mLastProgress = 0;
+  private boolean mLastOptimReturnStatus = false;
 
   public static MapotempoListManagerFragment newInstance() {
     return new MapotempoListManagerFragment();
@@ -85,9 +88,13 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
       @Override
       public void onClick(View v)
       {
-        mOptimProgressBar.setProgress(0);
-        mOptimProgressBar.setVisibility(View.VISIBLE);
-        RouteListManager.nativeOptimiseBookmarkCategory(mCategory.getId());
+        if(!mOptimInProgress)
+        {
+          mOptimProgressBar.setProgress(0);
+          mOptimProgressBar.setVisibility(View.VISIBLE);
+          RouteListManager.nativeOptimiseBookmarkCategory(mCategory.getId());
+          mOptimInProgress = true;
+        }
       }
     });
 
@@ -103,7 +110,8 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
       {
         boolean status = false;
 
-        if (mCategory.getBookmark(0) != null && !isActivate)
+        if (mCategory.getBookmark(0) != null
+            && !isActivate)
           status = RouteListManager.INSTANCE.initRoutingManager(mCategory.getId(), 0);
         else
           RouteListManager.INSTANCE.stopRoutingManager();
@@ -119,19 +127,33 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     return view;
   }
 
-  // Attention ses méthodes appelles du code thread on le racroche ton au thread ui !!!!
-  // FIXME A l'arrache !!!!! A refaire
+  public boolean onBackPressed()
+  {
+    boolean res = false;
+    if(mOptimInProgress)
+    {
+      RouteListManager.nativeStopCurrentOptimisation();
+      mOptimInProgress = false;
+      mOptimProgressBar.setVisibility(View.GONE);
 
-  boolean v;
+      res = true;
+    }
+
+    return res;
+  }
+
+  // Attention ces "callback" sont appellés depuis un thread.
+  // On ne modifie l'uix que sur le thread ui !!!!
   @Override
   public void onMtRouteOptimizeFinish(boolean status)
   {
-    v = status;
+    mLastOptimReturnStatus = status;
     UiThread.run(new Runnable()
     {
       @Override
       public void run()
       {
+        mOptimInProgress = false;
         mOptimProgressBar.setVisibility(View.GONE);
         // Sub Fragment rebuild
         if (getView().findViewById(R.id.mt_layout_fragment_container) != null
@@ -145,17 +167,16 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     });
   }
 
-  int p;
   @Override
   public void onMtRouteOptimizeProgress(int progress)
   {
-    p = progress;
+    mLastProgress = progress;
     UiThread.run(new Runnable()
     {
       @Override
       public void run()
       {
-        mOptimProgressBar.setProgress(p);
+        mOptimProgressBar.setProgress(mLastProgress);
       }
     });
   }

@@ -594,10 +594,13 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
       }
 
       delegate.OnProgress(counter * kOptimPointsFoundProgress / points.size());
+      INTERRUPT_WHEN_CANCELLED(delegate);
 
       counter++;
     }
   }
+
+  INTERRUPT_WHEN_CANCELLED(delegate);
 
   // 2. Cross Matrix calculation
   LOG(LDEBUG, (" Optim step 2 - Calcul Matrix"));
@@ -608,6 +611,8 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
   ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights, delegate);
   if(code != ResultCode::NoError)
     return code;
+
+  INTERRUPT_WHEN_CANCELLED(delegate);
 
   // 3. Convert matrix for Vroom and check matrix
   LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
@@ -627,8 +632,10 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
       counter++;
     }
   }
+
+  INTERRUPT_WHEN_CANCELLED(delegate);
   delegate.OnProgress(kOptimPointsFoundProgress + kOptimMatrixFoundProgress);
-  
+
   // 4. Vroom solver
   LOG(LDEBUG, (" Optim step 4 - Solve Problem"));
   LOG(LDEBUG, (" Solver version : ", get_version()));
@@ -650,6 +657,8 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
     result_list.push_back(v);
     LOG(LDEBUG, ("         index : ", v));
   }
+
+  INTERRUPT_WHEN_CANCELLED(delegate);
 
   // 5. Calcul multi-route polyline
   m2::PointD previous = m2::PointD::Zero();
@@ -684,6 +693,7 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
   result.second = solution.second;
   delegate.OnProgress(100.);
 
+  INTERRUPT_WHEN_CANCELLED(delegate);
   return ResultCode::NoError;
 }
 
