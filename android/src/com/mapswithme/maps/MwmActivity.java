@@ -17,8 +17,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,7 +27,6 @@ import android.widget.Toast;
 import com.mapswithme.maps.Framework.MapObjectListener;
 import com.mapswithme.maps.Framework.MTRouteListener;
 import com.mapswithme.maps.Framework.MTGoalIsNearListener;
-import com.mapswithme.maps.Framework.MTRouteOptimize;
 import com.mapswithme.maps.activity.CustomNavigateUpListener;
 import com.mapswithme.maps.ads.LikesManager;
 import com.mapswithme.maps.api.ParsedMwmRequest;
@@ -44,7 +41,7 @@ import com.mapswithme.maps.bookmarks.data.Banner;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.RouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.downloader.DownloaderActivity;
 import com.mapswithme.maps.downloader.DownloaderFragment;
@@ -95,7 +92,6 @@ import com.mapswithme.util.ThemeUtils;
 import com.mapswithme.util.UiUtils;
 import com.mapswithme.util.Utils;
 import com.mapswithme.util.concurrency.UiThread;
-import com.mapswithme.util.log.Logger;
 import com.mapswithme.util.sharing.ShareOption;
 import com.mapswithme.util.sharing.SharingHelper;
 import com.mapswithme.util.statistics.AlohaHelper;
@@ -455,7 +451,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     //});
     //getWindow().getDecorView().addOnLayoutChangeListener(mVisibleRectMeasurer);
 
-    RouteListManager.INSTANCE.nativeRestoreRoutingManager();
+    MTRouteListManager.INSTANCE.nativeRestoreRoutingManager();
   }
 
   private void initViews()
@@ -1071,7 +1067,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     else if (MapObject.isOfType(MapObject.BOOKMARK, object))
     {
       Bookmark bm = (Bookmark) object;
-      if(RouteListManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
+      if(MTRouteListManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
       {
         mMapotempoRouteController.refreshUI((Bookmark) object);
       }
@@ -1108,9 +1104,9 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @Override
   public void onMtRouteActivated()
   {
-    Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
+    Bookmark bm = MTRouteListManager.INSTANCE.getCurrentBookmark();
     BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bm.getCategoryId());
-    if(RouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
+    if(MTRouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
        && bmCat.getTracksCount() > 0)
     {
       Framework.nativeShowTrackRect(bmCat.getId(), 0);
@@ -1140,7 +1136,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
 
     RoutingController.get().cancel();
 
-    Bookmark bm = RouteListManager.INSTANCE.getCurrentBookmark();
+    Bookmark bm = MTRouteListManager.INSTANCE.getCurrentBookmark();
     mPlacePage.setMapObject(bm, true);
     mPlacePage.setState(State.DETAILS);
   }

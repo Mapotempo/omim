@@ -76,10 +76,10 @@ public enum BookmarkManager
   public Bookmark addNewBookmark(String name, double lat, double lon)
   {
     final Bookmark bookmark;
-    if(!RouteListManager.INSTANCE.getStatus())
+    if(!MTRouteListManager.INSTANCE.getStatus())
       bookmark = nativeAddBookmarkToLastEditedCategory(name, lat, lon);
     else
-      bookmark = RouteListManager.INSTANCE.nativeAddBookmarkToCurrentCategory(name, lat, lon);
+      bookmark = MTRouteListManager.INSTANCE.nativeAddBookmarkToCurrentCategory(name, lat, lon);
     Statistics.INSTANCE.trackBookmarkCreated();
     return bookmark;
   }

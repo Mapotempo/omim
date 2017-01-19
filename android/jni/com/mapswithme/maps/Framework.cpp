@@ -1250,6 +1250,8 @@ Java_com_mapswithme_maps_Framework_nativeSetVisibleRect(JNIEnv * env, jclass, ji
   frm()->SetVisibleViewport(m2::RectD(left, top, right, bottom));
 }
 
+//============ Mapotempo GLUE CODE =============//
+
 JNIEXPORT void JNICALL
 Java_com_mapswithme_maps_Framework_nativeSetMTRouteListener(JNIEnv * env, jclass clazz, jobject jListener)
 {

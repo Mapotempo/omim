@@ -13,7 +13,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.RouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
 import com.mapswithme.maps.widget.mapotempo.MapotempoListActivity;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
@@ -99,10 +99,10 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
       break;
 
     case R.id.set_delete:
-      if(RouteListManager.INSTANCE.getStatus()
-         && RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
+      if(MTRouteListManager.INSTANCE.getStatus()
+         && MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
       {
-        RouteListManager.INSTANCE.stopRoutingManager();
+        MTRouteListManager.INSTANCE.stopRoutingManager();
       }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
       getAdapter().notifyDataSetChanged();

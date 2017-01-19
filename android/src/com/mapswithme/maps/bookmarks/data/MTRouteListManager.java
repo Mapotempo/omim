@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum RouteListManager
+public enum MTRouteListManager
 {
   INSTANCE;
 
@@ -14,14 +14,14 @@ public enum RouteListManager
   public void stopRoutingManager()
   {
     nativeStopRoutingManager();
-    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    MTRouteListManager.INSTANCE.notifyCurrentBookmarkChange();
   }
 
   public boolean initRoutingManager(int catIndex, int bmIndex)
   {
     boolean res = nativeInitRoutingManager(catIndex, bmIndex);
     if(res)
-      RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+      MTRouteListManager.INSTANCE.notifyCurrentBookmarkChange();
     return res;
   }
 
@@ -34,21 +34,21 @@ public enum RouteListManager
   {
     boolean res = nativeSetCurrentBookmark(bmIndex);
     if(res)
-      RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+      MTRouteListManager.INSTANCE.notifyCurrentBookmarkChange();
     return res;
   }
 
   public Bookmark stepNextBookmark()
   {
     Bookmark bm = nativeStepNextBookmark();
-    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    MTRouteListManager.INSTANCE.notifyCurrentBookmarkChange();
     return bm;
   }
 
   public Bookmark stepPreviousBookmark()
   {
     Bookmark bm = nativeStepPreviousBookmark();
-    RouteListManager.INSTANCE.notifyCurrentBookmarkChange();
+    MTRouteListManager.INSTANCE.notifyCurrentBookmarkChange();
     return bm;
   }
 

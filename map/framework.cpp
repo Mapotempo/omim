@@ -2696,7 +2696,7 @@ void Framework::CheckLocationForRouting(GpsInfo const & info)
   {
     double lat, lon;
     GetCurrentPosition(lat, lon);
-    if(m_rountingListManager.checkCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
+    if(m_rountingListManager.CheckCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
     {
         m_goalIsNearFn();
         CloseRouting();

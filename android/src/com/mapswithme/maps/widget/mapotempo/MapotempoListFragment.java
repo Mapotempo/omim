@@ -17,7 +17,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.RouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -90,9 +90,9 @@ public class MapotempoListFragment extends Fragment
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(mCategoryIndex);
       listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
-    else if(RouteListManager.INSTANCE.getStatus())
+    else if(MTRouteListManager.INSTANCE.getStatus())
     {
-      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(RouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
+      mCurrentCategory = BookmarkManager.INSTANCE.getCategory(MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
       listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
     else

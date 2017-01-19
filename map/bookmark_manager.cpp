@@ -134,7 +134,7 @@ void BookmarkManager::ReplaceBookmark(size_t catIndex, size_t bmIndex, BookmarkD
   BookmarkCategory::Guard guard(*cat);
   static_cast<Bookmark *>(guard.m_controller.GetUserMarkForEdit(bmIndex))->SetData(bm);
   cat->SaveToKMLFile();
-bm.GetPhoneNumber();
+  bm.GetPhoneNumber();
   m_lastType = bm.GetType();
   SaveState();
 }

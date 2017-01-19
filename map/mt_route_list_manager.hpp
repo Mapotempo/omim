@@ -10,6 +10,12 @@
 
 #include "base/mutex.hpp"
 
+
+/**
+ * La classe MTRouteListManager permet d'enregister un signet courant.
+ * En héritant du BookmarkManager il gere la suppression et le déplacement
+ * du signet dans sa liste.
+ */
 class MTRouteListManager : public BookmarkManager
 {
   using TOptimisationFinishFn = function<void (bool)>;
@@ -57,7 +63,7 @@ public :
   int64_t StepPreviousBookmark();
   int64_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
   int64_t GetCurrentBookmark(){return m_indexCurrentBm;}
-  bool checkCurrentBookmarkStatus(const double & curLat, const double & curLon);
+  bool CheckCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
   // Optimisation
   bool optimiseBookmarkCategory(int64_t indexBmCat);

@@ -128,7 +128,7 @@ int64_t MTRouteListManager::StepPreviousBookmark()
   return GetCurrentBookmark();
 }
 
-bool MTRouteListManager::checkCurrentBookmarkStatus(const double & curLat, const double & curLon)
+bool MTRouteListManager::CheckCurrentBookmarkStatus(const double & curLat, const double & curLon)
 {
   if(GetStatus())
   {
@@ -156,14 +156,12 @@ void MTRouteListManager::SetOptimisationListeners(TOptimisationFinishFn const & 
 
 bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 {
-  if(!GetStatus())
-    return false;
+  threads::MutexGuard guard(m_routeListManagerMutex);
 
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
   if(bmCat == nullptr)
     return false;
 
-  m_routeListManagerMutex.Lock();
   {
     double lat, lon;
     m_framework.GetCurrentPosition(lat, lon);
@@ -180,7 +178,9 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
     auto readyCallback = [this, indexBmCat] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
-      BookmarkCategory * curBmCat = GetBmCategory(indexBmCat);
+      threads::MutexGuard guard(m_routeListManagerMutex);
+
+      BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
 
       if (code == routing::IRouter::ResultCode::NoError)
       {
@@ -203,12 +203,12 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         params.m_colors.push_back({ 15.0f, dp::Color::Black()});
 
         //Track const track(points, params);
-        curBmCat->ClearTracks();
-        curBmCat->AddTrack(make_unique<Track>(polyline, params));
+        bmCat->ClearTracks();
+        bmCat->AddTrack(make_unique<Track>(polyline, params));
 
         if(indexBmCat == m_indexCurrentBmCat)
         {
-          BookmarkCategory::Guard guard(*curBmCat);
+          BookmarkCategory::Guard guard(*bmCat);
           guard.m_controller.SetIsVisible(false);
           guard.m_controller.SetIsVisible(true);
         }
@@ -229,8 +229,6 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
     m_optimizer->OptimizeRoute(problemePoints, readyCallback, progressCallback, 0);
   }
 
-  // Free the route list manager mutex
-  m_routeListManagerMutex.Unlock();
   return true;
 }
 
