@@ -17,6 +17,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.util.ThemeUtils;
 import com.mapswithme.util.concurrency.UiThread;
+import com.mapswithme.util.sharing.SharingHelper;
 
 public class MapotempoListManagerFragment extends Fragment implements Framework.MTRouteOptimize
 {
@@ -124,6 +125,15 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
       }
     });
 
+    ImageView listManagerShare = (ImageView) view.findViewById(R.id.mt_list_manager_share);
+    listManagerShare.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        SharingHelper.shareBookmarksCategory(getActivity(), mCategory.getId());
+      }
+    });
     return view;
   }
 

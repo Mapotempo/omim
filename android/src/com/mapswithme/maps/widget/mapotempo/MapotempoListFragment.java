@@ -88,16 +88,16 @@ public class MapotempoListFragment extends Fragment
     if(mCategoryIndex >= 0)
     {
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(mCategoryIndex);
-      listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
     else if(MTRouteListManager.INSTANCE.getStatus())
     {
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
-      listAdapter = new MapotempoListAdapter(mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
     else
     {
-      listAdapter = new MapotempoListAdapter(R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
     }
 
     mDragListView.setAdapter(listAdapter, false);

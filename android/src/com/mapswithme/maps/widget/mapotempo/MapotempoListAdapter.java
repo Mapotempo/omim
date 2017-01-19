@@ -1,8 +1,10 @@
 package com.mapswithme.maps.widget.mapotempo;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,15 +16,21 @@ import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
+import com.mapswithme.maps.widget.placepage.EditBookmarkFragment;
+import com.mapswithme.maps.widget.placepage.Sponsored;
+import com.mapswithme.util.BottomSheetHelper;
+import com.mapswithme.util.sharing.ShareOption;
 import com.woxthebox.draglistview.DragItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoListAdapter.ViewHolder>
-    implements Bookmark.BookmarkParamsChangeListener
-    ,MTRouteListManager.CurrentBookmarkChangeListener
+    implements Bookmark.BookmarkParamsChangeListener,
+               MTRouteListManager.CurrentBookmarkChangeListener
 {
+  private Activity mActivity;
+
   private BookmarkCategory mCategory;
   private int mLayoutId;
   private int mGrabHandleId;
@@ -42,14 +50,16 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
     setItemList(mItemArray);
   }
 
-  public MapotempoListAdapter(int layoutId, int grabHandleId, boolean dragOnLongPress)
+  public MapotempoListAdapter(Activity activity, int layoutId, int grabHandleId, boolean dragOnLongPress)
   {
+    mActivity = activity;
     init(layoutId, grabHandleId, dragOnLongPress);
     mCategory = null;
   }
 
-  public MapotempoListAdapter(@NonNull BookmarkCategory category, int layoutId, int grabHandleId, boolean dragOnLongPress)
+  public MapotempoListAdapter(@NonNull Activity activity, @NonNull BookmarkCategory category, int layoutId, int grabHandleId, boolean dragOnLongPress)
   {
+    mActivity = activity;
     init (layoutId, grabHandleId, dragOnLongPress);
 
     mCategory = category;
@@ -171,7 +181,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
   //###############################################################################################
   //  Public class.
   //###############################################################################################
-  public class ViewHolder extends DragItemAdapter.ViewHolder
+  public class ViewHolder extends DragItemAdapter.ViewHolder implements MenuItem.OnMenuItemClickListener
   {
     public View mView;
     public TextView mText;
@@ -205,7 +215,48 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
     public boolean onItemLongClicked(View view)
     {
       super.onItemLongClicked(view);
+      BottomSheetHelper.Builder bs = BottomSheetHelper.create(mActivity, (mCategory.getBookmark(mBookmarkIndex)).getTitle())
+                                                      .sheet(R.menu.menu_bookmarks)
+                                                      .listener(this);
+      if (!ShareOption.SMS.isSupported(mActivity))
+        bs.getMenu().removeItem(R.id.share_message);
+
+      if (!ShareOption.EMAIL.isSupported(mActivity))
+        bs.getMenu().removeItem(R.id.share_email);
+
+      bs.tint().show();
       return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem)
+    {
+      Bookmark bookmark = mCategory.getBookmark(mBookmarkIndex);
+
+      switch (menuItem.getItemId())
+      {
+        case R.id.share_message:
+          ShareOption.SMS.shareMapObject(mActivity, bookmark, Sponsored.nativeGetCurrent());
+          break;
+
+        case R.id.share_email:
+          ShareOption.EMAIL.shareMapObject(mActivity, bookmark, Sponsored.nativeGetCurrent());
+          break;
+
+        case R.id.share:
+          ShareOption.ANY.shareMapObject(mActivity, bookmark, Sponsored.nativeGetCurrent());
+          break;
+
+        case R.id.edit:
+          //EditBookmarkFragment.editBookmark(mCategory.getId(), mBookmarkIndex, mActivity, getChildFragmentManager());
+          break;
+
+        case R.id.delete:
+          BookmarkManager.INSTANCE.deleteBookmark(bookmark);
+          notifyDataSetChanged();
+          break;
+      }
+      return false;
     }
 
     public void refreshInfo(Bookmark bookmark, boolean isCurrent)
