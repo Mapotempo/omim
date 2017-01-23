@@ -178,12 +178,15 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
     auto readyCallback = [this, indexBmCat] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
     {
+      bool res = false;
+
       threads::MutexGuard guard(m_routeListManagerMutex);
 
       BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
 
       if (code == routing::IRouter::ResultCode::NoError)
       {
+        res = true;        
         LOG(LINFO, ("Route optimize"));
 
         if(result.first.size() < 1)
@@ -217,7 +220,7 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         LOG(LWARNING, ("Problem occured during route optimization, abort"));
 
       if(m_optimisationFinishFn)
-        m_optimisationFinishFn(true);
+        m_optimisationFinishFn(res);
     };
 
     auto progressCallback = [this](float percent)

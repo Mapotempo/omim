@@ -1,5 +1,6 @@
 package com.mapswithme.maps.widget.mapotempo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.mapswithme.maps.Framework;
 import com.mapswithme.maps.R;
@@ -163,10 +165,20 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
       @Override
       public void run()
       {
+        if(!mLastOptimReturnStatus)
+        {
+          Context context = getContext();
+          CharSequence text = "Optimisation fail";
+          int duration = Toast.LENGTH_SHORT;
+
+          Toast toast = Toast.makeText(context, text, duration);
+          toast.show();
+        }
+
         mOptimInProgress = false;
         mOptimProgressBar.setVisibility(View.GONE);
         // Sub Fragment rebuild
-        if (getView().findViewById(R.id.mt_layout_fragment_container) != null
+        if (mLastOptimReturnStatus && getView().findViewById(R.id.mt_layout_fragment_container) != null
             && mCategory != null)
         {
           MapotempoListFragment firstFragment = new MapotempoListFragment();
