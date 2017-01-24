@@ -114,7 +114,7 @@
   <dimen name="nav_frame_padding">@dimen/margin_eighth</dimen>
   <dimen name="nav_button">28dp</dimen>
   <dimen name="nav_zoom_bottom">160dp</dimen>
-  <dimen name="nav_zoom_top">258dp</dimen>
+  <dimen name="nav_zoom_top">200dp</dimen>
   <dimen name="nav_button_top_limit">68dp</dimen>
   <dimen name="nav_my_position_bottom">136dp</dimen>
 
