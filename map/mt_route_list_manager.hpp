@@ -23,7 +23,7 @@ class MTRouteListManager : public BookmarkManager
   using TOptimisationProgessFn = function<void (float)>;
 
 private :
-  static const size_t MT_DISTANCE_BOOKMARK_DONE = 20;
+  static const size_t MT_DISTANCE_BOOKMARK_DONE = 50;
 
 private :
   Framework &m_framework;
