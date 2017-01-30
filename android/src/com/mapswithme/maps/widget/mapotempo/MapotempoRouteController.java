@@ -58,14 +58,14 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     //mMTActionLeft = (ImageView) mBottomMapotempoFrame.findViewById(R.id.mt_action_left);
     mMTActionRight = (ImageButton) mBottomMapotempoFrame.findViewById(R.id.mt_action_right);
     mMTCurrentBM = (TextView) mBottomMapotempoFrame.findViewById(R.id.mt_current_bm);
-    mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
+    //mapotempoStartRoute = (Button) mBottomMapotempoFrame.findViewById(R.id.mt_route_start);
 
-    mapotempoStartRoute.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        activity.startActivity(new Intent(activity, BookmarkCategoriesActivity.class));
-      }
-    });
+//    mapotempoStartRoute.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View v) {
+//        activity.startActivity(new Intent(activity, BookmarkCategoriesActivity.class));
+//      }
+//    });
 
     mapotempoMenu = new MapotempoMenu(mBottomMapotempoFrame, new MapotempoMenu.ItemClickListener<MapotempoMenu.Item>(){
       @Override
@@ -158,15 +158,14 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   {
     if(visibility && MTRouteListManager.INSTANCE.getStatus()) {
       mLineFrame.setVisibility(View.VISIBLE);
-      mapotempoStartRoute.setVisibility(View.GONE);
       Bookmark bookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
       refreshUI(bookmark);
     }
     else
     {
       mLineFrame.setVisibility(View.GONE);
-      mapotempoStartRoute.setVisibility(View.VISIBLE);
       mapotempoMenu.close(false);
+      mBottomMapotempoFrame.setVisibility(View.GONE);
     }
   }
 

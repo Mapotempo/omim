@@ -14,13 +14,6 @@
   tools:visibility="visible"
   tools:background="#40FF0000">
 
-  <Button
-    android:id="@+id/mt_route_start"
-    android:visibility="visible"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:background="@drawable/mt_background"/>
-
   <LinearLayout
     android:id="@+id/line_frame"
     android:visibility="gone"
