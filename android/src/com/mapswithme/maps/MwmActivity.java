@@ -917,13 +917,13 @@ public class MwmActivity extends BaseMwmFragmentActivity
             }
           });
       }
-      else if (!NewsFragment.showOn(this))
-      {
-        if (ViralFragment.shouldDisplay())
-          new ViralFragment().show(getSupportFragmentManager(), "");
-        else
-          LikesManager.INSTANCE.showDialogs(this);
-      }
+//      else if (!NewsFragment.showOn(this))
+//      {
+//        if (ViralFragment.shouldDisplay())
+//          new ViralFragment().show(getSupportFragmentManager(), "");
+//        else
+//          LikesManager.INSTANCE.showDialogs(this);
+//      }
     }
 
     RoutingController.get().restore();
