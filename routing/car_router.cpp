@@ -549,10 +549,15 @@ CarRouter::ResultCode CarRouter::CalculateRoute(m2::PointD const & startPoint,
   }
 }
 
-CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result, m2::PolylineD &polyline)
+CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points,
+                                               bool startPointInRes,
+                                               RouterDelegate const & delegate,
+                                               std::pair<std::list<size_t>,size_t> &result,
+                                               m2::PolylineD &polylineResult)
 {
   if(points.size() < 1)
     return ResultCode::NoCurrentPosition;
+    LOG(LINFO, (" la"));
 
   // 1. Get nodes
   LOG(LDEBUG, (" Optim step 1 - Get nodes"));
@@ -583,7 +588,7 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
         LOG(LWARNING, ("Invalide phantom nodes : ", code));
         return CarRouter::StartPointNotFound;
       }
-
+    LOG(LINFO, (" la"));
       // Finding start node.
       double distance = 10000000;
       for (FeatureGraphNode & start : startPointsFound)
@@ -601,7 +606,7 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
   }
 
   INTERRUPT_WHEN_CANCELLED(delegate);
-
+    LOG(LINFO, (" la"));
   // 2. Cross Matrix calculation
   LOG(LDEBUG, (" Optim step 2 - Calcul Matrix"));
   CrossMatrix crossMatrix(m_indexManager);
@@ -611,9 +616,9 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
   ResultCode const code = crossMatrix.CalculateCrossMwmMatrix(weights, delegate);
   if(code != ResultCode::NoError)
     return code;
-
+    LOG(LINFO, (" la"));
   INTERRUPT_WHEN_CANCELLED(delegate);
-
+    LOG(LINFO, (" la"));
   // 3. Convert matrix for Vroom and check matrix
   LOG(LDEBUG, (" Optim step 3 - Generate Problem"));
   pbl_context_t ctx {true, 0, false, 1};
@@ -632,7 +637,7 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
       counter++;
     }
   }
-
+    LOG(LINFO, (" la"));
   INTERRUPT_WHEN_CANCELLED(delegate);
   delegate.OnProgress(kOptimPointsFoundProgress + kOptimMatrixFoundProgress);
 
@@ -650,19 +655,31 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
   LOG(LDEBUG, ("   -  distance", solution.second));
   LOG(LDEBUG, ("   -  Index sorted : "));
   std::list<size_t> result_list(0);
-  while(!solution.first.empty())
+
+  for(index_t v : solution.first)
   {
-    index_t v = solution.first.front();
-    solution.first.pop_front();
-    result_list.push_back(v);
     LOG(LDEBUG, ("         index : ", v));
+
+    // Result adapter
+    index_t ref_adapter = v;
+
+    if (v != 0 && !startPointInRes)
+      ref_adapter = v - 1;
+    else if (!startPointInRes)
+      continue;
+
+    result_list.push_back(ref_adapter);
+
+    // FIXME feed the polyline here for the moment.
+    polylineResult.Add(points[v]);
   }
 
   INTERRUPT_WHEN_CANCELLED(delegate);
 
   // 5. Calcul multi-route polyline
-  m2::PointD previous = m2::PointD::Zero();
-  for(size_t idx : result_list)
+  //m2::PointD previous = m2::PointD::Zero();
+  /*
+  for(index_t idx : solution.first)
   {
     m2::PointD point = points[idx];
 
@@ -684,9 +701,7 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points, Route
       }
     }
     previous = point;
-    */
-    polyline.Add(point);
-  }
+  }*/
 
   //result_list.pop_front();
   result.first.swap(result_list);

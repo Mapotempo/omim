@@ -43,7 +43,11 @@ public:
                             m2::PointD const & finalPoint, RouterDelegate const & delegate,
                             Route & route) override;
 
-  ResultCode OptimizeRoute(vector<m2::PointD> &points, RouterDelegate const & delegate, std::pair<std::list<size_t>, size_t> &result, m2::PolylineD &polyline) override;
+  ResultCode OptimizeRoute(vector<m2::PointD> &points,
+                           bool startPointInRes,
+                           RouterDelegate const & delegate,
+                           std::pair<std::list<size_t>,size_t> &result,
+                           m2::PolylineD &polylineResult);
 
   virtual void ClearState() override;
 

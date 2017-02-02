@@ -164,16 +164,22 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
 
   {
     double lat, lon;
-    m_framework.GetCurrentPosition(lat, lon);
-    vector<m2::PointD> problemePoints(bmCat->GetUserMarkCount() + 1);
-    LOG(LDEBUG, (bmCat->GetUserMarkCount() , "user_mark founds"));
+    bool user_position = m_framework.GetCurrentPosition(lat, lon);
+    size_t probleme_size = (user_position ? bmCat->GetUserMarkCount() + 1 : bmCat->GetUserMarkCount()) ;
 
-    problemePoints[0] = MercatorBounds::FromLatLon(lat, lon);
+    vector<m2::PointD> problemePoints(probleme_size);
+    LOG(LINFO, (probleme_size , " probleme points founds"));
+
+    if(user_position)
+    {
+      problemePoints[0] = MercatorBounds::FromLatLon(lat, lon);
+    }
 
     for(int i = 0; i < bmCat->GetUserMarkCount(); i++)
     {
       const UserMark * user_mark = bmCat->GetUserMark(i);
-      problemePoints[i + 1] = MercatorBounds::FromLatLon(user_mark->GetLatLon().lat, user_mark->GetLatLon().lon);
+      int ref = (user_position ? i + 1: i);
+      problemePoints[ref] = MercatorBounds::FromLatLon(user_mark->GetLatLon().lat, user_mark->GetLatLon().lon);
     }
 
     auto readyCallback = [this, indexBmCat] (std::pair<std::list<size_t>, size_t> &result, routing::IRouter::ResultCode code, m2::PolylineD polyline)
@@ -197,7 +203,7 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         }
 
         // pop the first current position point
-        result.first.pop_front();
+        //result.first.pop_front();
         SortUserMarks(indexBmCat, result.first);
         m_indexCurrentBm = 0;
 
@@ -229,7 +235,9 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         m_optimisationProgressFn(percent);
     };
 
-    m_optimizer->OptimizeRoute(problemePoints, readyCallback, progressCallback, 0);
+    // On ne garde pas la position de l'utilisateur dans le résultat mais on la prend tout de même
+    // compte pour l'optimisation.
+    m_optimizer->OptimizeRoute(problemePoints, !user_position, readyCallback, progressCallback, 0);
   }
 
   return true;

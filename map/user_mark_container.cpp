@@ -242,14 +242,6 @@ bool UserMarkContainer::MoveUserMarkOrder(size_t oldIndex, size_t newIndex)
   return true;
 }
 
-// bool UserMarkContainer::SortUserMarks()
-// {
-//   std::sort (m_userMarks.begin(), m_userMarks.end(), +[](unique_ptr <UserMark> & A, unique_ptr <UserMark> & B){
-//     return A.get()->GetWeight() > B.get()->GetWeight();
-//   });
-//   return true;
-// }
-
 bool UserMarkContainer::UserMarksOrders(std::list<size_t> list)
 {
   if(list.size() != m_userMarks.size())
@@ -268,8 +260,8 @@ bool UserMarkContainer::UserMarksOrders(std::list<size_t> list)
   // Feed the container
   for(size_t ref : list)
   {
-    LOG(LDEBUG, (ref - 1, " - ", myVect[ref - 1]->GetSymbolName()));
-    m_userMarks.push_back(unique_ptr<UserMark>(myVect[ref - 1]));
+    LOG(LDEBUG, (ref - 1, " - ", myVect[ref]->GetSymbolName()));
+    m_userMarks.push_back(unique_ptr<UserMark>(myVect[ref]));
   }
   return true;
 }

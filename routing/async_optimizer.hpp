@@ -37,10 +37,11 @@ public:
   /// Processed result will be passed to callback. Callback will called at GUI thread.
   ///
   /// @param points target points for route
+  /// @param startPointInRes the first point in points list will be in res
   /// @param readyCallback function to return routing result
   /// @param progressCallback function to update the router progress
   /// @param timeoutSec timeout to cancel routing. 0 is infinity.
-  void OptimizeRoute(vector<m2::PointD> &points, TOptimReadyCallback const & readyCallback,
+  void OptimizeRoute(vector<m2::PointD> &points, bool startPointInRes, TOptimReadyCallback const & readyCallback,
                       RouterDelegate::TProgressCallback const & progressCallback,
                       uint32_t timeoutSec);
 
@@ -99,6 +100,7 @@ private:
   shared_ptr<IRouter> m_router;
 
   vector<m2::PointD> m_points;
+  bool m_startPointInRes;
 };
 
 }  // namespace routing

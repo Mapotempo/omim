@@ -140,7 +140,7 @@ void AsyncOptimizer::SetRouter(unique_ptr<IRouter> && router)//, unique_ptr<IOnl
   m_router = move(router);
 }
 
-void AsyncOptimizer::OptimizeRoute(vector<m2::PointD> &points, TOptimReadyCallback const & readyCallback,
+void AsyncOptimizer::OptimizeRoute(vector<m2::PointD> &points, bool startPointInRes, TOptimReadyCallback const & readyCallback,
                       RouterDelegate::TProgressCallback const & progressCallback,
                       uint32_t timeoutSec)
 {
@@ -148,6 +148,7 @@ void AsyncOptimizer::OptimizeRoute(vector<m2::PointD> &points, TOptimReadyCallba
   m_delegate = make_shared<RouterDelegateProxy>(readyCallback, nullptr, progressCallback, timeoutSec);
   m_hasRequest = true;
   m_threadCondVar.notify_one();
+  m_startPointInRes = startPointInRes;
   return;
 }
 
@@ -248,7 +249,11 @@ void AsyncOptimizer::OptimizeRoute()
   std::pair<std::list<size_t>, size_t> result;
   m2::PolylineD polyline;
 
-  IRouter::ResultCode  code = m_router->OptimizeRoute(m_points, delegate->GetDelegate(), result, polyline);
+  IRouter::ResultCode  code = m_router->OptimizeRoute(m_points,
+                                                      m_startPointInRes,
+                                                      delegate->GetDelegate(),
+                                                      result,
+                                                      polyline);
 
   delegate->OnReady(result, code, polyline);
 }
