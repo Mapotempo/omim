@@ -660,6 +660,9 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points,
   {
     LOG(LDEBUG, ("         index : ", v));
 
+    // FIXME feed the polyline here for the moment.
+    polylineResult.Add(points[v]);
+
     // Result adapter
     index_t ref_adapter = v;
 
@@ -669,9 +672,6 @@ CarRouter::ResultCode CarRouter::OptimizeRoute(vector<m2::PointD> &points,
       continue;
 
     result_list.push_back(ref_adapter);
-
-    // FIXME feed the polyline here for the moment.
-    polylineResult.Add(points[v]);
   }
 
   INTERRUPT_WHEN_CANCELLED(delegate);
