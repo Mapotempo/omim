@@ -24,6 +24,21 @@ enum class UserMarkType
   BOOKMARK_MARK
 };
 
+enum class UserMarkEventType
+{
+  CREATE_MARK,
+  DELETE_MARK,
+  CLEAR_MARK,
+  REVERSE_MARK,
+  MOVE_MARK
+};
+
+struct UserMarkEvent{
+  size_t old_index;
+  size_t new_index;
+  UserMarkEventType actionType;
+};
+
 class UserMarksController
 {
 public:
@@ -49,6 +64,8 @@ class UserMarkContainer : public df::UserMarksProvider
 {
 public:
   using TUserMarksList = deque<unique_ptr<UserMark>>;
+  using TUserMarksContainerListener = function<void (UserMarkEvent userMarkEvent)>;
+
 
   UserMarkContainer(double layerDepth, UserMarkType type, Framework & fm);
   virtual ~UserMarkContainer();
@@ -84,6 +101,28 @@ public:
   bool MoveUserMarkOrder(size_t oldIndex, size_t newIndex) override;
   bool UserMarksOrders(std::list<size_t> list) override;
 
+  // Mapotempo Usage : Event Listener
+  size_t AddEventListener(TUserMarksContainerListener const & userMarksEventListener)
+  {
+    m_eventListenersKeyCounter++;
+    m_eventListeners[m_eventListenersKeyCounter] = userMarksEventListener;
+    return m_eventListenersKeyCounter;
+  };
+
+  bool DeleteEventListener(size_t key)
+  {
+    m_eventListeners.erase(key);
+    return true;
+  };
+
+  void notify(UserMarkEvent userMarkEvent)
+  {
+    for(std::map<size_t,TUserMarksContainerListener>::iterator it=m_eventListeners.begin(); it!=m_eventListeners.end(); ++it)
+    {
+      it->second(userMarkEvent);
+    }
+  }
+
 protected:
   /// UserMarksController implementation
   UserMark * CreateUserMark(m2::PointD const & ptOrg) override;
@@ -104,6 +143,8 @@ private:
   double m_layerDepth;
   TUserMarksList m_userMarks;
   UserMarkType m_type;
+  size_t m_eventListenersKeyCounter;
+  std::map<size_t, TUserMarksContainerListener> m_eventListeners;
 };
 
 class SearchUserMarkContainer : public UserMarkContainer

@@ -33,7 +33,7 @@ public:
   void PrepareToShutdown();
 
   /// Scans and loads all kml files with bookmarks in WritableDir.
-  void LoadBookmarks();
+  virtual void LoadBookmarks();
   virtual void LoadBookmark(string const & filePath);
 
   void InitBookmarks();

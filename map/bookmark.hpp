@@ -15,6 +15,8 @@
 #include "std/iostream.hpp"
 #include "std/shared_ptr.hpp"
 
+#include "map/mt_route_planning.hpp"
+
 namespace anim
 {
   class Task;
@@ -191,6 +193,9 @@ public:
   /// Get unique bookmark file name from path and valid file name.
   static string GenerateUniqueFileName(const string & path, string name);
   //@}
+
+public :
+  MTRoutePlanning m_mt_bookmark_planning;
 
 protected:
   UserMark * AllocateUserMark(m2::PointD const & ptOrg) override;

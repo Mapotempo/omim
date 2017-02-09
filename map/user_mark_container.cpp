@@ -59,6 +59,7 @@ UserMarkContainer::UserMarkContainer(double layerDepth, UserMarkType type, Frame
   : m_framework(fm)
   , m_layerDepth(layerDepth)
   , m_type(type)
+  , m_eventListenersKeyCounter(1)
 {
   m_flags.set();
 }
@@ -180,6 +181,9 @@ UserMark * UserMarkContainer::CreateUserMark(m2::PointD const & ptOrg)
   // Push front an user mark.
   SetDirty();
   m_userMarks.push_front(unique_ptr<UserMark>(AllocateUserMark(ptOrg)));
+
+  notify({numeric_limits<size_t>::max(), m_userMarks.size() - 1, UserMarkEventType::CREATE_MARK});
+
   return m_userMarks.front().get();
 }
 
@@ -211,6 +215,8 @@ void UserMarkContainer::Clear(size_t skipCount/* = 0*/)
   SetDirty();
   if (skipCount < m_userMarks.size())
     m_userMarks.erase(m_userMarks.begin(), m_userMarks.end() - skipCount);
+
+  notify({numeric_limits<size_t>::max(), numeric_limits<size_t>::max(), UserMarkEventType::CLEAR_MARK});
 }
 
 void UserMarkContainer::SetIsDrawable(bool isDrawable)
@@ -239,6 +245,8 @@ bool UserMarkContainer::MoveUserMarkOrder(size_t oldIndex, size_t newIndex)
   UserMark * data = m_userMarks[oldIndex].release();
   m_userMarks.erase(m_userMarks.begin() + oldIndex);
   m_userMarks.emplace(m_userMarks.begin() + newIndex, unique_ptr<UserMark>(data));
+
+  notify({oldIndex, newIndex, UserMarkEventType::MOVE_MARK});
   return true;
 }
 
@@ -294,7 +302,10 @@ void UserMarkContainer::DeleteUserMark(size_t index)
   SetDirty();
   ASSERT_LESS(index, m_userMarks.size(), ());
   if (index < m_userMarks.size())
+  {
     m_userMarks.erase(m_userMarks.begin() + index);
+    notify({index, numeric_limits<size_t>::max(), UserMarkEventType::DELETE_MARK});
+  }
   else
     LOG(LWARNING, ("Trying to delete non-existing item at index", index));
 }

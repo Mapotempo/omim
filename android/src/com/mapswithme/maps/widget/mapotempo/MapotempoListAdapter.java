@@ -81,9 +81,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
   {
     mActivity = activity;
     init (layoutId, grabHandleId, dragOnLongPress);
-
     mCategory = category;
-
     reInitList();
   }
 
@@ -217,6 +215,7 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
       if(MTRouteListManager.INSTANCE.getStatus() && (mCategory.getId() == MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
         BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(mCategory.getId(),
                                                        mBookmarkIndex);
+      notifyDataSetChanged();
     }
 
     @Override

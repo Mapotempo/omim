@@ -450,8 +450,6 @@ public class MwmActivity extends BaseMwmFragmentActivity
     //  }
     //});
     //getWindow().getDecorView().addOnLayoutChangeListener(mVisibleRectMeasurer);
-
-    MTRouteListManager.INSTANCE.nativeRestoreRoutingManager();
   }
 
   private void initViews()

@@ -69,6 +69,7 @@ void BookmarkManager::LoadBookmarks()
     LoadBookmark(dir + files[i]);
 
   LoadState();
+  m_framework.MT_RestoreRoutingManager();
 }
 
 void BookmarkManager::LoadBookmark(string const & filePath)

@@ -62,7 +62,7 @@
 #include "std/vector.hpp"
 #include "std/weak_ptr.hpp"
 
-#include "mt_route_list_manager.hpp"
+#include "mt_route_planning_manager.hpp"
 
 namespace osm
 {
@@ -166,9 +166,9 @@ protected:
 
   location::TMyPositionModeChanged m_myPositionListener;
 
-  MTRouteListManager m_rountingListManager;
+  MTRoutePlanningManager m_rountingPlanningManager;
 
-  BookmarkManager &m_bmManager = m_rountingListManager;
+  BookmarkManager &m_bmManager = m_rountingPlanningManager;
 
   unique_ptr<BookingApi> m_bookingApi = make_unique<BookingApi>();
   unique_ptr<uber::Api> m_uberApi = make_unique<uber::Api>();

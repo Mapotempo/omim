@@ -8,15 +8,15 @@
 
 #include "routing/async_optimizer.hpp"
 
-#include "base/mutex.hpp"
-
+//#include "base/mutex.hpp"
 
 /**
- * La classe MTRouteListManager permet d'enregister un signet courant.
- * En héritant du BookmarkManager il gere la suppression et le déplacement
- * du signet dans sa liste.
+ * La classe MTRouteListManager permet de gerer une liste de bookmark.
+ * En héritant du BookmarkManager elle gere la suppression et le déplacement
+ * du signet dans sa liste, ainsi que le chargement des bookmarks depuis les
+ * kml au chargement de l'application.
  */
-class MTRouteListManager : public BookmarkManager
+class MTRoutePlanningManager : public BookmarkManager
 {
   using TOptimisationFinishFn = function<void (bool)>;
   /// Called to notify UI that mapotempo routing is deactivate;
@@ -28,8 +28,7 @@ private :
 private :
   Framework &m_framework;
 
-  int64_t m_indexCurrentBmCat;
-  int64_t m_indexCurrentBm;
+  size_t m_indexCurrentBmCat;
 
   unique_ptr<routing::AsyncOptimizer> m_optimizer;
   TOptimisationFinishFn m_optimisationFinishFn;
@@ -40,41 +39,46 @@ private :
   mutable threads::Mutex m_routeListManagerMutex;
 
 public :
-  MTRouteListManager(Framework & f) : BookmarkManager(f),
+  static const size_t INVALIDE_VALUE;
+
+  MTRoutePlanningManager(Framework & f) : BookmarkManager(f),
   m_framework(f),
-  m_indexCurrentBmCat(-1),
-  m_indexCurrentBm(-1),
+  m_indexCurrentBmCat(INVALIDE_VALUE),
   m_optimizer(nullptr),
   m_optimisationFinishFn(nullptr),
   m_optimisationProgressFn(nullptr){};
 
-  ~MTRouteListManager() {};
+  ~MTRoutePlanningManager() {};
 
   void SetRouter(unique_ptr<routing::IRouter> && router);
 
   // Route status manager
   bool GetStatus();
   void StopManager();
-  bool InitManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay);
+  bool InitManager(size_t indexBmCat, size_t indexFirstBmToDisplay);
   void ResetManager();
 
-  bool SetCurrentBookmark(int64_t indexBm);
-  int64_t StepNextBookmark();
-  int64_t StepPreviousBookmark();
-  int64_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
-  int64_t GetCurrentBookmark(){return m_indexCurrentBm;}
+  // Get current bookmark planning
+  bool SetCurrentBookmark(size_t indexBm);
+  size_t StepNextBookmark();
+  size_t StepPreviousBookmark();
+  size_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
+  size_t GetCurrentBookmark();
+
   bool CheckCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
   // Optimisation
-  bool optimiseBookmarkCategory(int64_t indexBmCat);
+  bool optimiseBookmarkCategory(size_t indexBmCat);
   void stopCurrentOptimisation();
   void SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener);
 
 public :
   // Override BookmarkManager virtual method
-  bool DeleteBmCategory(size_t index);
-  size_t CreateBmCategory(string const & name);
-  void LoadBookmark(string const & filePath);
-  bool ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex);
+  bool DeleteBmCategory(size_t index) override;
+  size_t CreateBmCategory(string const & name) override;
+  void LoadBookmark(string const & filePath) override;
+
+private :
+  void save_status();
 };

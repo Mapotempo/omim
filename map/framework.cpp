@@ -352,7 +352,7 @@ void Framework::Migrate(bool keepDownloaded)
 Framework::Framework()
   : m_startForegroundTime(0.0)
   , m_storage(platform::migrate::NeedMigrate() ? COUNTRIES_OBSOLETE_FILE : COUNTRIES_FILE)
-  , m_rountingListManager(*this)
+  , m_rountingPlanningManager(*this)
   , m_isRenderingEnabled(true)
   , m_trackingReporter(platform::CreateSocket(), TRACKING_REALTIME_HOST, TRACKING_REALTIME_PORT,
                        tracking::Reporter::kPushDelayMs)
@@ -475,7 +475,7 @@ Framework::Framework()
   router.reset(new CarRouter(m_model.GetIndex(), countryFileGetter,
                              SingleMwmRouter::CreateCarRouter(m_model.GetIndex(), m_routingSession)));
 
-  m_rountingListManager.SetRouter(move(router));
+  m_rountingPlanningManager.SetRouter(move(router));
 }
 
 Framework::~Framework()
@@ -754,12 +754,12 @@ size_t Framework::AddCategory(string const & categoryName)
 
 bool Framework::MT_GetStatus()
 {
-  return m_rountingListManager.GetStatus();
+  return m_rountingPlanningManager.GetStatus();
 }
 
 void Framework::MT_StopRouteManager()
 {
-  m_rountingListManager.StopManager();
+  m_rountingPlanningManager.StopManager();
   if(m_deactivateMapotempoRouteFn)
   {
     m_deactivateMapotempoRouteFn();
@@ -768,7 +768,7 @@ void Framework::MT_StopRouteManager()
 
 bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingListManager.InitManager(indexBmCat, indexBm);
+  bool res = m_rountingPlanningManager.InitManager(indexBmCat, indexBm);
 
   if(res && m_activateMapotempoRouteFn)
   {
@@ -778,23 +778,23 @@ bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
 }
 
 int64_t Framework::MT_GetCurrentBookmarkCategory(){
-  return m_rountingListManager.GetCurrentBookmarkCategory();
+  return m_rountingPlanningManager.GetCurrentBookmarkCategory();
 }
 
 int64_t Framework::MT_GetCurrentBookmark(){
-  return m_rountingListManager.GetCurrentBookmark();
+  return m_rountingPlanningManager.GetCurrentBookmark();
 }
 
 bool Framework::MT_SetCurrentBookmark(int64_t indexBm){
-  return m_rountingListManager.SetCurrentBookmark(indexBm);
+  return m_rountingPlanningManager.SetCurrentBookmark(indexBm);
 }
 
 int64_t Framework::MT_StepNextBookmark(){
-  return m_rountingListManager.StepNextBookmark();
+  return m_rountingPlanningManager.StepNextBookmark();
 }
 
 int64_t Framework::MT_StepPreviousBookmark(){
-  return m_rountingListManager.StepPreviousBookmark();
+  return m_rountingPlanningManager.StepPreviousBookmark();
 }
 
 void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
@@ -809,43 +809,42 @@ void Framework::MT_SetMapotempoGoalIsNearListeners(const TGoalIsNearMapotempoRou
   m_goalIsNearFn = goalIsNear;
 }
 
-void Framework::MT_SaveRoutingManager()
+/*void Framework::MT_SaveRoutingManager()
 {
   int64_t category = MT_GetCurrentBookmarkCategory();
   int64_t bookmark = MT_GetCurrentBookmark();
   settings::Set("category", category);
   settings::Set("bookmark", bookmark);
-}
+}*/
 
 bool Framework::MT_RestoreRoutingManager()
 {
 
   int64_t category;
-  int64_t bookmark;
 
-  if(!settings::Get("category", category) || !settings::Get("bookmark", bookmark))
+  if(!settings::Get("category", category))
     return false;
 
-  if(category < 0 || bookmark < 0)
+  if(category == MTRoutePlanningManager::INVALIDE_VALUE)
     return false;
 
-  return this->MT_InitRouteManager(category, bookmark);
+  return this->MT_InitRouteManager(category);
 }
 
 void Framework::MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener)
 {
-  m_rountingListManager.SetOptimisationListeners(finishListener, progressListener);
+  m_rountingPlanningManager.SetOptimisationListeners(finishListener, progressListener);
 }
 
 bool Framework::MT_OptimiseBookmarkCategory(int64_t indexBmCat)
 {
-  bool res = m_rountingListManager.optimiseBookmarkCategory(indexBmCat);
+  bool res = m_rountingPlanningManager.optimiseBookmarkCategory(indexBmCat);
   return res;
 }
 
 void Framework::MT_StopCurrentOptimisation()
 {
-  m_rountingListManager.stopCurrentOptimisation();
+  m_rountingPlanningManager.stopCurrentOptimisation();
 }
 
 namespace
@@ -2696,7 +2695,7 @@ void Framework::CheckLocationForRouting(GpsInfo const & info)
   {
     double lat, lon;
     GetCurrentPosition(lat, lon);
-    if(m_rountingListManager.CheckCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
+    if(m_rountingPlanningManager.CheckCurrentBookmarkStatus(lat, lon) && m_goalIsNearFn)
     {
         m_goalIsNearFn();
         CloseRouting();

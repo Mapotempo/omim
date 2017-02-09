@@ -1,4 +1,4 @@
-#include "mt_route_list_manager.hpp"
+#include "mt_route_planning_manager.hpp"
 
 #include "std/iostream.hpp"
 #include <vector>
@@ -21,25 +21,18 @@
 #include "geometry/point2d.hpp"
 #include "drape/color.hpp"
 
-void MTRouteListManager::SetRouter(unique_ptr<routing::IRouter> && router)
+const size_t MTRoutePlanningManager::INVALIDE_VALUE = numeric_limits<size_t>::max();
+ 
+bool MTRoutePlanningManager::GetStatus()
 {
-  threads::MutexGuard guard(m_routeListManagerMutex);
-  m_optimizer.reset(new routing::AsyncOptimizer());
-  m_optimizer->SetRouter(move(router));
-}
-
-bool MTRouteListManager::GetStatus()
-{
-  if(m_indexCurrentBmCat < 0)
+  if(m_indexCurrentBmCat == INVALIDE_VALUE || !GetBmCategory(m_indexCurrentBmCat))
     return false;
   return true;
 }
 
-void MTRouteListManager::StopManager()
+void MTRoutePlanningManager::StopManager()
 {
-  threads::MutexGuard guard(m_routeListManagerMutex);
-  m_indexCurrentBmCat = -1;
-  m_indexCurrentBm = -1;
+  m_indexCurrentBmCat = INVALIDE_VALUE;
 
   // Hide all other category
   for(int i = 0; i < GetBmCategoriesCount(); i++)
@@ -52,18 +45,19 @@ void MTRouteListManager::StopManager()
     otherCat->SaveToKMLFile();
   }
 
-  m_framework.MT_SaveRoutingManager();
+  save_status();
 }
 
-bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToDisplay)
+bool MTRoutePlanningManager::InitManager(size_t indexBmCat, size_t indexFirstBmToDisplay)
 {
-  threads::MutexGuard guard(m_routeListManagerMutex);
   static bool init = false;
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
-  if(bmCat == NULL || bmCat->GetUserMarkCount() <= indexFirstBmToDisplay)
-  {
+  if(!bmCat || !bmCat->m_mt_bookmark_planning.SetCurrentPlanId(indexFirstBmToDisplay))
     return false;
-  }
+
+  m_indexCurrentBmCat = indexBmCat;
+  save_status();
+
   // Hide all other category
   for(int i = 0; i < GetBmCategoriesCount(); i++)
   {
@@ -78,67 +72,60 @@ bool MTRouteListManager::InitManager(int64_t indexBmCat, int64_t indexFirstBmToD
     }
     otherCat->SaveToKMLFile();
   }
-  m_indexCurrentBmCat = indexBmCat;
-  m_indexCurrentBm = indexFirstBmToDisplay;
-  m_framework.MT_SaveRoutingManager();
+
   return true;
 }
 
-void MTRouteListManager::ResetManager(){
-  threads::MutexGuard guard(m_routeListManagerMutex);
-  m_indexCurrentBmCat = -1;
-  m_indexCurrentBm = -1;
-  m_framework.MT_SaveRoutingManager();
+void MTRoutePlanningManager::ResetManager(){
+  m_indexCurrentBmCat = INVALIDE_VALUE;
+  save_status();
 }
 
-bool MTRouteListManager::SetCurrentBookmark(int64_t indexBm)
+bool MTRoutePlanningManager::SetCurrentBookmark(size_t indexBm)
 {
   bool res = false;
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
-  if(bmCat && indexBm < bmCat->GetUserPointCount() && indexBm >= 0)
-  {
-    m_indexCurrentBm = indexBm;
-    res = true;
-  }
-  m_framework.MT_SaveRoutingManager();
+  bmCat->m_mt_bookmark_planning.SetCurrentPlanId(indexBm);
+  save_status();
   return res;
 }
 
-int64_t MTRouteListManager::StepNextBookmark()
+size_t MTRoutePlanningManager::StepNextBookmark()
 {
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
-
-  m_indexCurrentBm++;
-  if(bmCat && (m_indexCurrentBm >= bmCat->GetUserPointCount()))
-    m_indexCurrentBm = 0;
-
-  m_framework.MT_SaveRoutingManager();
+  bmCat->m_mt_bookmark_planning.StepNextPlanId();
+  save_status();
   return GetCurrentBookmark();
 }
 
-int64_t MTRouteListManager::StepPreviousBookmark()
+size_t MTRoutePlanningManager::StepPreviousBookmark()
 {
   BookmarkCategory * bmCat = GetBmCategory(m_indexCurrentBmCat);
-
-  m_indexCurrentBm--;
-  if(bmCat && (m_indexCurrentBm < 0))
-    m_indexCurrentBm = bmCat->GetUserPointCount() - 1;
-
-  m_framework.MT_SaveRoutingManager();
+  bmCat->m_mt_bookmark_planning.StepPreviousPlanId();
+  save_status();
   return GetCurrentBookmark();
 }
 
-bool MTRouteListManager::CheckCurrentBookmarkStatus(const double & curLat, const double & curLon)
+size_t MTRoutePlanningManager::GetCurrentBookmark()
+{
+  BookmarkCategory * cat = GetBmCategory(m_indexCurrentBmCat);
+  if(cat)
+    return cat->m_mt_bookmark_planning.GetCurrentPlanId();
+  else
+    return INVALIDE_VALUE;
+};
+
+bool MTRoutePlanningManager::CheckCurrentBookmarkStatus(const double & curLat, const double & curLon)
 {
   if(GetStatus())
   {
     BookmarkCategory * cat = GetBmCategory(m_indexCurrentBmCat);
-    const UserMark * bm = cat->GetUserMark(m_indexCurrentBm);
+    const UserMark * bm = cat->GetUserMark(cat->m_mt_bookmark_planning.GetCurrentPlanId());
     ms::LatLon bmPosition = bm->GetLatLon();
     if(cat)
     {
       double const d = ms::DistanceOnEarth(curLat, curLon, bmPosition.lat, bmPosition.lon);
-      if(d < MTRouteListManager::MT_DISTANCE_BOOKMARK_DONE)
+      if(d < MTRoutePlanningManager::MT_DISTANCE_BOOKMARK_DONE)
       {
         return true;
       }
@@ -147,14 +134,39 @@ bool MTRouteListManager::CheckCurrentBookmarkStatus(const double & curLat, const
   return false;
 }
 
-void MTRouteListManager::SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
+void MTRoutePlanningManager::save_status()
+{
+  BookmarkCategory * cat = GetBmCategory(m_indexCurrentBmCat);
+  if(cat)
+    settings::Set("category", m_indexCurrentBmCat);
+  else
+    settings::Set("category", INVALIDE_VALUE);
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+void MTRoutePlanningManager::SetRouter(unique_ptr<routing::IRouter> && router)
+{
+  threads::MutexGuard guard(m_routeListManagerMutex);
+  m_optimizer.reset(new routing::AsyncOptimizer());
+  m_optimizer->SetRouter(move(router));
+}
+
+void MTRoutePlanningManager::SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener)
 {
+  threads::MutexGuard guard(m_routeListManagerMutex);
   m_optimisationFinishFn = finishListener;
   m_optimisationProgressFn = progressListener;
 }
 
-bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
+bool MTRoutePlanningManager::optimiseBookmarkCategory(size_t indexBmCat)
 {
   threads::MutexGuard guard(m_routeListManagerMutex);
 
@@ -205,7 +217,7 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
         // pop the first current position point
         //result.first.pop_front();
         SortUserMarks(indexBmCat, result.first);
-        m_indexCurrentBm = 0;
+        bmCat->m_mt_bookmark_planning.SetCurrentPlanId(0);
 
         Track::Params params;
         params.m_name = "new_track";
@@ -243,7 +255,7 @@ bool MTRouteListManager::optimiseBookmarkCategory(int64_t indexBmCat)
   return true;
 }
 
-void MTRouteListManager::stopCurrentOptimisation()
+void MTRoutePlanningManager::stopCurrentOptimisation()
 {
   m_optimizer->ClearState();
 }
@@ -254,7 +266,7 @@ void MTRouteListManager::stopCurrentOptimisation()
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
-size_t MTRouteListManager::CreateBmCategory(string const & name)
+size_t MTRoutePlanningManager::CreateBmCategory(string const & name)
 {
   threads::MutexGuard guard(m_routeListManagerMutex);
   size_t index = BookmarkManager::CreateBmCategory(name);
@@ -266,7 +278,7 @@ size_t MTRouteListManager::CreateBmCategory(string const & name)
     bmCat->SaveToKMLFile();
   }
 
-  m_framework.MT_SaveRoutingManager();
+  save_status();
   return index;
 }
 
@@ -275,7 +287,7 @@ size_t MTRouteListManager::CreateBmCategory(string const & name)
  * Ceci pour voir passer les suppresions de
  * catégories sans avoir à toucher au code du boomark_manager.hpp/cpp.
  **/
-bool MTRouteListManager::DeleteBmCategory(size_t index)
+bool MTRoutePlanningManager::DeleteBmCategory(size_t index)
 {
   threads::MutexGuard guard(m_routeListManagerMutex);
   bool res = BookmarkManager::DeleteBmCategory(index);
@@ -285,12 +297,11 @@ bool MTRouteListManager::DeleteBmCategory(size_t index)
       m_indexCurrentBmCat--;
     else if(index == m_indexCurrentBmCat)
     {
-      m_indexCurrentBmCat = -1;
-      m_indexCurrentBm = -1;
+      m_indexCurrentBmCat = INVALIDE_VALUE;
     }
   }
 
-  m_framework.MT_SaveRoutingManager();
+  save_status();
   return res;
 }
 
@@ -300,7 +311,7 @@ bool MTRouteListManager::DeleteBmCategory(size_t index)
  * et pouvoir les cacher par defaut sans avoir à toucher au code du
  * boomark_manager.hpp/cpp.
  **/
-void MTRouteListManager::LoadBookmark(string const & filePath)
+void MTRoutePlanningManager::LoadBookmark(string const & filePath)
 {
   threads::MutexGuard guard(m_routeListManagerMutex);
   BookmarkManager::LoadBookmark(filePath);
@@ -316,28 +327,4 @@ void MTRouteListManager::LoadBookmark(string const & filePath)
       bmCat->SaveToKMLFile();
     }
   }
-}
-
-/**
- * Surcharge de la fonction "ChangeBookmarkOrder" du BookmarkManager.
- * Ceci pour voir passer les changement d'ordre et changer ainsi
- * l'ordre du bookmark courant.
- **/
-bool MTRouteListManager::ChangeBookmarkOrder(size_t catIndex, size_t curBmIndex, size_t newBmIndex)
-{
-  threads::MutexGuard guard(m_routeListManagerMutex);
-  bool res = BookmarkManager::ChangeBookmarkOrder(catIndex, curBmIndex, newBmIndex);
-
-  if(res && catIndex == m_indexCurrentBmCat)
-  {
-    if(curBmIndex == m_indexCurrentBm)
-      m_indexCurrentBm = newBmIndex;
-    else if(m_indexCurrentBm > curBmIndex
-      && m_indexCurrentBm <= newBmIndex)
-      m_indexCurrentBm--;
-    else if(m_indexCurrentBm < curBmIndex
-      && m_indexCurrentBm >= newBmIndex)
-      m_indexCurrentBm++;
-  }
-  return res;
 }
