@@ -5,7 +5,7 @@
 
 This file is part of Osmium (http://osmcode.org/libosmium).
 
-Copyright 2013-2015 Jochen Topf <jochen@topf.org> and others (see README).
+Copyright 2013-2017 Jochen Topf <jochen@topf.org> and others (see README).
 
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -48,17 +48,17 @@ namespace osmium {
 
         namespace map {
 
-            template <class TVector, typename TId, typename TValue>
+            template <typename TVector, typename TId, typename TValue>
             class VectorBasedDenseMap : public Map<TId, TValue> {
 
                 TVector m_vector;
 
             public:
 
-                typedef TValue element_type;
-                typedef TVector vector_type;
-                typedef typename vector_type::iterator iterator;
-                typedef typename vector_type::const_iterator const_iterator;
+                using element_type   = TValue;
+                using vector_type    = TVector;
+                using iterator       = typename vector_type::iterator;
+                using const_iterator = typename vector_type::const_iterator;
 
                 VectorBasedDenseMap() :
                     m_vector() {
@@ -68,42 +68,56 @@ namespace osmium {
                     m_vector(fd) {
                 }
 
-                ~VectorBasedDenseMap() {}
+                ~VectorBasedDenseMap() noexcept final = default;
 
-                void reserve(const size_t size) override final {
+                void reserve(const size_t size) final {
                     m_vector.reserve(size);
                 }
 
-                void set(const TId id, const TValue value) override final {
+                void set(const TId id, const TValue value) final {
                     if (size() <= id) {
                         m_vector.resize(id+1);
                     }
                     m_vector[id] = value;
                 }
 
-                const TValue get(const TId id) const override final {
-                    try {
-                        const TValue& value = m_vector.at(id);
-                        if (value == osmium::index::empty_value<TValue>()) {
-                            not_found_error(id);
-                        }
-                        return value;
-                    } catch (std::out_of_range&) {
-                        not_found_error(id);
+                TValue get(const TId id) const final {
+                    if (id >= m_vector.size()) {
+                        throw osmium::not_found{id};
                     }
+                    const TValue value = m_vector[id];
+                    if (value == osmium::index::empty_value<TValue>()) {
+                        throw osmium::not_found{id};
+                    }
+                    return value;
                 }
 
-                size_t size() const override final {
+                TValue get_noexcept(const TId id) const noexcept final {
+                    if (id >= m_vector.size()) {
+                        return osmium::index::empty_value<TValue>();
+                    }
+                    return m_vector[id];
+                }
+
+                size_t size() const final {
                     return m_vector.size();
                 }
 
-                size_t used_memory() const override final {
+                size_t byte_size() const {
+                    return m_vector.size() * sizeof(element_type);
+                }
+
+                size_t used_memory() const final {
                     return sizeof(TValue) * size();
                 }
 
-                void clear() override final {
+                void clear() final {
                     m_vector.clear();
                     m_vector.shrink_to_fit();
+                }
+
+                void dump_as_array(const int fd) final {
+                    osmium::io::detail::reliable_write(fd, reinterpret_cast<const char*>(m_vector.data()), byte_size());
                 }
 
                 iterator begin() {
@@ -138,14 +152,24 @@ namespace osmium {
 
             public:
 
-                typedef typename std::pair<TId, TValue> element_type;
-                typedef TVector<element_type> vector_type;
-                typedef typename vector_type::iterator iterator;
-                typedef typename vector_type::const_iterator const_iterator;
+                using element_type   = typename std::pair<TId, TValue>;
+                using vector_type    = TVector<element_type>;
+                using iterator       = typename vector_type::iterator;
+                using const_iterator = typename vector_type::const_iterator;
 
             private:
 
                 vector_type m_vector;
+
+                typename vector_type::const_iterator find_id(const TId id) const noexcept {
+                    const element_type element {
+                        id,
+                        osmium::index::empty_value<TValue>()
+                    };
+                    return std::lower_bound(m_vector.begin(), m_vector.end(), element, [](const element_type& a, const element_type& b) {
+                        return a.first < b.first;
+                    });
+                }
 
             public:
 
@@ -153,32 +177,35 @@ namespace osmium {
                     m_vector() {
                 }
 
-                VectorBasedSparseMap(int fd) :
+                explicit VectorBasedSparseMap(int fd) :
                     m_vector(fd) {
                 }
 
-                ~VectorBasedSparseMap() override final = default;
+                ~VectorBasedSparseMap() final = default;
 
-                void set(const TId id, const TValue value) override final {
+                void set(const TId id, const TValue value) final {
                     m_vector.push_back(element_type(id, value));
                 }
 
-                const TValue get(const TId id) const override final {
-                    const element_type element {
-                        id,
-                        osmium::index::empty_value<TValue>()
-                    };
-                    const auto result = std::lower_bound(m_vector.begin(), m_vector.end(), element, [](const element_type& a, const element_type& b) {
-                        return a.first < b.first;
-                    });
+                TValue get(const TId id) const final {
+                    const auto result = find_id(id);
                     if (result == m_vector.end() || result->first != id) {
-                        not_found_error(id);
-                    } else {
-                        return result->second;
+                        throw osmium::not_found{id};
                     }
+
+                    return result->second;
                 }
 
-                size_t size() const override final {
+                TValue get_noexcept(const TId id) const noexcept final {
+                    const auto result = find_id(id);
+                    if (result == m_vector.end() || result->first != id) {
+                        return osmium::index::empty_value<TValue>();
+                    }
+
+                    return result->second;
+                }
+
+                size_t size() const final {
                     return m_vector.size();
                 }
 
@@ -186,20 +213,20 @@ namespace osmium {
                     return m_vector.size() * sizeof(element_type);
                 }
 
-                size_t used_memory() const override final {
+                size_t used_memory() const final {
                     return sizeof(element_type) * size();
                 }
 
-                void clear() override final {
+                void clear() final {
                     m_vector.clear();
                     m_vector.shrink_to_fit();
                 }
 
-                void sort() override final {
+                void sort() final {
                     std::sort(m_vector.begin(), m_vector.end());
                 }
 
-                void dump_as_list(const int fd) override final {
+                void dump_as_list(const int fd) final {
                     osmium::io::detail::reliable_write(fd, reinterpret_cast<const char*>(m_vector.data()), byte_size());
                 }
 
