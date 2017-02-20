@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../typedefs.h"
 
 #include <luabind/tag_function.hpp>
+#include <luabind/iterator_policy.hpp>
 
 #include <osmium/osm.hpp>
 
@@ -49,6 +50,10 @@ auto get_value_by_key(T const &object, const char *key) -> decltype(object.get_v
 {
     return object.get_value_by_key(key, "");
 }
+
+// Luabind does not like memr funs: instead of casting to the function's signature (mem fun ptr) we
+// simply wrap it
+auto get_nodes_for_way(const osmium::Way &way) -> decltype(way.nodes()) { return way.nodes(); }
 
 int lua_error_callback(lua_State *L) // This is so I can use my own function as an
 // exception handler, pcall_log()
@@ -87,7 +92,8 @@ void ScriptingEnvironment::init_lua_state(lua_State *lua_state)
 
         luabind::class_<osmium::Location>("Location")
             .def<location_member_ptr_type>("lat", &osmium::Location::lat)
-            .def<location_member_ptr_type>("lon", &osmium::Location::lon),
+            .def<location_member_ptr_type>("lon", &osmium::Location::lon)
+            .def("valid", &osmium::Location::valid),
 
         luabind::class_<osmium::Node>("Node")
             // .def<node_member_ptr_type>("tags", &osmium::Node::tags)
@@ -119,10 +125,19 @@ void ScriptingEnvironment::init_lua_state(lua_State *lua_state)
                 luabind::value("bidirectional", 2),
                 luabind::value("opposite", 3)
             ],
-        luabind::class_<osmium::Way>("Way")
+         luabind::class_<osmium::NodeRef>("NodeRef")
+             .def(luabind::constructor<>())
+             // Dear ambitious reader: registering .location() as in:
+             .def("location", +[](const osmium::NodeRef& nref){ return nref.location(); })
+             // will crash at runtime, since we're not (yet?) using libosnmium's
+             // NodeLocationsForWays cache
+             .def("id", &osmium::NodeRef::ref),
+         luabind::class_<osmium::Way>("Way")
             .def("get_value_by_key", &osmium::Way::get_value_by_key)
             .def("get_value_by_key", &get_value_by_key<osmium::Way>)
             .def("id", &osmium::Way::id)
+            .def("version", &osmium::Way::version)
+            .def("get_nodes", get_nodes_for_way, luabind::return_stl_iterator)
     ];
 
     if (0 != luaL_dofile(lua_state, file_name.c_str()))
