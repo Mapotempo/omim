@@ -951,6 +951,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
       TrafficManager.INSTANCE.attach(mTrafficButtonController);
     if (mNavigationController != null)
       TrafficManager.INSTANCE.attach(mNavigationController);
+
+    mMapotempoRouteController.showMapotempoRoutePanel(MTRouteListManager.INSTANCE.getStatus());
   }
 
   @Override
