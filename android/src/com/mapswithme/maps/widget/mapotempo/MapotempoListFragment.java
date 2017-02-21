@@ -23,6 +23,8 @@ import com.woxthebox.draglistview.DragListView;
 
 public class MapotempoListFragment extends Fragment
 {
+
+  private boolean mDragOnLongPress = false;
   private int mCategoryIndex = -1;
   BookmarkCategory mCurrentCategory;
   private DragListView mDragListView;
@@ -88,16 +90,16 @@ public class MapotempoListFragment extends Fragment
     if(mCategoryIndex >= 0)
     {
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(mCategoryIndex);
-      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, mDragOnLongPress);
     }
     else if(MTRouteListManager.INSTANCE.getStatus())
     {
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId());
-      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, mDragOnLongPress);
     }
     else
     {
-      listAdapter = new MapotempoListAdapter(getActivity(), R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, true);
+      listAdapter = new MapotempoListAdapter(getActivity(), R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, mDragOnLongPress);
     }
 
     mDragListView.setAdapter(listAdapter, false);
