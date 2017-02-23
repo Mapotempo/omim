@@ -30,7 +30,7 @@ bool MTRoutePlanning::SetCurrentPlanId(size_t indexBm)
   LOG(LDEBUG, ("SetCurrent with value : ", indexBm));
 
   bool res = false;
-  if(indexBm < m_index_count)
+  if(indexBm < m_index_count || 0 != m_index_count)
   {
     m_index_current = indexBm;
     res = true;

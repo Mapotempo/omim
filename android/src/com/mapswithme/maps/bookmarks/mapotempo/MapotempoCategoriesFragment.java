@@ -1,50 +1,55 @@
-package com.mapswithme.maps.bookmarks;
+package com.mapswithme.maps.bookmarks.mapotempo;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
+import com.mapswithme.maps.bookmarks.BookmarkCategoriesAdapter;
+import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
-import com.mapswithme.maps.bookmarks.mapotempo.MapotempoListActivity;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.BottomSheetHelper;
 import com.mapswithme.util.sharing.SharingHelper;
 
-public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
+public class MapotempoCategoriesFragment extends BaseMwmRecyclerFragment
                                      implements EditTextDialogFragment.OnTextSaveListener,
                                                 MenuItem.OnMenuItemClickListener,
                                                 RecyclerClickListener,
                                                 RecyclerLongClickListener
 {
   private int mSelectedPosition;
+  private AddButtonController mAddButtonController;
 
   @Override
   protected @LayoutRes int getLayoutRes()
   {
-    return R.layout.recycler_default;
+    return R.layout.fragment_recycler_with_add;
   }
 
   @Override
   protected RecyclerView.Adapter createAdapter()
   {
-    return new BookmarkCategoriesAdapter(getActivity());
+    return new MapotempoCategoriesAdapter(getActivity());
   }
 
   @Override
-  protected BookmarkCategoriesAdapter getAdapter()
+  protected MapotempoCategoriesAdapter getAdapter()
   {
-    return (BookmarkCategoriesAdapter)super.getAdapter();
+    return (MapotempoCategoriesAdapter)super.getAdapter();
   }
 
   @Override
@@ -60,13 +65,14 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
 
     getAdapter().setOnClickListener(this);
     getAdapter().setOnLongClickListener(this);
+    mAddButtonController = new AddButtonController(this, view);
   }
 
   @Override
   public void onResume()
   {
     super.onResume();
-    getAdapter().notifyDataSetChanged();
+    update();
   }
 
   @Override
@@ -81,7 +87,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   {
     final BookmarkCategory category = BookmarkManager.INSTANCE.getCategory(mSelectedPosition);
     category.setName(text);
-    getAdapter().notifyDataSetChanged();
+    update();
   }
 
   @Override
@@ -91,7 +97,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
     {
     case R.id.set_show:
       BookmarkManager.INSTANCE.toggleCategoryVisibility(mSelectedPosition);
-      getAdapter().notifyDataSetChanged();
+      update();
       break;
 
     case R.id.set_share:
@@ -105,7 +111,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
         MTRouteListManager.INSTANCE.stopRoutingManager();
       }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
-      getAdapter().notifyDataSetChanged();
+      update();
       break;
 
     case R.id.set_edit:
@@ -140,5 +146,10 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   {
     startActivity(new Intent(getActivity(), MapotempoListActivity.class)
                       .putExtra(ChooseBookmarkCategoryFragment.CATEGORY_ID, position));
+  }
+
+  public void update()
+  {
+    getAdapter().notifyDataSetChanged();
   }
 }

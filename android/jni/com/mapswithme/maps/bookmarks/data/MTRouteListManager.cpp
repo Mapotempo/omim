@@ -6,6 +6,7 @@
 
 #include "coding/zip_creator.hpp"
 #include "map/place_page_info.hpp"
+#include <map/mt_route_planning_manager.hpp>
 
 #include "base/logging.hpp"
 
@@ -48,6 +49,9 @@ using namespace jni;
 
     BookmarkCategory * category = frm()->GetBmCategory(catId);
 
+    if(catId == MTRoutePlanningManager::INVALIDE_VALUE || bmkId == MTRoutePlanning::INVALIDE_VALUE)
+      return NULL;
+
     frm()->FillBookmarkInfo(*static_cast<Bookmark const *>(category->GetUserMark(bmkId)), {static_cast<size_t>(bmkId), static_cast<size_t>(catId)}, info);
     return usermark_helper::CreateMapObject(env, info);
   }
@@ -60,12 +64,10 @@ using namespace jni;
     jint catId = frm()->MT_GetCurrentBookmarkCategory();
     jint bmkId = frm()->MT_StepNextBookmark();
 
-    BookmarkCategory * category = frm()->GetBmCategory(catId);
+    if(catId == MTRoutePlanningManager::INVALIDE_VALUE || bmkId == MTRoutePlanning::INVALIDE_VALUE)
+      return NULL;
 
-    if(!category)
-    {
-        return NULL;
-    }
+    BookmarkCategory * category = frm()->GetBmCategory(catId);
 
     frm()->FillBookmarkInfo(*static_cast<Bookmark const *>(category->GetUserMark(bmkId)), {static_cast<size_t>(bmkId), static_cast<size_t>(catId)}, info);
     return usermark_helper::CreateMapObject(env, info);
@@ -79,11 +81,10 @@ using namespace jni;
     jint catId = frm()->MT_GetCurrentBookmarkCategory();
     jint bmkId = frm()->MT_StepPreviousBookmark();
 
+    if(catId == MTRoutePlanningManager::INVALIDE_VALUE || bmkId == MTRoutePlanning::INVALIDE_VALUE)
+      return NULL;
+
     BookmarkCategory * category = frm()->GetBmCategory(catId);
-    if(!category)
-    {
-        return NULL;
-    }
 
     frm()->FillBookmarkInfo(*static_cast<Bookmark const *>(category->GetUserMark(bmkId)), {static_cast<size_t>(bmkId), static_cast<size_t>(catId)}, info);
     return usermark_helper::CreateMapObject(env, info);

@@ -80,7 +80,7 @@
     tools:visibility="visible">
 
     <fragment
-      class="com.mapswithme.maps.widget.mapotempo.MapotempoListFragment"
+      class="com.mapswithme.maps.bookmarks.mapotempo.MapotempoListFragment"
       android:id="@+id/fragment_container"
       android:layout_width="match_parent"
       android:layout_height="250dp"/>

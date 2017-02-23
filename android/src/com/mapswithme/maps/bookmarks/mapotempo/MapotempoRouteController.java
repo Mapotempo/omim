@@ -1,4 +1,4 @@
-package com.mapswithme.maps.widget.mapotempo;
+package com.mapswithme.maps.bookmarks.mapotempo;
 
 import android.app.Activity;
 

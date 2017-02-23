@@ -52,12 +52,17 @@ bool MTRoutePlanningManager::InitManager(size_t indexBmCat, size_t indexFirstBmT
 {
   static bool init = false;
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
-  if(!bmCat || !bmCat->m_mt_bookmark_planning.SetCurrentPlanId(indexFirstBmToDisplay))
+
+  if(!bmCat)
     return false;
+
+  if(!bmCat->m_mt_bookmark_planning.SetCurrentPlanId(indexFirstBmToDisplay))
+  {
+    LOG(LWARNING, ("Can init plannign with value : ", indexFirstBmToDisplay));
+  }
 
   m_indexCurrentBmCat = indexBmCat;
   save_status();
-
   // Hide all other category
   for(int i = 0; i < GetBmCategoriesCount(); i++)
   {
@@ -72,7 +77,6 @@ bool MTRoutePlanningManager::InitManager(size_t indexBmCat, size_t indexFirstBmT
     }
     otherCat->SaveToKMLFile();
   }
-
   return true;
 }
 

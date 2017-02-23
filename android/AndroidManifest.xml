@@ -220,7 +220,7 @@
     </activity>
 
     <activity
-        android:name="com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity"
+        android:name="com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity"
         android:configChanges="orientation|screenLayout|screenSize"
         android:label="@string/bookmark_sets"
         android:parentActivityName="com.mapswithme.maps.MwmActivity">
@@ -234,11 +234,11 @@
         android:name="com.mapswithme.maps.bookmarks.BookmarkListActivity"
         android:configChanges="orientation|screenLayout|screenSize"
         android:label="@string/bookmarks"
-        android:parentActivityName="com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity">
+        android:parentActivityName="com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity">
       <!-- The meta-data element is needed for versions lower than 4.1 -->
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
-          android:value="com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity"/>
+          android:value="com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity"/>
     </activity>
 
     <activity
@@ -328,10 +328,10 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
     <activity
-      android:name="com.mapswithme.maps.widget.mapotempo.MapotempoListActivity"
+      android:name="com.mapswithme.maps.bookmarks.mapotempo.MapotempoListActivity"
       android:configChanges="orientation|screenLayout|screenSize"
       android:label="@string/bookmarks"
-      android:parentActivityName="com.mapswithme.maps.widget.mapotempo.MapotempoListActivity">
+      android:parentActivityName="com.mapswithme.maps.bookmarks.mapotempo.MapotempoListActivity">
       <!-- The meta-data element is needed for versions lower than 4.1 -->
       <meta-data
         android:name="android.support.PARENT_ACTIVITY"

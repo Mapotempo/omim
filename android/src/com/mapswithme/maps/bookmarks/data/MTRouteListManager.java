@@ -25,6 +25,7 @@ public enum MTRouteListManager
     return res;
   }
 
+  @Nullable
   public Bookmark getCurrentBookmark()
   {
     return nativeGetCurrentBookmark();
@@ -38,6 +39,7 @@ public enum MTRouteListManager
     return res;
   }
 
+  @Nullable
   public Bookmark stepNextBookmark()
   {
     Bookmark bm = nativeStepNextBookmark();
@@ -45,6 +47,7 @@ public enum MTRouteListManager
     return bm;
   }
 
+  @Nullable
   public Bookmark stepPreviousBookmark()
   {
     Bookmark bm = nativeStepPreviousBookmark();

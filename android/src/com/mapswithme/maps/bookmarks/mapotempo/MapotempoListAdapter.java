@@ -1,4 +1,4 @@
-package com.mapswithme.maps.widget.mapotempo;
+package com.mapswithme.maps.bookmarks.mapotempo;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -16,7 +16,6 @@ import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
-import com.mapswithme.maps.widget.placepage.EditBookmarkFragment;
 import com.mapswithme.maps.widget.placepage.Sponsored;
 import com.mapswithme.util.BottomSheetHelper;
 import com.mapswithme.util.sharing.ShareOption;
