@@ -9,8 +9,7 @@ MTRoutePlanning::MTRoutePlanning(BookmarkCategory& bm_category):
   m_index_stop(INVALIDE_VALUE)
 {
   m_listener_key = bm_category.AddEventListener([this](UserMarkEvent event){
-    userMarkContainerUpdateListener(event);
-  });
+    userMarkContainerUpdateListener(event);});
 }
 
 MTRoutePlanning::~MTRoutePlanning()
@@ -23,6 +22,14 @@ void MTRoutePlanning::PlanningInitialisation()
   m_index_current = 0;
   m_index_start = INVALIDE_VALUE;
   m_index_stop = INVALIDE_VALUE;
+}
+
+bool MTRoutePlanning::IsValidPlanning()
+{
+  if(m_index_current != INVALIDE_VALUE &&
+     m_index_count > 0)
+    return true;
+  return false;
 }
 
 bool MTRoutePlanning::SetCurrentPlanId(size_t indexBm)
@@ -75,19 +82,23 @@ void MTRoutePlanning::update_delete(size_t index_old)
 
   if(index_old < m_index_count)
   {
-    // On remet l'index courant du planning à zéro.
     if(index_old < m_index_current)
       m_index_current--;
+    // On remet l'index courant du planning à zéro.
     else if(index_old == m_index_current)
       m_index_current = 0;
   }
+
+  if(m_index_count == 0)
+    m_index_current = INVALIDE_VALUE;
+  
   LOG(LDEBUG, ("update_delete value index_old : ", index_old));
 }
 
 void MTRoutePlanning::update_clear()
 {
-  m_index_current = -1;
-  m_index_count = -1;
+  m_index_current = INVALIDE_VALUE;
+  m_index_count = INVALIDE_VALUE;
   LOG(LDEBUG, ("update_clear with value m_index_current : ", m_index_current));
 }
 
@@ -103,6 +114,5 @@ void MTRoutePlanning::update_move(size_t old_index, size_t new_index)
   else if(m_index_current < old_index
     && m_index_current >= new_index)
     m_index_current++;
-
   LOG(LDEBUG, ("update_move with value old_index : ", old_index, " - new_index :", new_index));
 }

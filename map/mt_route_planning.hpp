@@ -18,6 +18,7 @@ private :
   size_t m_index_current;
   size_t m_index_start;
   size_t m_index_stop;
+  bool m_valididy;
 
 public :
   BookmarkCategory &m_bm_category;
@@ -39,6 +40,12 @@ public :
    * Initialise le planning en fonction de l'état des bookmarks.
    */
   void PlanningInitialisation();
+
+    /**
+   * IsValidPlanning.
+   * @return True if planning is valid.
+   */
+  bool IsValidPlanning();
 
   /**
   * SetCurrentPlanId.
@@ -78,6 +85,7 @@ public :
   size_t GetPlanStopID(){return m_index_stop;};
 
 private:
+
 /*###################################################
              BookmarkCategory helper.
 
