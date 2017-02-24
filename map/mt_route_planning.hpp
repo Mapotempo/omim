@@ -52,37 +52,37 @@ public :
   * @indexBm
   * @return "true" if planning set with new index.
   */
-  bool SetCurrentPlanId(size_t indexBm);
+  bool SetCurrentBookmarkId(size_t indexBm);
 
   /**
    * StepNextPlanId.
    * @return Index suivant.
    */
-  size_t StepNextPlanId();
+  size_t StepNextBookmarkId();
 
    /**
    * StepPreviousPlanId.
    * @return Index précedant.
    */
-  size_t StepPreviousPlanId();
+  size_t StepPreviousBookmarkId();
 
   /**
    * GetCurrentPlanId.
    * @return Index courant.
    */
-  size_t GetCurrentPlanId(){return m_index_current;};
+  size_t GetCurrentBookmarkId(){return m_index_current;};
 
   /**
    * GetPlanStartID.
    * @return Index du point de départ.
    */
-  size_t GetPlanStartID(){return m_index_start;};
+  size_t GetBookmarkStartID(){return m_index_start;};
 
   /**
    * GetPlanStopID.
    * @return Index du point de d'arrivé.
    */
-  size_t GetPlanStopID(){return m_index_stop;};
+  size_t GetBookmarkStopID(){return m_index_stop;};
 
 private:
 

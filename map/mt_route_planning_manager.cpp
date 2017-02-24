@@ -30,7 +30,7 @@ bool MTRoutePlanningManager::GetStatus()
   return true;
 }
 
-void MTRoutePlanningManager::StopManager()
+void MTRoutePlanningManager::StopFollow()
 {
   m_indexCurrentBmCat = INVALIDE_VALUE;
 
@@ -48,18 +48,13 @@ void MTRoutePlanningManager::StopManager()
   save_status();
 }
 
-bool MTRoutePlanningManager::InitManager(size_t indexBmCat, size_t indexFirstBmToDisplay)
+bool MTRoutePlanningManager::FollowPlanning(size_t indexBmCat)
 {
   static bool init = false;
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
 
   if(!bmCat)
     return false;
-
-  if(!bmCat->m_mt_bookmark_planning.SetCurrentPlanId(indexFirstBmToDisplay))
-  {
-    LOG(LWARNING, ("Can init plannign with value : ", indexFirstBmToDisplay));
-  }
 
   m_indexCurrentBmCat = indexBmCat;
   save_status();
@@ -80,11 +75,12 @@ bool MTRoutePlanningManager::InitManager(size_t indexBmCat, size_t indexFirstBmT
   return true;
 }
 
-void MTRoutePlanningManager::ResetManager(){
-  m_indexCurrentBmCat = INVALIDE_VALUE;
-  save_status();
+BookmarkCategory * MTRoutePlanningManager::GetFollowedBookmarkCategory()
+{
+  return GetBmCategory(m_indexCurrentBmCat);
 }
 
+/*
 bool MTRoutePlanningManager::SetCurrentBookmark(size_t indexBm)
 {
   bool res = false;
@@ -118,13 +114,14 @@ size_t MTRoutePlanningManager::GetCurrentBookmark()
   else
     return INVALIDE_VALUE;
 };
+*/
 
 bool MTRoutePlanningManager::CheckCurrentBookmarkStatus(const double & curLat, const double & curLon)
 {
   if(GetStatus())
   {
     BookmarkCategory * cat = GetBmCategory(m_indexCurrentBmCat);
-    const UserMark * bm = cat->GetUserMark(cat->m_mt_bookmark_planning.GetCurrentPlanId());
+    const UserMark * bm = cat->GetUserMark(cat->m_mt_bookmark_planning.GetCurrentBookmarkId());
     ms::LatLon bmPosition = bm->GetLatLon();
     if(cat)
     {
@@ -221,7 +218,7 @@ bool MTRoutePlanningManager::optimiseBookmarkCategory(size_t indexBmCat)
         // pop the first current position point
         //result.first.pop_front();
         SortUserMarks(indexBmCat, result.first);
-        bmCat->m_mt_bookmark_planning.SetCurrentPlanId(0);
+        bmCat->m_mt_bookmark_planning.SetCurrentBookmarkId(0);
 
         Track::Params params;
         params.m_name = "new_track";

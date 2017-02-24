@@ -47,9 +47,10 @@ import com.mapswithme.maps.bookmarks.data.Banner;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.DistanceAndAzimut;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanning;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.data.Metadata;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.downloader.CountryItem;
 import com.mapswithme.maps.downloader.DownloaderStatusIcon;
 import com.mapswithme.maps.downloader.MapManager;
@@ -434,7 +435,8 @@ public class PlacePageView extends RelativeLayout
           break;
 
         case NEXT_ROUTE:
-          Bookmark bookmark = MTRouteListManager.INSTANCE.stepNextBookmark();
+          int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+          Bookmark bookmark = MTRoutePlanning.INSTANCE.stepNextBookmark(catId);
           BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
           //refreshUI(bookmark);
           if (RoutingController.get().isPlanning())

@@ -15,7 +15,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.BaseBookmarkCategoryAdapter;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.ThemeUtils;
@@ -97,9 +97,9 @@ public class MapotempoCategoriesAdapter extends BaseBookmarkCategoryAdapter<Mapo
         boolean visibility = !set.isVisible();
 
         if (set.getBookmark(0) != null && !visibility)
-          MTRouteListManager.INSTANCE.initRoutingManager(set.getId(), 0);
+          MTRoutePlanningManager.INSTANCE.initRoutingManager(set.getId(), 0);
         else
-          MTRouteListManager.INSTANCE.stopRoutingManager();
+          MTRoutePlanningManager.INSTANCE.stopRoutingManager();
 
         holder.setVisibilityState(set.isVisible());
         notifyDataSetChanged();

@@ -110,7 +110,8 @@ LOCAL_SRC_FILES := \
 	com/mapswithme/util/HttpClient.cpp \
 	com/mapswithme/util/StringUtils.cpp \
 	com/mapswithme/util/statistics/PushwooshHelper.cpp \
-  com/mapswithme/maps/bookmarks/data/MTRouteListManager.cpp \
+	com/mapswithme/maps/bookmarks/data/MTRoutePlanning.cpp \
+	com/mapswithme/maps/bookmarks/data/MTRoutePlanningManager.cpp \
 
 
 LOCAL_LDLIBS := -llog -landroid -lEGL -lGLESv2 -latomic -lz

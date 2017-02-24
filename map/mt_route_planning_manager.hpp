@@ -11,10 +11,11 @@
 //#include "base/mutex.hpp"
 
 /**
- * La classe MTRouteListManager permet de gerer une liste de bookmark.
+ * TODO JMF à améliorer.
+ * La classe MTRoutePlanningManager permet de gerer une liste de bookmark (MTRoutePlanning).
  * En héritant du BookmarkManager elle gere la suppression et le déplacement
  * du signet dans sa liste, ainsi que le chargement des bookmarks depuis les
- * kml au chargement de l'application.
+ * kml au chargement de l'application et sont affichage sur la carte.
  */
 class MTRoutePlanningManager : public BookmarkManager
 {
@@ -53,18 +54,13 @@ public :
   void SetRouter(unique_ptr<routing::IRouter> && router);
 
   // Route status manager
+  void StopFollow();
+  bool FollowPlanning(size_t indexBmCat);
   bool GetStatus();
-  void StopManager();
-  bool InitManager(size_t indexBmCat, size_t indexFirstBmToDisplay);
-  void ResetManager();
 
   // Get current bookmark planning
-  bool SetCurrentBookmark(size_t indexBm);
-  size_t StepNextBookmark();
-  size_t StepPreviousBookmark();
-  size_t GetCurrentBookmarkCategory() const {return m_indexCurrentBmCat;}
-  size_t GetCurrentBookmark();
-
+  size_t GetFollowedBookmarkCategoryID() const {return m_indexCurrentBmCat;}
+  BookmarkCategory * GetFollowedBookmarkCategory();
   bool CheckCurrentBookmarkStatus(const double & curLat, const double & curLon);
 
   // Optimisation

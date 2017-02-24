@@ -1,24 +1,20 @@
 package com.mapswithme.maps.bookmarks.mapotempo;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
-import com.mapswithme.maps.bookmarks.BookmarkCategoriesAdapter;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
@@ -105,10 +101,10 @@ public class MapotempoCategoriesFragment extends BaseMwmRecyclerFragment
       break;
 
     case R.id.set_delete:
-      if(MTRouteListManager.INSTANCE.getStatus()
-         && MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
+      if(MTRoutePlanningManager.INSTANCE.getStatus()
+         && MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId() == mSelectedPosition)
       {
-        MTRouteListManager.INSTANCE.stopRoutingManager();
+        MTRoutePlanningManager.INSTANCE.stopRoutingManager();
       }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
       update();

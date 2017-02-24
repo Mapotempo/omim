@@ -35,13 +35,13 @@ import com.mapswithme.maps.api.ParsedUrlMwmRequest;
 import com.mapswithme.maps.api.RoutePoint;
 import com.mapswithme.maps.base.BaseMwmFragmentActivity;
 import com.mapswithme.maps.base.OnBackPressListener;
-import com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.Banner;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanning;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity;
 import com.mapswithme.maps.downloader.DownloaderActivity;
@@ -951,7 +951,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     if (mNavigationController != null)
       TrafficManager.INSTANCE.attach(mNavigationController);
 
-    mMapotempoRouteController.showMapotempoRoutePanel(MTRouteListManager.INSTANCE.getStatus());
+    mMapotempoRouteController.showMapotempoRoutePanel(MTRoutePlanningManager.INSTANCE.getStatus());
   }
 
   @Override
@@ -1066,7 +1066,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
     else if (MapObject.isOfType(MapObject.BOOKMARK, object))
     {
       Bookmark bm = (Bookmark) object;
-      if(MTRouteListManager.INSTANCE.setCurrentBookmark(bm.getBookmarkId()));
+
+      if(MTRoutePlanning.INSTANCE.setCurrentBookmark(bm.getCategoryId(), bm.getBookmarkId()))
       {
         mMapotempoRouteController.refreshUI((Bookmark) object);
       }
@@ -1103,16 +1104,18 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @Override
   public void onMtRouteActivated()
   {
-    Bookmark bm = MTRouteListManager.INSTANCE.getCurrentBookmark();
-    BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bm.getCategoryId());
-    if(MTRouteListManager.INSTANCE.getCurrentBookmark().getBookmarkId() == 0
+    BookmarkCategory category = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory();
+    Bookmark bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(category.getId());
+
+    BookmarkCategory bmCat = BookmarkManager.INSTANCE.getCategory(bookmark.getCategoryId());
+    if(MTRoutePlanning.INSTANCE.getCurrentBookmark(bmCat.getId()).getBookmarkId() == 0
        && bmCat.getTracksCount() > 0)
     {
       Framework.nativeShowTrackRect(bmCat.getId(), 0);
     }
     else
     {
-      BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bm.getCategoryId(), bm.getBookmarkId());
+      BookmarkManager.INSTANCE.nativeMoveToBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
     }
     mMapotempoRouteController.showMapotempoRoutePanel(true);
   }
@@ -1135,7 +1138,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
 
     RoutingController.get().cancel();
 
-    Bookmark bm = MTRouteListManager.INSTANCE.getCurrentBookmark();
+    int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+    Bookmark bm = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
     mPlacePage.setMapObject(bm, true);
     mPlacePage.setState(State.DETAILS);
   }

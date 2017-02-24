@@ -1,8 +1,6 @@
 package com.mapswithme.maps.bookmarks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.ThemeUtils;
@@ -25,12 +21,10 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
   private final static int TYPE_HELP = 1;
   private RecyclerLongClickListener mLongClickListener;
   private RecyclerClickListener mClickListener;
-  private Context mContext;
 
   public BookmarkCategoriesAdapter(Context context)
   {
     super(context);
-    mContext = context;
   }
 
   public void setOnClickListener(RecyclerClickListener listener)
@@ -81,7 +75,8 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
   }
 
   @Override
-  public void onBindViewHolder(final ViewHolder holder, final int position) {
+  public void onBindViewHolder(final ViewHolder holder, final int position)
+  {
     if (getItemViewType(position) == TYPE_HELP)
       return;
 
@@ -89,22 +84,13 @@ public class BookmarkCategoriesAdapter extends BaseBookmarkCategoryAdapter<Bookm
     holder.name.setText(set.getName());
     holder.size.setText(String.valueOf(set.getSize()));
     holder.setVisibilityState(set.isVisible());
-    holder.visibilityMarker.setOnClickListener(new View.OnClickListener() {
+    holder.visibilityMarker.setOnClickListener(new View.OnClickListener()
+    {
       @Override
-      public void onClick(View v) {
+      public void onClick(View v)
+      {
         BookmarkManager.INSTANCE.toggleCategoryVisibility(holder.getAdapterPosition());
-        boolean visibility = !set.isVisible();
-
-        if (set.getBookmark(0) != null && !visibility)
-          MTRouteListManager.INSTANCE.initRoutingManager(set.getId(), 0);
-        else
-          MTRouteListManager.INSTANCE.stopRoutingManager();
-
         holder.setVisibilityState(set.isVisible());
-        notifyDataSetChanged();
-        final Intent i = new Intent((Activity) mContext, MwmActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mContext.startActivity(i);
       }
     });
   }

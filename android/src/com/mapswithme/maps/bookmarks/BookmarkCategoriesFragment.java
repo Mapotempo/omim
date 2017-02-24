@@ -4,18 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.mapswithme.maps.R;
 import com.mapswithme.maps.base.BaseMwmRecyclerFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 import com.mapswithme.maps.dialog.EditTextDialogFragment;
-import com.mapswithme.maps.bookmarks.mapotempo.MapotempoListActivity;
 import com.mapswithme.maps.widget.recycler.RecyclerClickListener;
 import com.mapswithme.maps.widget.recycler.RecyclerLongClickListener;
 import com.mapswithme.util.BottomSheetHelper;
@@ -45,12 +41,6 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   protected BookmarkCategoriesAdapter getAdapter()
   {
     return (BookmarkCategoriesAdapter)super.getAdapter();
-  }
-
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-  {
-    return super.onCreateView(inflater, container, savedInstanceState);
   }
 
   @Override
@@ -99,11 +89,6 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
       break;
 
     case R.id.set_delete:
-      if(MTRouteListManager.INSTANCE.getStatus()
-         && MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId() == mSelectedPosition)
-      {
-        MTRouteListManager.INSTANCE.stopRoutingManager();
-      }
       BookmarkManager.INSTANCE.nativeDeleteCategory(mSelectedPosition);
       getAdapter().notifyDataSetChanged();
       break;
@@ -138,7 +123,7 @@ public class BookmarkCategoriesFragment extends BaseMwmRecyclerFragment
   @Override
   public void onItemClick(View v, int position)
   {
-    startActivity(new Intent(getActivity(), MapotempoListActivity.class)
+    startActivity(new Intent(getActivity(), BookmarkListActivity.class)
                       .putExtra(ChooseBookmarkCategoryFragment.CATEGORY_ID, position));
   }
 }

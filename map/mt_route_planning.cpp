@@ -32,7 +32,7 @@ bool MTRoutePlanning::IsValidPlanning()
   return false;
 }
 
-bool MTRoutePlanning::SetCurrentPlanId(size_t indexBm)
+bool MTRoutePlanning::SetCurrentBookmarkId(size_t indexBm)
 {
   LOG(LDEBUG, ("SetCurrent with value : ", indexBm));
 
@@ -45,7 +45,7 @@ bool MTRoutePlanning::SetCurrentPlanId(size_t indexBm)
   return res;
 }
 
-size_t MTRoutePlanning::StepNextPlanId()
+size_t MTRoutePlanning::StepNextBookmarkId()
 {
   m_index_current++;
   if(m_index_current >= m_index_count)
@@ -55,7 +55,7 @@ size_t MTRoutePlanning::StepNextPlanId()
   return m_index_current;
 }
 
-size_t MTRoutePlanning::StepPreviousPlanId()
+size_t MTRoutePlanning::StepPreviousBookmarkId()
 {
   if(m_index_current == 0)
     m_index_current = m_index_count - 1;

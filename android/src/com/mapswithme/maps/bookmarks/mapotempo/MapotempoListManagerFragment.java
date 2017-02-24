@@ -16,7 +16,7 @@ import com.mapswithme.maps.R;
 import com.mapswithme.maps.bookmarks.ChooseBookmarkCategoryFragment;
 import com.mapswithme.maps.bookmarks.data.BookmarkCategory;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.util.ThemeUtils;
 import com.mapswithme.util.concurrency.UiThread;
 import com.mapswithme.util.sharing.SharingHelper;
@@ -50,7 +50,8 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     if(categoryIndex >= 0)
     {
       mCategory = BookmarkManager.INSTANCE.getCategory(categoryIndex);
-      if(MTRouteListManager.INSTANCE.getStatus() && (mCategory.getId() == MTRouteListManager.INSTANCE.getCurrentBookmark().getCategoryId()))
+      if(MTRoutePlanningManager.INSTANCE.getStatus() && (mCategory.getId()
+          == MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId()))
       {
         isActivate = true;
       }
@@ -95,7 +96,7 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
         {
           mOptimProgressBar.setProgress(0);
           mOptimProgressBar.setVisibility(View.VISIBLE);
-          MTRouteListManager.nativeOptimiseBookmarkCategory(mCategory.getId());
+          MTRoutePlanningManager.nativeOptimiseBookmarkCategory(mCategory.getId());
           mOptimInProgress = true;
         }
       }
@@ -115,9 +116,9 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
 
         if (mCategory.getBookmark(0) != null
             && !isActivate)
-          status = MTRouteListManager.INSTANCE.initRoutingManager(mCategory.getId(), 0);
+          status = MTRoutePlanningManager.INSTANCE.initRoutingManager(mCategory.getId(), 0);
         else
-          MTRouteListManager.INSTANCE.stopRoutingManager();
+          MTRoutePlanningManager.INSTANCE.stopRoutingManager();
 
         mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? status ? R.drawable.ic_bookmark_show_night
                                                                                  : R.drawable.ic_bookmark_hide_night
@@ -144,7 +145,7 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     boolean res = false;
     if(mOptimInProgress)
     {
-      MTRouteListManager.nativeStopCurrentOptimisation();
+      MTRoutePlanningManager.INSTANCE.nativeStopCurrentOptimisation();
       mOptimInProgress = false;
       mOptimProgressBar.setVisibility(View.GONE);
 

@@ -757,18 +757,18 @@ bool Framework::MT_GetStatus()
   return m_rountingPlanningManager.GetStatus();
 }
 
-void Framework::MT_StopRouteManager()
+void Framework::MT_StopFollowPlanning()
 {
-  m_rountingPlanningManager.StopManager();
+  m_rountingPlanningManager.StopFollow();
   if(m_deactivateMapotempoRouteFn)
   {
     m_deactivateMapotempoRouteFn();
   }
 }
 
-bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
+bool Framework::MT_FollowPlanning(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingPlanningManager.InitManager(indexBmCat, indexBm);
+  bool res = m_rountingPlanningManager.FollowPlanning(indexBmCat);
 
   if(res && m_activateMapotempoRouteFn)
   {
@@ -777,24 +777,9 @@ bool Framework::MT_InitRouteManager(int64_t indexBmCat, int64_t indexBm)
   return res;
 }
 
-int64_t Framework::MT_GetCurrentBookmarkCategory(){
-  return m_rountingPlanningManager.GetCurrentBookmarkCategory();
-}
-
-int64_t Framework::MT_GetCurrentBookmark(){
-  return m_rountingPlanningManager.GetCurrentBookmark();
-}
-
-bool Framework::MT_SetCurrentBookmark(int64_t indexBm){
-  return m_rountingPlanningManager.SetCurrentBookmark(indexBm);
-}
-
-int64_t Framework::MT_StepNextBookmark(){
-  return m_rountingPlanningManager.StepNextBookmark();
-}
-
-int64_t Framework::MT_StepPreviousBookmark(){
-  return m_rountingPlanningManager.StepPreviousBookmark();
+int64_t Framework::MT_GetFollowedBookmarkCategoryID()
+{
+  return m_rountingPlanningManager.GetFollowedBookmarkCategoryID();
 }
 
 void Framework::MT_SetMapotempoRouteStatusListeners(TActivateMapotempoRouteFn const & activator,
@@ -809,14 +794,6 @@ void Framework::MT_SetMapotempoGoalIsNearListeners(const TGoalIsNearMapotempoRou
   m_goalIsNearFn = goalIsNear;
 }
 
-/*void Framework::MT_SaveRoutingManager()
-{
-  int64_t category = MT_GetCurrentBookmarkCategory();
-  int64_t bookmark = MT_GetCurrentBookmark();
-  settings::Set("category", category);
-  settings::Set("bookmark", bookmark);
-}*/
-
 bool Framework::MT_RestoreRoutingManager()
 {
 
@@ -828,7 +805,7 @@ bool Framework::MT_RestoreRoutingManager()
   if(category == MTRoutePlanningManager::INVALIDE_VALUE)
     return false;
 
-  return this->MT_InitRouteManager(category);
+  return this->MT_FollowPlanning(category);
 }
 
 void Framework::MT_SetMapotempoOptimisationListeners(TOptimisationFinishFn const & finishListener, TOptimisationProgessFn const & progressListener)

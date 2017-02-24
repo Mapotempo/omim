@@ -1,8 +1,6 @@
 package com.mapswithme.maps.bookmarks.mapotempo;
 
 import android.app.Activity;
-
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -12,12 +10,12 @@ import android.widget.TextView;
 
 import com.mapswithme.maps.MwmActivity;
 import com.mapswithme.maps.R;
-import com.mapswithme.maps.bookmarks.BookmarkCategoriesActivity;
 import com.mapswithme.maps.bookmarks.data.Bookmark;
 import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.Icon;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanning;
+import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.widget.menu.MapotempoMenu;
-import com.mapswithme.maps.bookmarks.data.MTRouteListManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +86,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTNextBM.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Bookmark bookmark = MTRouteListManager.INSTANCE.stepNextBookmark();
+        int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+        Bookmark bookmark = MTRoutePlanning.INSTANCE.stepNextBookmark(catId);
         BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
         refreshUI(bookmark);
       }
@@ -97,7 +96,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTPrevBM.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Bookmark bookmark = MTRouteListManager.INSTANCE.stepPreviousBookmark();
+        int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+        Bookmark bookmark = MTRoutePlanning.INSTANCE.stepPreviousBookmark(catId);
         BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
         refreshUI(bookmark);
       }
@@ -106,7 +106,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
     mMTCurrentBM.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Bookmark bookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
+        int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+        Bookmark bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
         BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
         refreshUI(bookmark);
       }
@@ -116,7 +117,8 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
       @Override
       public void onClick(View v) {
         ImageButton button = (ImageButton) v;
-        Bookmark bookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
+        int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+        Bookmark bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
         switch (bookmark.getIcon().getSelectedResId())
         {
           case R.drawable.ic_bookmark_marker_blue_on :
@@ -130,8 +132,9 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
             bookmark.setParamsAndNotify(bookmark.getTitle(), BookmarkManager.ICONS.get(1), bookmark.getBookmarkDescription(), bookmark.getPhoneNumber());
             break;
         }
+
         // Get the bookmark refresh
-        bookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
+        bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
         refreshUI(bookmark);
       }
     });
@@ -156,9 +159,10 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
 
   public void showMapotempoRoutePanel(boolean visibility)
   {
-    if(visibility && MTRouteListManager.INSTANCE.getStatus()) {
+    if(visibility && MTRoutePlanningManager.INSTANCE.getStatus()) {
       mLineFrame.setVisibility(View.VISIBLE);
-      Bookmark bookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
+      int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+      Bookmark bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
       refreshUI(bookmark);
     }
     else
@@ -172,7 +176,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
 
   public void refreshUI(Bookmark currentBm)
   {
-    if(MTRouteListManager.INSTANCE.getStatus()) {
+    if(MTRoutePlanningManager.INSTANCE.getStatus()) {
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       mMTCurrentBM.setText(currentBm.getTitle());
       mMTActionRight.setImageResource(currentBm.getIcon().getSelectedResId());
@@ -182,11 +186,12 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   @Override
   public void onBookmarkParamsChangeListerner(Bookmark bookmark)
   {
-    if(MTRouteListManager.INSTANCE.getStatus())
+    if(MTRoutePlanningManager.INSTANCE.getStatus())
     {
-      Bookmark cuBookmark = MTRouteListManager.INSTANCE.getCurrentBookmark();
-      if(cuBookmark != null &&
-         bookmark.getBookmarkId() == cuBookmark.getBookmarkId())
+      int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
+      Bookmark cuBm = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
+      if(bookmark != null &&
+         bookmark.getBookmarkId() == cuBm.getBookmarkId())
       {
         refreshUI(bookmark);
       }

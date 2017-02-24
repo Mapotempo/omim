@@ -11,6 +11,7 @@
 
 extern jclass g_mapObjectClazz;
 extern jclass g_bookmarkClazz;
+extern jclass g_bookmarkCategoryClazz;
 extern jclass g_myTrackerClazz;
 extern jclass g_httpClientClazz;
 extern jclass g_httpParamsClazz;
