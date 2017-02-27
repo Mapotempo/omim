@@ -58,7 +58,9 @@ public class MapObject implements Parcelable
     mMetadata = metadata;
     mApiId = apiId;
     mBanner = banner;
-    mReachableByTaxi = reachableByTaxi;
+    //mReachableByTaxi = reachableByTaxi;
+    // Mapotempo disable uber button
+    mReachableByTaxi = false;
   }
 
   protected MapObject(Parcel source)

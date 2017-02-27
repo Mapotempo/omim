@@ -56,7 +56,7 @@ public class RoutingPlanController extends ToolbarController
   private final WheelProgressView mProgressVehicle;
   private final WheelProgressView mProgressPedestrian;
   private final WheelProgressView mProgressBicycle;
-  private final WheelProgressView mProgressTaxi;
+  //private final WheelProgressView mProgressTaxi;
 
   private final View mAltitudeChartFrame;
   private final View mUberFrame;
@@ -144,6 +144,7 @@ public class RoutingPlanController extends ToolbarController
       }
     });
 
+    /*
     setupRouterButton(R.id.taxi, R.drawable.ic_taxi, new View.OnClickListener()
     {
       @Override
@@ -154,12 +155,12 @@ public class RoutingPlanController extends ToolbarController
         RoutingController.get().setRouterType(Framework.ROUTER_TYPE_TAXI);
       }
     });
-
+*/
     View progressFrame = mToolbar.findViewById(R.id.progress_frame);
     mProgressVehicle = (WheelProgressView) progressFrame.findViewById(R.id.progress_vehicle);
     mProgressPedestrian = (WheelProgressView) progressFrame.findViewById(R.id.progress_pedestrian);
     mProgressBicycle = (WheelProgressView) progressFrame.findViewById(R.id.progress_bicycle);
-    mProgressTaxi = (WheelProgressView) progressFrame.findViewById(R.id.progress_taxi);
+  //  mProgressTaxi = (WheelProgressView) progressFrame.findViewById(R.id.progress_taxi);
 
     mAltitudeChartFrame = getViewById(R.id.altitude_chart_panel);
     UiUtils.hide(mAltitudeChartFrame);
@@ -282,7 +283,7 @@ public class RoutingPlanController extends ToolbarController
 
   public void updateBuildProgress(int progress, @Framework.RouterType int router)
   {
-    UiUtils.invisible(mProgressVehicle, mProgressPedestrian, mProgressBicycle, mProgressTaxi);
+    UiUtils.invisible(mProgressVehicle, mProgressPedestrian, mProgressBicycle);
     WheelProgressView progressView;
     if (router == Framework.ROUTER_TYPE_VEHICLE)
     {
@@ -294,11 +295,11 @@ public class RoutingPlanController extends ToolbarController
       mRouterTypes.check(R.id.pedestrian);
       progressView = mProgressPedestrian;
     }
-    else if (router == Framework.ROUTER_TYPE_TAXI)
-    {
-      mRouterTypes.check(R.id.taxi);
-      progressView = mProgressTaxi;
-    }
+//    else if (router == Framework.ROUTER_TYPE_TAXI)
+//    {
+//      mRouterTypes.check(R.id.taxi);
+//      progressView = mProgressTaxi;
+//    }
     else
     {
       mRouterTypes.check(R.id.bicycle);
