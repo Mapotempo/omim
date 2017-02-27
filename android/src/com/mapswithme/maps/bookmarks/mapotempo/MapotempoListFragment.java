@@ -93,7 +93,7 @@ public class MapotempoListFragment extends Fragment
       mCurrentCategory = BookmarkManager.INSTANCE.getCategory(mCategoryIndex);
       listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, mDragOnLongPress);
     }
-    else if(MTRoutePlanningManager.INSTANCE.getStatus())
+    else if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING)
     {
       mCurrentCategory = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory();
       listAdapter = new MapotempoListAdapter(getActivity(), mCurrentCategory, R.layout.item_mapotempo_bookmark, R.id.iv__bookmark_drag, mDragOnLongPress);

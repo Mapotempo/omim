@@ -43,6 +43,7 @@ import com.mapswithme.maps.bookmarks.data.BookmarkManager;
 import com.mapswithme.maps.bookmarks.data.MTRoutePlanning;
 import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
+import com.mapswithme.maps.bookmarks.mapotempo.MTRoutePlanningManagerStatus;
 import com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity;
 import com.mapswithme.maps.downloader.DownloaderActivity;
 import com.mapswithme.maps.downloader.DownloaderFragment;
@@ -951,7 +952,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
     if (mNavigationController != null)
       TrafficManager.INSTANCE.attach(mNavigationController);
 
-    mMapotempoRouteController.showMapotempoRoutePanel(MTRoutePlanningManager.INSTANCE.getStatus());
+    mMapotempoRouteController.showMapotempoRoutePanel(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING);
   }
 
   @Override

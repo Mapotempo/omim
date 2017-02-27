@@ -20,7 +20,7 @@ extern "C"
 {
 using namespace jni;
 
-  JNIEXPORT jboolean JNICALL
+  JNIEXPORT jint JNICALL
   Java_com_mapswithme_maps_bookmarks_data_MTRoutePlanningManager_nativeGetStatus(
       JNIEnv * env, jobject thiz)
   {
@@ -34,7 +34,7 @@ using namespace jni;
     frm()->MT_StopFollowPlanning();
   }
 
-  JNIEXPORT jboolean JNICALL
+  JNIEXPORT jint JNICALL
   Java_com_mapswithme_maps_bookmarks_data_MTRoutePlanningManager_nativeFollowCategory(
       JNIEnv * env, jobject thiz, jint bmCatIndex)
   {
@@ -62,7 +62,7 @@ using namespace jni;
   Java_com_mapswithme_maps_bookmarks_data_MTRoutePlanningManager_nativeAddBookmarkToFollowedCategory(
       JNIEnv * env, jobject thiz, jstring name, double lat, double lon)
   {
-    if(frm()->MT_GetStatus())
+    if(frm()->MT_GetStatus() != PlanningManagerStatus::CLOSE)
     {
       m2::PointD const glbPoint(MercatorBounds::FromLatLon(lat, lon));
       ::Framework * f = frm();

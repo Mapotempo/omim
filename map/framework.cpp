@@ -752,7 +752,7 @@ size_t Framework::AddCategory(string const & categoryName)
   return m_bmManager.CreateBmCategory(categoryName);
 }
 
-bool Framework::MT_GetStatus()
+PlanningManagerStatus Framework::MT_GetStatus()
 {
   return m_rountingPlanningManager.GetStatus();
 }
@@ -766,14 +766,19 @@ void Framework::MT_StopFollowPlanning()
   }
 }
 
-bool Framework::MT_FollowPlanning(int64_t indexBmCat, int64_t indexBm)
+PlanningManagerStatus Framework::MT_FollowPlanning(int64_t indexBmCat, int64_t indexBm)
 {
-  bool res = m_rountingPlanningManager.FollowPlanning(indexBmCat);
+  PlanningManagerStatus res = m_rountingPlanningManager.FollowPlanning(indexBmCat);
 
-  if(res && m_activateMapotempoRouteFn)
+  if(res == FOLLOW_PLANNING && m_activateMapotempoRouteFn)
   {
     m_activateMapotempoRouteFn();
   }
+  else if(m_deactivateMapotempoRouteFn) // FIXE JMF remove this tricks.
+  {
+    m_deactivateMapotempoRouteFn();
+  }
+
   return res;
 }
 

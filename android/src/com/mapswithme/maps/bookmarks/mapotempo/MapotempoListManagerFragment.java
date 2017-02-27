@@ -24,7 +24,7 @@ import com.mapswithme.util.sharing.SharingHelper;
 public class MapotempoListManagerFragment extends Fragment implements Framework.MTRouteOptimize
 {
   private BookmarkCategory mCategory;
-  private boolean isActivate = false;
+  private MTRoutePlanningManagerStatus isActivate = MTRoutePlanningManagerStatus.CLOSE;
   private ImageView mListManagerActivate;
 
   private ProgressBar mOptimProgressBar;
@@ -50,10 +50,10 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     if(categoryIndex >= 0)
     {
       mCategory = BookmarkManager.INSTANCE.getCategory(categoryIndex);
-      if(MTRoutePlanningManager.INSTANCE.getStatus() && (mCategory.getId()
-          == MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId()))
+      if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING &&
+          (mCategory.getId() == MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId()))
       {
-        isActivate = true;
+        isActivate = MTRoutePlanningManagerStatus.FOLLOW_PLANNING;
       }
     }
   }
@@ -103,26 +103,29 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     });
 
     mListManagerActivate = (ImageView) view.findViewById(R.id.mt_list_manager_activate);
-    mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? isActivate ? R.drawable.ic_bookmark_show_night
+    mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? isActivate != MTRoutePlanningManagerStatus.CLOSE ?
+                                                                                   R.drawable.ic_bookmark_show_night
                                                                                  : R.drawable.ic_bookmark_hide_night
-                                                                    : isActivate ? R.drawable.ic_bookmark_show
+                                                                    : isActivate != MTRoutePlanningManagerStatus.CLOSE ?
+                                                                                   R.drawable.ic_bookmark_show
                                                                                  : R.drawable.ic_bookmark_hide);
     mListManagerActivate.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
       {
-        boolean status = false;
+        MTRoutePlanningManagerStatus status = MTRoutePlanningManagerStatus.CLOSE;
 
-        if (mCategory.getBookmark(0) != null
-            && !isActivate)
-          status = MTRoutePlanningManager.INSTANCE.initRoutingManager(mCategory.getId(), 0);
+        if (isActivate == MTRoutePlanningManagerStatus.CLOSE)
+          status = MTRoutePlanningManager.INSTANCE.initRoutingManager(mCategory.getId());
         else
           MTRoutePlanningManager.INSTANCE.stopRoutingManager();
 
-        mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? status ? R.drawable.ic_bookmark_show_night
+        mListManagerActivate.setImageResource(ThemeUtils.isNightTheme() ? status != MTRoutePlanningManagerStatus.CLOSE ?
+                                                                                   R.drawable.ic_bookmark_show_night
                                                                                  : R.drawable.ic_bookmark_hide_night
-                                                                        : status ? R.drawable.ic_bookmark_show
+                                                                        : status != MTRoutePlanningManagerStatus.CLOSE ?
+                                                                                   R.drawable.ic_bookmark_show
                                                                                  : R.drawable.ic_bookmark_hide);
         isActivate = status;
       }

@@ -23,11 +23,16 @@
 
 const size_t MTRoutePlanningManager::INVALIDE_VALUE = numeric_limits<size_t>::max();
  
-bool MTRoutePlanningManager::GetStatus()
+PlanningManagerStatus MTRoutePlanningManager::GetStatus()
 {
-  if(m_indexCurrentBmCat == INVALIDE_VALUE || !GetBmCategory(m_indexCurrentBmCat))
-    return false;
-  return true;
+  if(m_indexCurrentBmCat == INVALIDE_VALUE ||
+     !GetBmCategory(m_indexCurrentBmCat))
+     return PlanningManagerStatus::CLOSE;
+
+  if(GetBmCategory(m_indexCurrentBmCat)->GetUserMarkCount() == 0)
+    return PlanningManagerStatus::FOLLOW_EMPTY_PLANNING;
+
+  return PlanningManagerStatus::FOLLOW_PLANNING;
 }
 
 void MTRoutePlanningManager::StopFollow()
@@ -48,13 +53,13 @@ void MTRoutePlanningManager::StopFollow()
   save_status();
 }
 
-bool MTRoutePlanningManager::FollowPlanning(size_t indexBmCat)
+PlanningManagerStatus MTRoutePlanningManager::FollowPlanning(size_t indexBmCat)
 {
-  static bool init = false;
+  static bool res = false;
   BookmarkCategory * bmCat = GetBmCategory(indexBmCat);
 
   if(!bmCat)
-    return false;
+    return PlanningManagerStatus::CLOSE;
 
   m_indexCurrentBmCat = indexBmCat;
   save_status();
@@ -72,7 +77,8 @@ bool MTRoutePlanningManager::FollowPlanning(size_t indexBmCat)
     }
     otherCat->SaveToKMLFile();
   }
-  return true;
+
+  return GetStatus();
 }
 
 BookmarkCategory * MTRoutePlanningManager::GetFollowedBookmarkCategory()

@@ -2,6 +2,8 @@ package com.mapswithme.maps.bookmarks.data;
 
 import android.support.annotation.Nullable;
 
+import com.mapswithme.maps.bookmarks.mapotempo.MTRoutePlanningManagerStatus;
+
 public enum MTRoutePlanningManager
 {
   INSTANCE;
@@ -11,15 +13,26 @@ public enum MTRoutePlanningManager
     nativeStopFollowCategory();
   }
 
-  public boolean initRoutingManager(int catIndex, int bmIndex)
+  private MTRoutePlanningManagerStatus JNIConverterEnum(int status)
   {
-    boolean res = nativeFollowCategory(catIndex);
-    return res;
+    if(status == 0)
+      return MTRoutePlanningManagerStatus.FOLLOW_PLANNING;
+    else if(status == 1)
+      return MTRoutePlanningManagerStatus.FOLLOW_EMPTY_PLANNING;
+    else
+      return MTRoutePlanningManagerStatus.CLOSE;
   }
 
-  public boolean getStatus()
+  public MTRoutePlanningManagerStatus initRoutingManager(int catIndex)
   {
-    return nativeGetStatus();
+    int native_status = nativeFollowCategory(catIndex);
+    return JNIConverterEnum(native_status);
+  }
+
+  public MTRoutePlanningManagerStatus getStatus()
+  {
+    int native_status = nativeGetStatus();
+    return JNIConverterEnum(native_status);
   }
 
   public BookmarkCategory getCurrentBookmarkCategory()
@@ -27,11 +40,11 @@ public enum MTRoutePlanningManager
     return  nativeGetFollowedCategory();
   }
 
-  private static native boolean nativeGetStatus();
+  private static native int nativeGetStatus();
 
   private static native void nativeStopFollowCategory();
 
-  private static native boolean nativeFollowCategory(int catIndex);
+  private static native int nativeFollowCategory(int catIndex);
 
   @Nullable
   private static native BookmarkCategory nativeGetFollowedCategory();

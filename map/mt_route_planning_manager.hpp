@@ -10,12 +10,19 @@
 
 //#include "base/mutex.hpp"
 
+// Have a JNI mirror into MTRoutePLanningMananger.java
+  enum PlanningManagerStatus {
+    FOLLOW_PLANNING = 0,
+    FOLLOW_EMPTY_PLANNING = 1,
+    CLOSE = 2
+  };
+
 /**
  * TODO JMF à améliorer.
  * La classe MTRoutePlanningManager permet de gerer une liste de bookmark (MTRoutePlanning).
  * En héritant du BookmarkManager elle gere la suppression et le déplacement
  * du signet dans sa liste, ainsi que le chargement des bookmarks depuis les
- * kml au chargement de l'application et sont affichage sur la carte.
+ * kml au chargement de l'application et leurs affichage sur la carte.
  */
 class MTRoutePlanningManager : public BookmarkManager
 {
@@ -23,23 +30,8 @@ class MTRoutePlanningManager : public BookmarkManager
   /// Called to notify UI that mapotempo routing is deactivate;
   using TOptimisationProgessFn = function<void (float)>;
 
-private :
-  static const size_t MT_DISTANCE_BOOKMARK_DONE = 50;
-
-private :
-  Framework &m_framework;
-
-  size_t m_indexCurrentBmCat;
-
-  unique_ptr<routing::AsyncOptimizer> m_optimizer;
-  TOptimisationFinishFn m_optimisationFinishFn;
-  TOptimisationProgessFn m_optimisationProgressFn;
-
-  // Guard mutex categoryManager and category
-  // This is a guard on the current bookmark category to prevent another thread from deleting during optimization.
-  mutable threads::Mutex m_routeListManagerMutex;
-
 public :
+
   static const size_t INVALIDE_VALUE;
 
   MTRoutePlanningManager(Framework & f) : BookmarkManager(f),
@@ -55,8 +47,8 @@ public :
 
   // Route status manager
   void StopFollow();
-  bool FollowPlanning(size_t indexBmCat);
-  bool GetStatus();
+  PlanningManagerStatus FollowPlanning(size_t indexBmCat);
+  PlanningManagerStatus GetStatus();
 
   // Get current bookmark planning
   size_t GetFollowedBookmarkCategoryID() const {return m_indexCurrentBmCat;}
@@ -68,6 +60,22 @@ public :
   void stopCurrentOptimisation();
   void SetOptimisationListeners(TOptimisationFinishFn const & finishListener,
                                 TOptimisationProgessFn const & progressListener);
+
+
+private :
+  static const size_t MT_DISTANCE_BOOKMARK_DONE = 50;
+
+  Framework &m_framework;
+
+  size_t m_indexCurrentBmCat;
+
+  unique_ptr<routing::AsyncOptimizer> m_optimizer;
+  TOptimisationFinishFn m_optimisationFinishFn;
+  TOptimisationProgessFn m_optimisationProgressFn;
+
+  // Guard mutex categoryManager and category
+  // This is a guard on the current bookmark category to prevent another thread from deleting during optimization.
+  mutable threads::Mutex m_routeListManagerMutex;
 
 public :
   // Override BookmarkManager virtual method

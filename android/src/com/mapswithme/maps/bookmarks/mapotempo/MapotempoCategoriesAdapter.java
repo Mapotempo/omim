@@ -96,8 +96,8 @@ public class MapotempoCategoriesAdapter extends BaseBookmarkCategoryAdapter<Mapo
         BookmarkManager.INSTANCE.toggleCategoryVisibility(holder.getAdapterPosition());
         boolean visibility = !set.isVisible();
 
-        if (set.getBookmark(0) != null && !visibility)
-          MTRoutePlanningManager.INSTANCE.initRoutingManager(set.getId(), 0);
+        if (!visibility)
+          MTRoutePlanningManager.INSTANCE.initRoutingManager(set.getId());
         else
           MTRoutePlanningManager.INSTANCE.stopRoutingManager();
 

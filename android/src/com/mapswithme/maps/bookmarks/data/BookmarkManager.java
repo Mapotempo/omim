@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mapswithme.maps.R;
+import com.mapswithme.maps.bookmarks.mapotempo.MTRoutePlanningManagerStatus;
 import com.mapswithme.util.statistics.Statistics;
 
 public enum BookmarkManager
@@ -76,7 +77,7 @@ public enum BookmarkManager
   public Bookmark addNewBookmark(String name, double lat, double lon)
   {
     final Bookmark bookmark;
-    if(!MTRoutePlanningManager.INSTANCE.getStatus())
+    if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.CLOSE)
       bookmark = nativeAddBookmarkToLastEditedCategory(name, lat, lon);
     else
       bookmark = MTRoutePlanningManager.INSTANCE.nativeAddBookmarkToFollowedCategory(name, lat, lon);

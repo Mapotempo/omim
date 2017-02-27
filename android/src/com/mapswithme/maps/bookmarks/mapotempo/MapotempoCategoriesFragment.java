@@ -101,8 +101,8 @@ public class MapotempoCategoriesFragment extends BaseMwmRecyclerFragment
       break;
 
     case R.id.set_delete:
-      if(MTRoutePlanningManager.INSTANCE.getStatus()
-         && MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId() == mSelectedPosition)
+      if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING &&
+          MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId() == mSelectedPosition)
       {
         MTRoutePlanningManager.INSTANCE.stopRoutingManager();
       }

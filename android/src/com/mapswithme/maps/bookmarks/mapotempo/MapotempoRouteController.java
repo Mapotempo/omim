@@ -159,7 +159,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
 
   public void showMapotempoRoutePanel(boolean visibility)
   {
-    if(visibility && MTRoutePlanningManager.INSTANCE.getStatus()) {
+    if(visibility && MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING) {
       mLineFrame.setVisibility(View.VISIBLE);
       int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
       Bookmark bookmark = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);
@@ -176,7 +176,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
 
   public void refreshUI(Bookmark currentBm)
   {
-    if(MTRoutePlanningManager.INSTANCE.getStatus()) {
+    if(MTRoutePlanningManager.INSTANCE.getStatus() != MTRoutePlanningManagerStatus.CLOSE) {
       mBottomMapotempoFrame.setVisibility(View.VISIBLE);
       mMTCurrentBM.setText(currentBm.getTitle());
       mMTActionRight.setImageResource(currentBm.getIcon().getSelectedResId());
@@ -186,7 +186,7 @@ public class MapotempoRouteController implements Bookmark.BookmarkParamsChangeLi
   @Override
   public void onBookmarkParamsChangeListerner(Bookmark bookmark)
   {
-    if(MTRoutePlanningManager.INSTANCE.getStatus())
+    if(MTRoutePlanningManager.INSTANCE.getStatus() != MTRoutePlanningManagerStatus.CLOSE)
     {
       int catId = MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId();
       Bookmark cuBm = MTRoutePlanning.INSTANCE.getCurrentBookmark(catId);

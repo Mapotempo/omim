@@ -324,9 +324,9 @@ public:
   // Utilities
   void VizualizeRoadsInRect(m2::RectD const & rect);
 
-  bool MT_GetStatus();
+  PlanningManagerStatus MT_GetStatus();
   void MT_StopFollowPlanning();
-  bool MT_FollowPlanning(int64_t indexBmCat, int64_t indexBm = 0);
+  PlanningManagerStatus MT_FollowPlanning(int64_t indexBmCat, int64_t indexBm = 0);
   int64_t MT_GetFollowedBookmarkCategoryID();
 
   bool MT_RestoreRoutingManager();
