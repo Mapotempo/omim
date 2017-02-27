@@ -598,7 +598,7 @@ bool BookmarkCategory::LoadFromKML(ReaderPtr<Reader> const & reader)
   if (ParseXML(src, parser, true))
   {
     // MAPOTEMPO - Reverse the loaded bookmarks.
-    ReverseUserMarks();
+   // ReverseUserMarks();
     return true;
   }
   else

@@ -179,12 +179,16 @@ bool UserMarkContainer::IsDrawable() const
 UserMark * UserMarkContainer::CreateUserMark(m2::PointD const & ptOrg)
 {
   // Push front an user mark.
+  //SetDirty();
+  //m_userMarks.push_front(unique_ptr<UserMark>(AllocateUserMark(ptOrg)));
+
+  // MapotempoPush back an user mark.
   SetDirty();
-  m_userMarks.push_front(unique_ptr<UserMark>(AllocateUserMark(ptOrg)));
+  m_userMarks.push_back(unique_ptr<UserMark>(AllocateUserMark(ptOrg)));
 
   notify({numeric_limits<size_t>::max(), m_userMarks.size() - 1, UserMarkEventType::CREATE_MARK});
 
-  return m_userMarks.front().get();
+  return m_userMarks.back().get();
 }
 
 size_t UserMarkContainer::GetUserMarkCount() const
