@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,5 +135,12 @@ public class MapotempoListFragment extends Fragment
       ImageView imageButtonDrag = (ImageView) dragView.findViewById(R.id.iv__bookmark_drag);
       imageButtonDrag.setEnabled(true);
     }
+  }
+
+  public void update()
+  {
+    RecyclerView.Adapter listAdapter = mDragListView.getAdapter();
+    if(listAdapter != null)
+      listAdapter.notifyDataSetChanged();
   }
 }

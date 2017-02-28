@@ -81,7 +81,7 @@
 
     <fragment
       class="com.mapswithme.maps.bookmarks.mapotempo.MapotempoListFragment"
-      android:id="@+id/fragment_container"
+      android:id="@+id/mapotempo_fragment"
       android:layout_width="match_parent"
       android:layout_height="250dp"/>
 

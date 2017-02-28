@@ -45,6 +45,7 @@ import com.mapswithme.maps.bookmarks.data.MTRoutePlanningManager;
 import com.mapswithme.maps.bookmarks.data.MapObject;
 import com.mapswithme.maps.bookmarks.mapotempo.MTRoutePlanningManagerStatus;
 import com.mapswithme.maps.bookmarks.mapotempo.MapotempoCategoriesActivity;
+import com.mapswithme.maps.bookmarks.mapotempo.MapotempoListFragment;
 import com.mapswithme.maps.downloader.DownloaderActivity;
 import com.mapswithme.maps.downloader.DownloaderFragment;
 import com.mapswithme.maps.downloader.MapManager;
@@ -1071,6 +1072,9 @@ public class MwmActivity extends BaseMwmFragmentActivity
       if(MTRoutePlanning.INSTANCE.setCurrentBookmark(bm.getCategoryId(), bm.getBookmarkId()))
       {
         mMapotempoRouteController.refreshUI((Bookmark) object);
+        MapotempoListFragment mapotempoFragment = (MapotempoListFragment)getSupportFragmentManager().findFragmentById(R.id.mapotempo_fragment);
+        if(mapotempoFragment != null)
+          mapotempoFragment.update();
       }
     }
 
