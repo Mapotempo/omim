@@ -356,7 +356,7 @@
 "share_bookmarks_email_subject" = "MAPS.ME bookmarks were shared with you";
 
 /* Email text when sharing bookmarks category */
-"share_bookmarks_email_body" = "Hello!\n\nAttached are my bookmarks from MAPS.ME offline maps. Please open them if you have MAPS.ME installed. Or, if you don't, download the app for your iOS or Android device by following this link: http://maps.me/get?kmz\n\nEnjoy traveling with MAPS.ME!";
+"share_bookmarks_email_body" = "Hello!\n\nAttached are my bookmarks from MAPS.ME offline maps. Please open them if you have MAPS.ME installed. Or, if you don't, download the app for your Android device by following this link: http://maps.me/get?kmz\n\nEnjoy traveling with MAPS.ME!";
 
 /* message title of loading file */
 "load_kmz_title" = "Loading Bookmarks";
@@ -1796,3 +1796,5 @@
 "uber" = "Uber";
 
 "pref_url_server_title" = "Server URL";
+
+"p2p_next_route" = "Next route";

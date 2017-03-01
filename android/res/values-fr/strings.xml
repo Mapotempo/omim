@@ -226,7 +226,7 @@
 	<!-- Email Subject when sharing bookmarks category -->
 	<string name="share_bookmarks_email_subject">Signets MAPS.ME partagés</string>
 	<!-- Email text when sharing bookmarks category -->
-	<string name="share_bookmarks_email_body">Bonjour,\n\nVous trouverez ci-joints mes signets de MAPS.ME - cartes hors ligne. Veuillez ouvrir le fichier si vous avez MAPS.ME d\&#39;installé. Sinon, téléchargez l\&#39;appli pour votre appareil iOS ou Android en suivant ce lien http://maps.me/get?kmz\n\nAppréciez vos voyages avec MAPS.ME !</string>
+	<string name="share_bookmarks_email_body">Bonjour,\n\nVous trouverez ci-joints mes signets de MAPS.ME - cartes hors ligne. Veuillez ouvrir le fichier si vous avez MAPS.ME d\&#39;installé. Sinon, téléchargez l\&#39;appli pour votre appareil Android en suivant ce lien http://maps.me/get?kmz\n\nAppréciez vos voyages avec MAPS.ME !</string>
 	<!-- message title of loading file -->
 	<string name="load_kmz_title">Chargement des signets</string>
 	<!-- Kmz file successful loading -->
@@ -656,7 +656,6 @@
 	<string name="p2p_to_here">Itinéraire vers</string>
 	<string name="p2p_only_from_current">La navigation est uniquement disponible à partir de votre emplacement actuel.</string>
 	<string name="p2p_reroute_from_current">Souhaitez-vous que nous planifiions un itinéraire à partir de votre emplacement actuel ?</string>
-  <string name="p2p_next_route">Itinéraire suivant</string>
 	<string name="whats_new_next_button">Suivant</string>
 	<string name="editor_time_add">Ajouter au planning</string>
 	<string name="editor_time_delete">Supprimer du planning</string>
@@ -1059,4 +1058,5 @@
 	<!-- january -->
 	<string name="whatsnew_font_size_text">Les étiquettes sur la carte peuvent être agrandies.</string>
 	<string name="pref_url_server_title">URL serveur</string>
+	<string name="p2p_next_route">Itinéraire suivant</string>
 </resources>

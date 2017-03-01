@@ -229,7 +229,7 @@
 	<!-- Email Subject when sharing bookmarks category -->
 	<string name="share_bookmarks_email_subject">MAPS.ME bookmarks were shared with you</string>
 	<!-- Email text when sharing bookmarks category -->
-	<string name="share_bookmarks_email_body">Hello!\n\nAttached are my bookmarks from MAPS.ME offline maps. Please open them if you have MAPS.ME installed. Or, if you don\&#39;t, download the app for your iOS or Android device by following this link: http://maps.me/get?kmz\n\nEnjoy traveling with MAPS.ME!</string>
+	<string name="share_bookmarks_email_body">Hello!\n\nAttached are my bookmarks from MAPS.ME offline maps. Please open them if you have MAPS.ME installed. Or, if you don\&#39;t, download the app for your Android device by following this link: http://maps.me/get?kmz\n\nEnjoy traveling with MAPS.ME!</string>
 	<!-- message title of loading file -->
 	<string name="load_kmz_title">Loading Bookmarks</string>
 	<!-- Kmz file successful loading -->
@@ -661,7 +661,6 @@
 	<string name="p2p_to_here">Route to</string>
 	<string name="p2p_only_from_current">Navigation is available only from your current location.</string>
 	<string name="p2p_reroute_from_current">Do you want us to plan a route from your current location?</string>
-  <string name="p2p_next_route">Next route</string>
 	<string name="whats_new_next_button">Next</string>
 	<string name="editor_time_add">Add Schedule</string>
 	<string name="editor_time_delete">Delete Schedule</string>
@@ -1067,4 +1066,5 @@
 	<!-- "Translation is no needed, because it's a company name" -->
 	<string name="uber">Uber</string>
 	<string name="pref_url_server_title">Server URL</string>
+	<string name="p2p_next_route">Next route</string>
 </resources>
