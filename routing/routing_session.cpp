@@ -22,6 +22,10 @@ namespace
 
 int constexpr kOnRouteMissedCount = 5;
 
+double constexpr kOnRouteMissedTimer = 10.;
+
+double constexpr kOnRouteMissedAwayDistLimit = 100.;
+
 // @TODO(vbykoianko) The distance should depend on the current speed.
 double constexpr kShowLanesDistInMeters = 500.;
 
@@ -124,6 +128,7 @@ void RoutingSession::RemoveRouteImpl()
 {
   SetState(RoutingNotActive);
   m_lastDistance = 0.0;
+  m_lastTime = 0.0;
   m_moveAwayCounter = 0;
   m_turnNotificationsMgr.Reset();
 
@@ -200,6 +205,7 @@ RoutingSession::State RoutingSession::OnLocationPositionChanged(GpsInfo const & 
   {
     m_moveAwayCounter = 0;
     m_lastDistance = 0.0;
+    m_lastTime = std::numeric_limits<double>::max();
 
     if (m_route->IsCurrentOnEnd())
     {
@@ -247,9 +253,11 @@ RoutingSession::State RoutingSession::OnLocationPositionChanged(GpsInfo const & 
     {
       ++m_moveAwayCounter;
       m_lastDistance = dist;
+      m_lastTime = info.m_timestamp - m_lastTime;
     }
 
-    if (m_moveAwayCounter > kOnRouteMissedCount)
+    if (m_moveAwayCounter > kOnRouteMissedCount ||
+        (m_lastTime > kOnRouteMissedTimer && m_lastDistance < kOnRouteMissedAwayDistLimit))
     {
       m_passedDistanceOnRouteMeters += m_route->GetCurrentDistanceFromBeginMeters();
       SetState(RouteNeedRebuild);

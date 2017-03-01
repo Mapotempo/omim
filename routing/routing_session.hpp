@@ -213,6 +213,7 @@ private:
 
   /// Current position metrics to check for RouteNeedRebuild state.
   double m_lastDistance;
+  double m_lastTime;
   int m_moveAwayCounter;
   m2::PointD m_lastGoodPosition;
   m2::PointD m_userCurrentPosition;
