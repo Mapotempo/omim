@@ -80,7 +80,13 @@ public enum BookmarkManager
     if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.CLOSE)
       bookmark = nativeAddBookmarkToLastEditedCategory(name, lat, lon);
     else
+    {
       bookmark = MTRoutePlanningManager.INSTANCE.nativeAddBookmarkToFollowedCategory(name, lat, lon);
+
+      // FIXME JMF trick for reopen the mapotempo panel, remove this later.
+      MTRoutePlanningManager.INSTANCE.initRoutingManager(MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId());
+      BookmarkManager.INSTANCE.nativeShowBookmarkOnMap(bookmark.getCategoryId(), bookmark.getBookmarkId());
+    }
     Statistics.INSTANCE.trackBookmarkCreated();
     return bookmark;
   }

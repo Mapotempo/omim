@@ -36,7 +36,7 @@
     android:layout_height="36dp"
     android:layout_alignParentRight="true"
     android:layout_centerVertical="true"
-    android:layout_marginRight="@dimen/margin_base"
+    android:paddingRight="@dimen/margin_base"
     android:src="@drawable/mt_drag"
     android:background="@android:color/transparent"/>
 
