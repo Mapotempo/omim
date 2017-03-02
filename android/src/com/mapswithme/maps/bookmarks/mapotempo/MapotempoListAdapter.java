@@ -36,7 +36,6 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
   private boolean mDragOnLongPress;
 
   // Information current open category and bookmark status.
-  private boolean isCurrentOpenCategory = false;
   private int mCurrentOpenBookmarkIdx = -1;
 
   private void init(int layoutId, int grabHandleId, boolean dragOnLongPress)
@@ -71,7 +70,6 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
       if (MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING &&
           (mCategory.getId() == MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId()))
       {
-        isCurrentOpenCategory = true;
         mCurrentOpenBookmarkIdx = MTRoutePlanning.INSTANCE.getCurrentBookmark(mCategory.getId()).getBookmarkId();
       }
 
@@ -113,15 +111,21 @@ public class MapotempoListAdapter extends DragItemAdapter<Integer, MapotempoList
 
   @Override
   public void onBindViewHolder(final ViewHolder holder, final int position) {
+    super.onBindViewHolder(holder, position);
+
     if(mCategory == null)
       return;
 
-    super.onBindViewHolder(holder, position);
-
     final Bookmark bookmark = mCategory.getBookmark(position);
-    if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING && isCurrentOpenCategory)
+
+    if(MTRoutePlanningManager.INSTANCE.getStatus() == MTRoutePlanningManagerStatus.FOLLOW_PLANNING
+        && mCategory.getId() == MTRoutePlanningManager.INSTANCE.getCurrentBookmarkCategory().getId())
     {
       mCurrentOpenBookmarkIdx = MTRoutePlanning.INSTANCE.getCurrentBookmark(mCategory.getId()).getBookmarkId();
+    }
+    else
+    {
+      mCurrentOpenBookmarkIdx = -1;
     }
 
     holder.refreshInfo(bookmark, (mCurrentOpenBookmarkIdx == bookmark.getBookmarkId()? true : false));

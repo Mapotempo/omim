@@ -32,6 +32,8 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
   private int mLastProgress = 0;
   private boolean mLastOptimReturnStatus = false;
 
+  @Nullable  private MapotempoListFragment mMapotempoListFragment = null;
+
   public static MapotempoListManagerFragment newInstance() {
     return new MapotempoListManagerFragment();
   }
@@ -67,9 +69,9 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
     if (getView().findViewById(R.id.mt_layout_fragment_container) != null
         && mCategory != null)
     {
-      MapotempoListFragment firstFragment = new MapotempoListFragment();
-      firstFragment.setArguments(getArguments());
-      getFragmentManager().beginTransaction().add(R.id.mt_layout_fragment_container, firstFragment).commit();
+      mMapotempoListFragment = new MapotempoListFragment();
+      mMapotempoListFragment.setArguments(getArguments());
+      getFragmentManager().beginTransaction().add(R.id.mt_layout_fragment_container, mMapotempoListFragment).commit();
     }
   }
 
@@ -128,6 +130,11 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
                                                                                    R.drawable.ic_bookmark_show
                                                                                  : R.drawable.ic_bookmark_hide);
         isActivate = status;
+
+        if(mMapotempoListFragment != null)
+        {
+          mMapotempoListFragment.update();
+        }
       }
     });
 
@@ -185,9 +192,9 @@ public class MapotempoListManagerFragment extends Fragment implements Framework.
         if (mLastOptimReturnStatus && getView().findViewById(R.id.mt_layout_fragment_container) != null
             && mCategory != null)
         {
-          MapotempoListFragment firstFragment = new MapotempoListFragment();
-          firstFragment.setArguments(getArguments());
-          getFragmentManager().beginTransaction().replace(R.id.mt_layout_fragment_container, firstFragment).commit();
+          mMapotempoListFragment = new MapotempoListFragment();
+          mMapotempoListFragment.setArguments(getArguments());
+          getFragmentManager().beginTransaction().replace(R.id.mt_layout_fragment_container, mMapotempoListFragment).commit();
         }
       }
     });
