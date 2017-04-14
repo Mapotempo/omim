@@ -91,8 +91,8 @@ elif [ "$1" == "prepare" ]; then
     rm -f "$OSRM_FILE"
     find_osmium
     PBF_LOCATION="$INTDIR/tmp_location.pbf"
-    $OSMIUM add-locations-to-ways --verbose --keep-untagged-nodes --ignore-missing-nodes -F pbf -f pbf -o $PBF_LOCATION -O $PBF || fail "Prepare PBF failed"
-    mv $PBF_LOCATION $PBF
+    $OSMIUM add-locations-to-ways --verbose --keep-untagged-nodes --ignore-missing-nodes -F pbf -f pbf -o "${PBF_LOCATION}" -O "${PBF}" || fail "Prepare PBF failed"
+    mv "${PBF_LOCATION}" "${PBF}"
     "$OSRM_BUILD_PATH/osrm-extract" --config "$EXTRACT_CFG" --profile "$PROFILE" "$PBF" >> "$LOG" 2>&1 || true
     "$OSRM_BUILD_PATH/osrm-prepare" --config "$PREPARE_CFG" --profile "$PROFILE" "$OSRM_FILE" -r "$RESTRICTIONS_FILE" >> "$LOG" 2>&1 || true
     "$OSRM_BUILD_PATH/osrm-mapsme" -i "$OSRM_FILE" >> "$LOG" 2>&1 || true
